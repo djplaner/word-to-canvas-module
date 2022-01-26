@@ -3,13 +3,12 @@
  */
 
 
-/*import { c2m_View } from './view/c2m_View.js';
+// import { c2m_View } from './view/c2m_View.js';
 
-import { c2m_Model} from './model/c2m_Model.js';
-*/
+// import { c2m_Model} from './model/c2m_Model.js';
 
 
-export default class cc_CanvasModules {
+export default class c2m_controller {
 	constructor( ){
 	    // get all the div with ids starting with context_module_ within div#context_modules
 /*	    this.moduleElements = document.querySelectorAll( 'div#context_modules > div[id^=context_module_]');
