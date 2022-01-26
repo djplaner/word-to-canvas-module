@@ -1,0 +1,45 @@
+{
+  "name": "word-to-canvas-module",
+  "version": "0.0.0",
+  "description": "Userscript to create a new Canvas LMS Module from a Word document",
+  "main": "./src/index.js",
+  "userscript": {
+    "entry": "./src/index.js",     // Entry file
+    "dev": "./dist",               // Output folder for dev builds
+    "release": "./release",        // Output folder for release builds
+    "fileName": "word2canvas.js",        // Output filename -> filename.user.js
+    "meta": {                      // Userscript meta info
+      "name": "Word 2 Canvas Module",
+      "namespace": "http://tampermonkey.net/",
+      "homepage": "https://github.com/djplaner/word-to-canvas-module",
+      "match": "*://*/courses/.*/modules.*",
+      "grant": "none",
+      "require": [
+      ]
+    }
+  },
+  "scripts": {
+     "build": "userscript-builder --mode dev",
+    "release:bugfix": "userscript-builder --mode bugfix",
+    "release:minor": "userscript-builder --mode minor",
+    "release:major": "userscript-builder --mode major"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/djplaner/word-to-canvas-module.git"
+  },
+  "keywords": [
+    "Canvas",
+    "module",
+    "word"
+  ],
+  "author": "David Jones",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/djplaner/word-to-canvas-module/issues"
+  },
+  "homepage": "https://github.com/djplaner/word-to-canvas-module#readme",
+  "devDependencies": {
+    "userscript-builder": "^0.4.0"
+  }
+}
