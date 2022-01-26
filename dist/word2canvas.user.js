@@ -11,33 +11,97 @@
 // @homepage     https://github.com/djplaner/word-to-canvas-module
 // ==/UserScript==
 
+// src/views/c2m_View.js
+class c2m_View {
+
+	constructor(model ){
+		this.model = model;
+
+		this.render();
+	}
+
+	render(){
+	}
+
+	renderChooseWord() {
+		console.log("1. Choose the Word document");
+	}
+
+	renderCheckHtml() {
+		console.log("2. Check the HTML");
+	}
+
+	renderCheckModule() {
+		console.log("3. Check the Canvas Module");
+	}
+
+	renderComplete() {
+		console.log("4. Complete");
+	}
+}
+
+// src/models/c2m_Model.js
+/**
+ * Model used to 
+ * - track which stage of the conversion process is current
+ * - store details about (separate classess to do this?)
+ *   - Word document
+ *   - Mammoth object - method to convert to HTML
+ *   - conversion to HTML results
+ *   - method for converting to Canvas Module data structure
+ *   - method for inserting module into Canvas
+ * 
+ */
+
+// Define enum for stage
+
+const c2m_chooseWord = Symbol("choseWord");
+const c2m_checkHtml = Symbol("createHtml");
+const c2m_checkModule = Symbol("checkModule");
+const c2m_complete = Symbol("complete");
+
+class c2m_Model {
+	constructor( ){
+
+		// indicate which of the four stages we're up to
+		this.stage = c2m_chooseWord;
+    
+	}
+}
+
 // src/c2m_controller.js
 /**
  * c2m_controller.js
  */
 
 
-// import { c2m_View } from './view/c2m_View.js';
 
-// import { c2m_Model} from './model/c2m_Model.js';
+
+
 
 
 class c2m_controller {
 	constructor( ){
-	    // get all the div with ids starting with context_module_ within div#context_modules
-/*	    this.moduleElements = document.querySelectorAll( 'div#context_modules > div[id^=context_module_]');
-    
-	    this.currentCollection = DEFAULT_ACTIVE_COLLECTION;
-    
-	    // loop thru each moduleElement and construct a cc_Module object
-	    this.modules = Array.from( this.moduleElements).map( ( moduleElement) => {
-		return new cc_Module( moduleElement);
-	    });
-    
-	    // simple dump
-	    console.log(this.modules);*/
 
-        console.log("hello world");
+		this.model = new c2m_Model();
+		this.view = new c2m_View(this.model);
+
+		switch(this.model.stage) {
+			case c2m_chooseWord:
+				this.view.renderChooseWord();
+				break;
+			case c2m_checkHtml:
+				this.view.renderCheckHtml();
+				break;
+			case c2m_checkModule:
+				this.view.renderCheckModule();
+				break;
+			case c2m_complete:
+				this.view.renderComplete();
+				break;
+			default:
+				console.log("Unknown stage");
+		}	
 	}
 }
 
