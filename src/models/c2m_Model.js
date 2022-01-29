@@ -12,11 +12,12 @@
 
 // Define enum for stage
 
-const c2m_initialise = Symbol("initialise");
-const c2m_chooseWord = Symbol("choseWord");
-const c2m_checkHtml = Symbol("createHtml");
-const c2m_checkModule = Symbol("checkModule");
-const c2m_complete = Symbol("complete");
+const c2m_initialise = "initialise";
+const c2m_chooseWord = "choseWord";
+const c2m_checkHtml = "createHtml";
+const c2m_checkModule = "checkModule";
+const c2m_complete = "complete";
+const c2m_close = "close";
 
 export default class c2m_Model {
 	constructor( ){

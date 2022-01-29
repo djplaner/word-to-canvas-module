@@ -3,8 +3,11 @@
 const BOOTSTRAP_CSS = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">';
 const BOOTSTRAP_JS = '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>';
 
-const C2M_DIV_HTML = `
+const CHOOSE_WORD_HTML = `
 <h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 1 of 4: Provide Word document</p>
+
 
 <div class="c2m-upload">
   <p>Select a .docx file:
@@ -12,9 +15,65 @@ const C2M_DIV_HTML = `
   </p>
 </div>
 
+<div id="c2m_choice">
+  <button id="c2m-btn-close" class="btn btn-primary">Close</button>
+  <button id="c2m-btn-confirm" class="btn btn-success">Confirm</button>
+</div>
+
 <p><em>Some link to documentation</em></p>
 <p><em>Some method to cancel operation</em></p>
 <p><em>Visual indication of process - e.g. tabs</em></p>
+
+`;
+
+const CHECK_HTML_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 2 of 4: Check HTML conversion</p>
+
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<h4>Converted HTML</h4>
+
+<div id="c2m_html">
+</div>
+`;
+
+const CHECK_MODULE_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<h4>Converted Canvas Module</h4>
+
+<div id="c2m_module">
+</div>
+`;
+
+const COMPLETE_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 4 of 4: Complete</p>
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<div id="c2m_outcome">
+</div>
 
 `;
 
@@ -26,16 +85,17 @@ export default class c2m_View {
 	 */
 	constructor(model, controller) {
 		this.model = model;
-		this.controller = controller;
+		//		this.controller = controller;
 
 		// add in any CSS/JS
-//		document.head.insertAdjacentHTML('beforeend', BOOTSTRAP_CSS);
-//		document.body.insertAdjacentHTML('beforeend', BOOTSTRAP_JS);
+		//		document.head.insertAdjacentHTML('beforeend', BOOTSTRAP_CSS);
+		//		document.body.insertAdjacentHTML('beforeend', BOOTSTRAP_JS);
 
 		this.render();
 	}
 
 	render() {
+		console.log(`rendering stage ${this.model.stage}`);
 		// which is kludgier
 		// - dirty big switch statement here?
 		// - data structure shenigans in click function below?
@@ -61,17 +121,11 @@ export default class c2m_View {
 	}
 
 	handleClick(originatingStage) {
-		console.log(`handle click switching to ...`);
+		console.log(`handle click switching to ...${originatingStage}`);
 
-		const eventHandlers = {
-			[c2m_initialise]: this.initialiseButtonClick,
-			[c2m_chooseWord]: this.chooseWordButtonClick,
-			[c2m_checkHtml]: this.checkHtmlButtonClick,
-			[c2m_checkModule]: this.checkModuleButtonClick,
-			[c2m_complete]: this.completeButtonClick
-		};
+		this.model.stage = originatingStage;
+		this.render();
 
-		eventHandlers[originatingStage].call(this);
 	}
 
 	/**
@@ -86,27 +140,38 @@ export default class c2m_View {
 		// is there a button.add_module_link
 		let addModuleButton = document.querySelector("button.add_module_link");
 		if (addModuleButton) {
-			// create a dom element button.c2m_word_2_module
-			let button = document.createElement("button");
-			// add margin-right to button style
-			button.style = "margin-right: 0.2em";
-			button.classList.add("c2m_word_2_module");
-			button.classList.add("btn");
-			button.classList.add("btn-primary");
-			button.onclick = () => this.handleClick(c2m_initialise);
-			button.innerHTML = `
+			// Only add the add button if there's isn't one
+			let button = document.querySelector("button.c2m_word_2_module");
+			if (!button) {
+				// create a dom element button.c2m_word_2_module
+				button = document.createElement("button");
+				// add margin-right to button style
+				button.style = "margin-right: 0.2em";
+				button.classList.add("c2m_word_2_module");
+				button.classList.add("btn");
+				button.classList.add("btn-primary");
+				button.onclick = () => this.handleClick(c2m_chooseWord);
+				button.innerHTML = `
 			.docx 2 <i class="icon-plus"></i> 
 			<span class="screenreader-only">Add</span>
 			Module
 			`;
 
-			// get the collapse al button and insert + docx button before it
-			// TODO this didn't strangely work, unresovled and maybe better design
-			//let collapseAllButton = document.querySelector("button#expand_collapse_all");
-			//collapseAllButton.parentElement.insertBefore(collapseAllButton, addModuleButton);
+				// get the collapse al button and insert + docx button before it
+				// TODO this didn't strangely work, unresovled and maybe better design
+				//let collapseAllButton = document.querySelector("button#expand_collapse_all");
+				//collapseAllButton.parentElement.insertBefore(collapseAllButton, addModuleButton);
 
-			// insert it before + Module
-			addModuleButton.parentElement.insertBefore(button, addModuleButton);
+				// insert it before + Module
+				addModuleButton.parentElement.insertBefore(button, addModuleButton);
+			}
+
+			// if there is already a div.c2m_dialog, remove it.
+			let dialog = document.querySelector("div.c2m_dialog");
+			if (dialog) {
+				// remove dialog from document
+				dialog.parentElement.removeChild(dialog);
+			}
 		}
 	}
 
@@ -116,68 +181,100 @@ export default class c2m_View {
 	renderChooseWord() {
 		console.log("1. Choose the Word document");
 
-		// open the c2m div, after the div.header-bar
-		let c2mDiv = document.createElement('div');
-		c2mDiv.classList.add("c2m_dialog");
-		c2mDiv.insertAdjacentHTML('afterbegin', C2M_DIV_HTML);
+		let c2mDiv = this.createEmptyDialogDiv();
+		// insert the new stage html
+		c2mDiv.insertAdjacentHTML('afterbegin', CHOOSE_WORD_HTML);
 
 		// insert it before div.item-group-container
 		let itemGroupContainer = document.querySelector("div.item-group-container");
 		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+		// add onClick event handlers
+		let closeButton = document.getElementById("c2m-btn-close");
+		let confirmButton = document.getElementById("c2m-btn-confirm");
+		closeButton.onclick = () => this.handleClick(c2m_initialise);
+		confirmButton.onclick = () => this.handleClick(c2m_checkHtml);
 	}
 
 	renderCheckHtml() {
 		console.log("2. Check the HTML");
+
+		let c2mDiv = this.createEmptyDialogDiv();
+		// insert the new stage html
+		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
+
+		// insert it before div.item-group-container
+		let itemGroupContainer = document.querySelector("div.item-group-container");
+		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+		// add onClick event handlers TODO fix these
+		let closeButton = document.getElementById("c2m-btn-close");
+		closeButton.onclick = () => this.handleClick(c2m_initialise);
+
+		let confirmButton = document.getElementById("c2m-btn-confirm");
+		confirmButton.onclick = () => this.handleClick(c2m_checkModule);
+
+		let startAgainButton = document.getElementById("c2m-btn-start-again");
+		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
 	}
 
 	renderCheckModule() {
 		console.log("3. Check the Canvas Module");
+
+		let c2mDiv = this.createEmptyDialogDiv();
+		// insert the new stage html
+		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_MODULE_HTML);
+
+		// insert it before div.item-group-container
+		let itemGroupContainer = document.querySelector("div.item-group-container");
+		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+		// add event handlers
+		let closeButton = document.getElementById("c2m-btn-close");
+		closeButton.onclick = () => this.handleClick(c2m_initialise);
+
+		let startAgainButton = document.getElementById("c2m-btn-start-again");
+		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
+
+		let confirmButton = document.getElementById("c2m-btn-confirm");
+		confirmButton.onclick = () => this.handleClick(c2m_complete);
 	}
 
 	renderComplete() {
 		console.log("4. Complete");
+
+		let c2mDiv = this.createEmptyDialogDiv();
+		// insert the new stage html
+		c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
+
+		// insert it before div.item-group-container
+		let itemGroupContainer = document.querySelector("div.item-group-container");
+		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+		// add event handlers
+		let closeButton = document.getElementById("c2m-btn-close");
+		closeButton.onclick = () => this.handleClick(c2m_initialise);
+
+		let startAgainButton = document.getElementById("c2m-btn-start-again");
+		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
 	}
 
 	/**
-	 * event handler called when the ".docx 2 Module" button (created in
-	 * renderInitialise) is clicked, it will/might/should
-	 * - change the stage to c2m_chooseWord
-	 * - and call the
+	 * Add an empty div.c2m_dialog to the page or empty the existing one
 	 */
-	initialiseButtonClick() {
-		// TODO should probably do some checks to ensure current
-		// stage is c2m_initialise
-		console.log('initialiseButtonClick');
-		console.log(this)
-		this.model.stage = c2m_chooseWord;
-		this.render();
-	}
+	createEmptyDialogDiv() {
 
-	chooseWordButtonClick() {
-		// TODO should probably do some checks to ensure current
-		// stage is c2m_chooseWord
-		this.model.stage = c2m_checkHtml;
-		this.render();
-	}
+		// check for existing div.c2m_dialog
+		let c2mDiv = document.querySelector("div.c2m_dialog");
 
-	checkHtmlButtonClick() {
-		// TODO should probably do some checks to ensure current
-		// stage is c2m_checkHtml
-		this.model.stage = c2m_checkModule;
-		this.render();
-	}
+		if (c2mDiv) {
+			// empty it
+			c2mDiv.innerHTML = "";
+		} else {
+			c2mDiv = document.createElement('div');
+			c2mDiv.classList.add("c2m_dialog");
+		}
+		return c2mDiv;
 
-	checkModuleButtonClick() {
-		// TODO should probably do some checks to ensure current
-		// stage is c2m_checkModule
-		this.model.stage = c2m_complete;
-		this.render();
-	}
-
-	completeButtonClick() {
-		// TODO should probably do some checks to ensure current
-		// stage is c2m_complete
-		this.model.stage = c2m_initialise;
-		this.render();
 	}
 }
