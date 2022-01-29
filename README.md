@@ -6,6 +6,8 @@ Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) t
 
 ## Development
 
+- Uses [mammoth.js](https://github.com/mwilliamson/mammoth.js/) for Word to HTML conversion
+
 ### Userscript
 
 For local development it is suggested to 

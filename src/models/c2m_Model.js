@@ -10,6 +10,10 @@
  * 
  */
 
+// Import the c2m_Converter class
+
+import c2m_Converter from './c2m_Converter';
+
 // Define enum for stage
 
 const c2m_initialise = "initialise";
@@ -24,6 +28,13 @@ export default class c2m_Model {
 
 		// indicate which of the four stages we're up to
 		this.stage = c2m_initialise;
-    
+		this.converter = new c2m_Converter();
+
+	}
+
+	convertWordDoc(event) {
+		console.log('c2m_Model -> convertWordDoc')
+
+		this.converter.handleFileSelect(event);
 	}
 }

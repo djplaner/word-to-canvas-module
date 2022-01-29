@@ -15,6 +15,7 @@
 const BOOTSTRAP_CSS = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">';
 const BOOTSTRAP_JS = '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>';
 
+
 const CHOOSE_WORD_HTML = `
 <h3>Create new module from Word document</h3>
 
@@ -50,10 +51,11 @@ const CHECK_HTML_HTML = `
   <button id="c2m-btn-close" class="btn-primary">Close</button>
 </div>
 
-<h4>Converted HTML</h4>
+<h4>Messages</h4>
+<div id="c2m_messages"></div>
 
-<div id="c2m_html">
-</div>
+<h4>HTML</h4>
+<div id="c2m_html"></div>
 `;
 
 const CHECK_MODULE_HTML = `
@@ -132,12 +134,78 @@ class c2m_View {
 		}
 	}
 
-	handleClick(originatingStage) {
-		console.log(`handle click switching to ...${originatingStage}`);
+	/**
+	 * Event handler for clicks on navigation buttons between app stages.
+	 * Given the new stage, modify the model and render
+	 * @param {String} newStage 
+	 */
+	handleClick(newStage) {
+		console.log(`handle click switching to ...${newStage}`);
 
-		this.model.stage = originatingStage;
+		this.model.stage = newStage;
 		this.render();
 
+	}
+
+	/**
+	 * Event handler for uploading a Word doc
+	 * Use the model's convertWordDoc method, modify stage to checkHtml
+	 * and render
+	 */
+
+	handleUpload(event) {
+		console.log("handle upload");
+		console.log(event);
+		this.model.convertWordDoc(event);
+
+		// at this stage this.model.converter.mammothResult is defined
+		console.log("-------------------");
+		//console.log(this.model.converter.mammothResult); 
+
+		// get ready to display results
+		this.model.stage = c2m_checkHtml;
+		this.render();
+	}
+
+	/**
+	 * Handle a mammoth result becoming available
+	 * Should only happen for checkHtml
+	 */
+
+	handleMammothResult(event) {
+		console.log("XXXXXXXXX mammoth result available");
+		console.log(this.model.converter.mammothResult);
+		// TODO update the div with the results
+		// handle any error messages
+
+		// Show the converted html
+		// update div#c2m_html with the result html
+		let c2m_html = document.getElementById("c2m_html");
+		if (c2m_html) {
+			c2m_html.innerHTML = this.model.converter.mammothResult.value;
+		}
+
+		// Show the messages from mammoth
+		let c2m_messages = document.getElementById("c2m_messages");
+        if (c2m_messages) {
+			let messageHtml = this.generateMessageHtml(this.model.converter.mammothResult.messages);
+		    c2m_messages.innerHTML = messageHtml;
+		}
+	}
+
+	/**
+	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
+	 * HTML to add in page
+	 * @param {Array} messages 
+	 * @returns {String} html representing messages
+	 */
+
+	generateMessageHtml(messages){
+		let messageHtml = "";
+		messages.forEach(function(message){
+			messageHtml += `<div class="c2m_alert ${message.type}" role="alert">${message.message}</div>`;
+		});
+		return messageHtml;
 	}
 
 	/**
@@ -201,7 +269,11 @@ class c2m_View {
 		let itemGroupContainer = document.querySelector("div.item-group-container");
 		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
 
-		// add onClick event handlers
+		// add onChange event handler for c2m-docx
+		let c2mDocx = document.querySelector("input#c2m-docx");
+		c2mDocx.addEventListener('change', (e) => this.handleUpload(e) );
+
+		// add onClick event handlers - for navigation buttons
 		let closeButton = document.getElementById("c2m-btn-close");
 		let confirmButton = document.getElementById("c2m-btn-confirm");
 		closeButton.onclick = () => this.handleClick(c2m_initialise);
@@ -212,12 +284,18 @@ class c2m_View {
 		console.log("2. Check the HTML");
 
 		let c2mDiv = this.createEmptyDialogDiv();
+		// add the event handler for mammoth results
+		c2mDiv.addEventListener('mammoth-results', (e) => this.handleMammothResult(e) );
+
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
 
 		// insert it before div.item-group-container
 		let itemGroupContainer = document.querySelector("div.item-group-container");
 		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+		// TODO check the model's mammoth member to access the html and
+		// also to check progress
 
 		// add onClick event handlers TODO fix these
 		let closeButton = document.getElementById("c2m-btn-close");
@@ -291,6 +369,101 @@ class c2m_View {
 	}
 }
 
+// src/models/c2m_Converter.js
+/**
+ * Converter.js
+ * Define c2m_Converter class which is responsible for doing the conversion of the
+ * the new module from docx to HTML to Canvas module 
+ */
+
+
+
+class c2m_Converter {
+
+	/**
+	 * construct the object
+	 * - if event is defined then we're converting from .docx to html
+	 * - if no event initialise
+	 */
+	constructor( ){
+
+//		this.mammothConvert();
+
+//		this.handleFileSelect(event);
+	}
+
+	displayResult(result){
+		console.log("Converter display result");
+
+		this.mammothResult = result;
+
+		// generate mammoth-results event
+		const event = new Event('mammoth-results');
+		let c2m_dialog = document.querySelector('div.c2m_dialog');
+		if (c2m_dialog) {
+		    c2m_dialog.dispatchEvent(event);
+		}
+	}
+
+	/**
+	 * Grab the content of a file selector and run it thru Mammoth
+	 * - adapted from Mammoth.js demo
+	 * https://github.com/mwilliamson/mammoth.js/blob/master/browser-demo/demo.js
+	 */
+
+	handleFileSelect(event) {
+        let file = event.target.files[0];
+
+        let reader = new FileReader();
+        
+		// where is loadEvent coming from
+        reader.onload = (loadEvent) => this.callBack(loadEvent);
+        
+        reader.readAsArrayBuffer(file);
+    }
+
+	callBack(loadEvent) {
+            let arrayBuffer = loadEvent.target.result;
+			 // to set options, use this one e.g. how to do conversion
+            mammoth.convertToHtml({arrayBuffer: arrayBuffer})
+                .then( (result) => this.displayResult(result))
+                .done();
+	}
+
+	/**
+	 * Read a file from the event
+	 * - adapted from Mammoth.js demo
+	 * https://github.com/mwilliamson/mammoth.js/blob/master/browser-demo/demo.js
+	 */
+	readFileInputEventAsArrayBuffer(event) {
+        let file = event.target.files[0];
+
+        let reader = new FileReader();
+        
+		// where is loadEvent coming from
+        reader.onload = (loadEvent) => this.callBack(loadEvent);
+        
+        reader.readAsArrayBuffer(file);
+    }
+
+
+
+
+}
+
+ function displayResult(result) {
+	 console.log(result);
+
+	 return result;
+        /*document.getElementById("output").innerHTML = result.value;
+        
+        var messageHtml = result.messages.map(function(message) {
+            return '<li class="' + message.type + '">' + escapeHtml(message.message) + "</li>";
+        }).join("");
+        
+        document.getElementById("messages").innerHTML = "<ul>" + messageHtml + "</ul>"; */
+    }
+
 // src/models/c2m_Model.js
 /**
  * Model used to 
@@ -303,6 +476,10 @@ class c2m_View {
  *   - method for inserting module into Canvas
  * 
  */
+
+// Import the c2m_Converter class
+
+
 
 // Define enum for stage
 
@@ -318,7 +495,14 @@ class c2m_Model {
 
 		// indicate which of the four stages we're up to
 		this.stage = c2m_initialise;
-    
+		this.converter = new c2m_Converter();
+
+	}
+
+	convertWordDoc(event) {
+		console.log('c2m_Model -> convertWordDoc')
+
+		this.converter.handleFileSelect(event);
 	}
 }
 
