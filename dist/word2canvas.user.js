@@ -149,16 +149,17 @@ class c2m_View {
 	 */
 	constructor(model, controller) {
 		this.model = model;
+		this.controller = controller;
 		//		this.controller = controller;
 
 		// add in any CSS/JS
 		//		document.head.insertAdjacentHTML('beforeend', BOOTSTRAP_CSS);
 		//		document.body.insertAdjacentHTML('beforeend', BOOTSTRAP_JS);
 
-		this.render();
+		//this.render();
 	}
 
-	render() {
+/*	render() {
 		console.log(`rendering stage ${this.model.stage}`);
 		// which is kludgier
 		// - dirty big switch statement here?
@@ -182,7 +183,7 @@ class c2m_View {
 			default:
 				console.log("Unknown stage");
 		}
-	}
+	} */
 
 	/**
 	 * Event handler for clicks on navigation buttons between app stages.
@@ -447,6 +448,60 @@ class c2m_View {
 	}
 }
 
+// src/views/c2m_InitialisedView.js
+class c2m_InitialisedView {
+
+
+	constructor(model, controller) {
+		// all a bit kludgy and unnecessary ATM
+		// Will that change??
+		this.model = model;
+		this.controller = controller;
+	}
+
+	render() {
+		console.log("0. Initialise");
+
+		// is there a button.add_module_link
+		let addModuleButton = document.querySelector("button.add_module_link");
+		if (addModuleButton) {
+			// Only add the add button if there's isn't one
+			let button = document.querySelector("button.c2m_word_2_module");
+			if (!button) {
+				// create a dom element button.c2m_word_2_module
+				button = document.createElement("button");
+				// add margin-right to button style
+				button.style = "margin-right: 0.2em";
+				button.classList.add("c2m_word_2_module");
+				button.classList.add("btn");
+				button.classList.add("btn-primary");
+				button.onclick = () => this.handleClick(c2m_chooseWord);
+				button.innerHTML = `
+			.docx 2 <i class="icon-plus"></i> 
+			<span class="screenreader-only">Add</span>
+			Module
+			`;
+
+				// get the collapse al button and insert + docx button before it
+				// TODO this didn't strangely work, unresovled and maybe better design
+				//let collapseAllButton = document.querySelector("button#expand_collapse_all");
+				//collapseAllButton.parentElement.insertBefore(collapseAllButton, addModuleButton);
+
+				// insert it before + Module
+				addModuleButton.parentElement.insertBefore(button, addModuleButton);
+			}
+
+			// if there is already a div.c2m_dialog, remove it.
+			let dialog = document.querySelector("div.c2m_dialog");
+			if (dialog) {
+				// remove dialog from document
+				dialog.parentElement.removeChild(dialog);
+			}
+		}
+	}
+
+}
+
 // src/models/c2m_Converter.js
 /**
  * Converter.js
@@ -654,7 +709,7 @@ function displayResult(result) {
 
 const c2m_initialise = "initialise";
 const c2m_chooseWord = "choseWord";
-const c2m_checkHtml = "createHtml";
+const c2m_checkHtml = "checkHtml";
 const c2m_checkModule = "checkModule";
 const c2m_complete = "complete";
 const c2m_close = "close";
@@ -686,13 +741,55 @@ class c2m_Model {
 
 
 
-class c2m_controller {
-	constructor( ){
 
+
+// Define the states
+
+const c2m_Initialised = "c2m_Initialised";
+const c2m_ChooseWord = "c2m_ChoseWord";
+const c2m_CheckHtml = "c2m_CheckHtml";
+const c2m_CheckModule = "c2m_CheckModule";
+const c2m_Completed = "c2m_Completed";
+//const c2m_Close = "close";
+
+
+class c2m_Controller {
+	constructor() {
+
+		this.currentState = c2m_Initialised;
+
+		// ?? passed to views for the services it provides with
+		// Mammoth and Canvas Module converters??
 		this.model = new c2m_Model();
-		this.view = new c2m_View(this.model,this);
+		// TODO: will eventually create many different views
+		this.view = new c2m_View(this.model, this);
 
+		// render the current state
+		this.render();
 	}
+
+	render() {
+		console.log(`rendering stage ${this.currentState}`);
+
+		const view = eval(`new ${this.currentState}View(this.model, this)`);
+		view.render();
+	}
+
+	/**
+	 * Event handler for clicks on navigation buttons between app states.
+	 * Given the new state, modify the model and render
+	 * @param {String} newState 
+	 */
+
+	handleClick(newState) {
+		console.log(`handle click switching to ...${newState}`);
+
+		this.currentState = newState;
+		this.render();
+	}
+
+
+
 
 
 
@@ -713,7 +810,7 @@ function canvas2Module(){
         // - module content is dynamically loaded, wait (dumbly) for it to finish
         this.setTimeout(
             () => {
-                let controller = new c2m_controller();
+                let controller = new c2m_Controller();
             }, 2000);
     });
 }

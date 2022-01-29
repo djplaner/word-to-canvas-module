@@ -137,16 +137,17 @@ export default class c2m_View {
 	 */
 	constructor(model, controller) {
 		this.model = model;
+		this.controller = controller;
 		//		this.controller = controller;
 
 		// add in any CSS/JS
 		//		document.head.insertAdjacentHTML('beforeend', BOOTSTRAP_CSS);
 		//		document.body.insertAdjacentHTML('beforeend', BOOTSTRAP_JS);
 
-		this.render();
+		//this.render();
 	}
 
-	render() {
+/*	render() {
 		console.log(`rendering stage ${this.model.stage}`);
 		// which is kludgier
 		// - dirty big switch statement here?
@@ -170,20 +171,20 @@ export default class c2m_View {
 			default:
 				console.log("Unknown stage");
 		}
-	}
+	} */
 
 	/**
 	 * Event handler for clicks on navigation buttons between app stages.
 	 * Given the new stage, modify the model and render
 	 * @param {String} newStage 
 	 */
-	handleClick(newStage) {
+/*	handleClick(newStage) {
 		console.log(`handle click switching to ...${newStage}`);
 
 		this.model.stage = newStage;
 		this.render();
 
-	}
+	} */
 
 	/**
 	 * Event handler for uploading a Word doc
