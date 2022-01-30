@@ -1,14 +1,28 @@
 
 import { c2m_View } from './c2m_View.js';
 
+
+const COMPLETE_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 4 of 4: Complete</p>
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<div id="c2m_outcome">
+</div>
+
+`;
+
 export default class c2m_CompletedView extends c2m_View {
 
 
 	constructor(model, controller) {
-		// all a bit kludgy and unnecessary ATM
-		// Will that change??
-		this.model = model;
-		this.controller = controller;
+		super(model,controller);
 	}
 
 	render() {
@@ -24,10 +38,10 @@ export default class c2m_CompletedView extends c2m_View {
 
 		// add event handlers
 		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.handleClick(c2m_initialise);
+		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
 
 		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
+		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
 	}
 

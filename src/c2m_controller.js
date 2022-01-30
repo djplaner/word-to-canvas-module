@@ -40,7 +40,7 @@ export default class c2m_Controller {
 	}
 
 	render() {
-		console.log(`rendering stage ${this.currentState}`);
+		console.log(`rendering state ${this.currentState}`);
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
@@ -61,7 +61,7 @@ export default class c2m_Controller {
 
 	/**
 	 * Event handler for uploading a Word doc
-	 * Use the model's convertWordDoc method, modify stage to checkHtml
+	 * Use the model's convertWordDoc method, modify state to checkHtml
 	 * and render
 	 */
 
@@ -70,12 +70,12 @@ export default class c2m_Controller {
 		console.log(event);
 		this.model.convertWordDoc(event);
 
-		// at this stage this.model.converter.mammothResult is defined
+		// at this state this.model.converter.mammothResult is defined
 		console.log("-------------------");
 		//console.log(this.model.converter.mammothResult); 
 
 		// get ready to display results
-		this.model.stage = c2m_CheckHtml;
+		this.currentState = c2m_CheckHtml;
 		this.render();
 	}
 
