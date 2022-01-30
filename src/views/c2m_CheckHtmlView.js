@@ -17,16 +17,31 @@ const CHECK_HTML_HTML = `
 <p><em>Waiting for conversion...</em></p>
 <div class="c2m-loading"></div>
 </div>
-<div class="c2m-received-results" style="display:none">
 
-<button class="c2m_accordion">Conversion Messages</button>
-<div class="c2m_panel" id="c2m_messages"></div>
+<div class="c2m-received-results" style="display:none">
+  <h4>Conversion completed</h4>
+  <div id="c2m_summary">
+  <p>Use the following to check conversion. If
+  ok, click <em>Confirm</em> to see the Canvas Module this HTML would become.</p>
+  <p>Open <em>Messages</em> accordion to show conversion messages</p>
+  <p>Open <em>HTML</em> to the HTML conversion of the Word document content.</p>
+  </div>
+
+
+<button class="c2m_accordion" id="c2m_result">Messages</button>
+<div class="c2m_panel">
+  <div id="c2m_messages"></div>
+</div>
 
 <button class="c2m_accordion">HTML</button>
 <div class="c2m_panel" id="c2m_html"></div>
 </div>
 
 <style>
+.c2m-received-results {
+	margin-top: 0.5em;
+}
+
 .c2m-loading {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */
@@ -42,12 +57,13 @@ const CHECK_HTML_HTML = `
   100% { transform: rotate(360deg); }
 }
 
-* Style the buttons that are used to open and close the accordion panel */
+/* Style the buttons that are used to open and close the accordion panel */
 .c2m_accordion {
   background-color: #eee;
   color: #444;
   cursor: pointer;
-  padding: 18px;
+  font-weight: bold;
+  padding: 0.5em;
   width: 100%;
   text-align: left;
   border: none;
@@ -67,6 +83,18 @@ const CHECK_HTML_HTML = `
   display: none;
   overflow: hidden;
 }
+
+.c2m_accordion:after {
+  content: '+'; /* Unicode character for "plus" sign (+) */
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+}
+
+.c2m_active:after {
+  content: "-"; /* Unicode character for "minus" sign (-) */
+}
 </style>
 `;
 
@@ -75,7 +103,7 @@ export default class c2m_CheckHtmlView extends c2m_View {
 
 
 	constructor(model, controller) {
-		super(model,controller);
+		super(model, controller);
 	}
 
 	render() {
@@ -122,7 +150,7 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		// update div#c2m_html with the result html
 		let c2m_html = document.getElementById("c2m_html");
 		if (c2m_html) {
-			c2m_html.innerHTML = this.model.converter.mammothResult.value;
+			c2m_html.innerHTML = this.model.wordConverter.mammothResult.value;
 		}
 
 		// Show the messages from mammoth

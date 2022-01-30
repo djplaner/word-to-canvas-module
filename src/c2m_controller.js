@@ -32,10 +32,7 @@ export default class c2m_Controller {
 		// ?? passed to views for the services it provides with
 		// Mammoth and Canvas Module converters??
 		this.model = new c2m_Model();
-		// TODO: will eventually create many different views
-//		this.view = new c2m_View(this.model, this);
 
-		// render the current state
 		this.render();
 	}
 
@@ -67,26 +64,23 @@ export default class c2m_Controller {
 
 	handleUpload(event) {
 		console.log("handle upload");
-		console.log(event);
+
+		// do the conversion, it will be async
+		// handleUpdateResults will be called when it is done
 		this.model.convertWordDoc(event);
 
-		// at this state this.model.converter.mammothResult is defined
-		console.log("-------------------");
-		//console.log(this.model.converter.mammothResult); 
-
-		// get ready to display results
+		// move the state on and render, ready for the results
 		this.currentState = c2m_CheckHtml;
 		this.render();
 	}
 
 	/**
 	 * Handle a mammoth result becoming available
-	 * Should only happen for checkHtml
 	 */
 
-	handleMammothResult(event) {
+	handleMammothResult() {
 		console.log("XXXXXXXXX mammoth result available");
-		console.log(this.model.converter.mammothResult);
+		console.log(this.model.wordConverter.mammothResult);
 
 		let view = new c2m_CheckHtmlView(this.model, this);
 		view.renderUpdateResults();

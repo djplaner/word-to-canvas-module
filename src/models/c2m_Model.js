@@ -12,7 +12,7 @@
 
 // Import the c2m_Converter class
 
-import c2m_Converter from './c2m_Converter';
+import c2m_WordConverter from './c2m_WordConverter';
 
 // Define enum for stage
 
@@ -22,13 +22,15 @@ export default class c2m_Model {
 
 		// indicate which of the four stages we're up to
 //		this.stage = c2m_initialise;
-		this.converter = new c2m_Converter();
+		this.wordConverter = new c2m_WordConverter();
+
+
 
 	}
 
 	convertWordDoc(event) {
 		console.log('c2m_Model -> convertWordDoc')
 
-		this.converter.handleFileSelect(event);
+		this.wordConverter.handleFileSelect(event);
 	}
 }
