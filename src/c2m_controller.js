@@ -87,26 +87,8 @@ export default class c2m_Controller {
 	handleMammothResult(event) {
 		console.log("XXXXXXXXX mammoth result available");
 		console.log(this.model.converter.mammothResult);
-		// TODO update the div with the results
-		// handle any error messages
 
-		// Show the converted html
-		// update div#c2m_html with the result html
-		let c2m_html = document.getElementById("c2m_html");
-		if (c2m_html) {
-			c2m_html.innerHTML = this.model.converter.mammothResult.value;
-		}
-
-		// Show the messages from mammoth
-		let c2m_messages = document.getElementById("c2m_messages");
-		if (c2m_messages) {
-			let messageHtml = this.generateMessageHtml(this.model.converter.mammothResult.messages);
-			c2m_messages.innerHTML = messageHtml;
-		}
-
-		// hide div.c2m-waiting-results
-		document.querySelector("div.c2m-waiting-results").style.display = "none";
-		// display div.c2m-received-results
-		document.querySelector("div.c2m-received-results").style.display = "block";
+		let view = new c2m_CheckHtmlView(this.model, this);
+		view.renderUpdateResults();
 	}
 }

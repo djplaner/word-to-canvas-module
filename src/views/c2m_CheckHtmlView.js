@@ -110,4 +110,33 @@ export default class c2m_CheckHtmlView extends c2m_View {
 
 	}
 
+	/**
+	 * Mammoth results are in, update the messages and html with the results
+	 */
+	renderUpdateResults() {
+
+		// TODO update the div with the results
+		// handle any error messages
+
+		// Show the converted html
+		// update div#c2m_html with the result html
+		let c2m_html = document.getElementById("c2m_html");
+		if (c2m_html) {
+			c2m_html.innerHTML = this.model.converter.mammothResult.value;
+		}
+
+		// Show the messages from mammoth
+		let c2m_messages = document.getElementById("c2m_messages");
+		if (c2m_messages) {
+			let messageHtml = this.generateMessageHtml(this.model.converter.mammothResult.messages);
+			c2m_messages.innerHTML = messageHtml;
+		}
+
+		// hide div.c2m-waiting-results
+		document.querySelector("div.c2m-waiting-results").style.display = "none";
+		// display div.c2m-received-results
+		document.querySelector("div.c2m-received-results").style.display = "block";
+	}
+
+
 }

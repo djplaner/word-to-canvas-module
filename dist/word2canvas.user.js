@@ -18,39 +18,6 @@ const BOOTSTRAP_JS = '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/
 
 
 
-const CHECK_MODULE_HTML = `
-<h3>Create new module from Word document</h3>
-
-<p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
-
-<div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
-  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
-  <button id="c2m-btn-close" class="btn-primary">Close</button>
-</div>
-
-<h4>Converted Canvas Module</h4>
-
-<div id="c2m_module">
-</div>
-`;
-
-const COMPLETE_HTML = `
-<h3>Create new module from Word document</h3>
-
-<p color="secondary">Step 4 of 4: Complete</p>
-
-<div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
-  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
-  <button id="c2m-btn-close" class="btn-primary">Close</button>
-</div>
-
-<div id="c2m_outcome">
-</div>
-
-`;
-
 class c2m_View {
 	/**
 	 * create view object
@@ -332,9 +299,56 @@ class c2m_CheckHtmlView extends c2m_View {
 
 	}
 
+	/**
+	 * Mammoth results are in, update the messages and html with the results
+	 */
+	renderUpdateResults() {
+
+		// TODO update the div with the results
+		// handle any error messages
+
+		// Show the converted html
+		// update div#c2m_html with the result html
+		let c2m_html = document.getElementById("c2m_html");
+		if (c2m_html) {
+			c2m_html.innerHTML = this.model.converter.mammothResult.value;
+		}
+
+		// Show the messages from mammoth
+		let c2m_messages = document.getElementById("c2m_messages");
+		if (c2m_messages) {
+			let messageHtml = this.generateMessageHtml(this.model.converter.mammothResult.messages);
+			c2m_messages.innerHTML = messageHtml;
+		}
+
+		// hide div.c2m-waiting-results
+		document.querySelector("div.c2m-waiting-results").style.display = "none";
+		// display div.c2m-received-results
+		document.querySelector("div.c2m-received-results").style.display = "block";
+	}
+
+
 }
 
 // src/views/c2m_CheckModuleView.js
+const CHECK_MODULE_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<h4>Converted Canvas Module</h4>
+
+<div id="c2m_module">
+</div>
+`;
+
+
 class c2m_CheckModuleView extends c2m_View {
 
 
@@ -355,19 +369,33 @@ class c2m_CheckModuleView extends c2m_View {
 
 		// add event handlers
 		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.handleClick(c2m_initialise);
+		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
 
 		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
+		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
 		let confirmButton = document.getElementById("c2m-btn-confirm");
-		confirmButton.onclick = () => this.handleClick(c2m_complete);
-
+		confirmButton.onclick = () => this.controller.handleClick(c2m_Completed);
 	}
-
 }
 
 // src/views/c2m_CompletedView.js
+const COMPLETE_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 4 of 4: Complete</p>
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<div id="c2m_outcome">
+</div>
+
+`;
+
 class c2m_CompletedView extends c2m_View {
 
 
@@ -388,10 +416,10 @@ class c2m_CompletedView extends c2m_View {
 
 		// add event handlers
 		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.handleClick(c2m_initialise);
+		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
 
 		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
+		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
 	}
 
@@ -544,7 +572,7 @@ class c2m_Converter {
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
 		// TODO: more flexibility with choosing options
-		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
+		mammoth.convertToHtml({ arrayBuffer: arrayBuffer })//, DEFAULT_OPTIONS)
 			.then((result) => this.displayResult(result))
 			.done();
 	}
@@ -709,27 +737,9 @@ class c2m_Controller {
 	handleMammothResult(event) {
 		console.log("XXXXXXXXX mammoth result available");
 		console.log(this.model.converter.mammothResult);
-		// TODO update the div with the results
-		// handle any error messages
 
-		// Show the converted html
-		// update div#c2m_html with the result html
-		let c2m_html = document.getElementById("c2m_html");
-		if (c2m_html) {
-			c2m_html.innerHTML = this.model.converter.mammothResult.value;
-		}
-
-		// Show the messages from mammoth
-		let c2m_messages = document.getElementById("c2m_messages");
-		if (c2m_messages) {
-			let messageHtml = this.generateMessageHtml(this.model.converter.mammothResult.messages);
-			c2m_messages.innerHTML = messageHtml;
-		}
-
-		// hide div.c2m-waiting-results
-		document.querySelector("div.c2m-waiting-results").style.display = "none";
-		// display div.c2m-received-results
-		document.querySelector("div.c2m-received-results").style.display = "block";
+		let view = new c2m_CheckHtmlView(this.model, this);
+		view.renderUpdateResults();
 	}
 }
 
