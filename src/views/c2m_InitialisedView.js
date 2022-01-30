@@ -1,14 +1,12 @@
 
 
+import { c2m_View } from './c2m_View.js';
 
-export default class c2m_InitialisedView {
+export default class c2m_InitialisedView extends c2m_View {
 
 
 	constructor(model, controller) {
-		// all a bit kludgy and unnecessary ATM
-		// Will that change??
-		this.model = model;
-		this.controller = controller;
+		super(model,controller);
 	}
 
 	render() {
@@ -27,7 +25,7 @@ export default class c2m_InitialisedView {
 				button.classList.add("c2m_word_2_module");
 				button.classList.add("btn");
 				button.classList.add("btn-primary");
-				button.onclick = () => this.handleClick(c2m_chooseWord);
+				button.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 				button.innerHTML = `
 			.docx 2 <i class="icon-plus"></i> 
 			<span class="screenreader-only">Add</span>
