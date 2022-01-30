@@ -9,6 +9,7 @@
 // @source       https://github.com/djplaner/word-to-canvas-module.git
 // @license      MIT
 // @homepage     https://github.com/djplaner/word-to-canvas-module
+// @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/0.3.10/mammoth.browser.min.js
 // @require      file:///home/david/code/2022/word-to-canvas-module/dist/word2canvas.js.user.js
 // @run-at       document-end
 // ==/UserScript==
