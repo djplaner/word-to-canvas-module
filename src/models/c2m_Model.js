@@ -24,7 +24,6 @@ export default class c2m_Model {
 		// indicate which of the four stages we're up to
 //		this.stage = c2m_initialise;
 		this.wordConverter = new c2m_WordConverter();
-		this.htmlConverter = new c2m_HtmlConverter();
 //		this.moduleCreator = new c2m_ModuleCreator();
 
 
@@ -35,5 +34,23 @@ export default class c2m_Model {
 		console.log('c2m_Model -> convertWordDoc')
 
 		this.wordConverter.handleFileSelect(event);
+	}
+
+	/**
+	 * Convert Mammoth result HTML into a dummy Canvas module data 
+	 * structure to present to the user
+	 */
+	testHtmlToModule() {
+		// if there's no result in the mammoth object, error
+		if (
+			! Object.prototype.hasOwnProperty.call(this.wordConverter, 'mammothResult') || 
+			! Object.prototype.hasOwnProperty.call(this.wordConverter.mammothResult,'value')) {
+				console.error('c2m_Model -> testHtmlToModule: no mammoth result');
+				return;
+		}
+
+		this.htmlConverter = new c2m_HtmlConverter(this.wordConverter.mammothResult.value );
+		this.htmlConverter.dump();
+
 	}
 }
