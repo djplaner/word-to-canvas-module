@@ -16,11 +16,131 @@ const BOOTSTRAP_CSS = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/
 const BOOTSTRAP_JS = '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>';
 
 
+
+
+class c2m_View {
+	/**
+	 * create view object
+	 * @param {Object} model
+	 * @param {Object} controller
+	 */
+	constructor(model, controller) {
+		this.model = model;
+		this.controller = controller;
+	}
+
+	/**
+	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
+	 * HTML to add in page
+	 * @param {Array} messages 
+	 * @returns {String} html representing messages
+	 */
+
+	generateMessageHtml(messages) {
+		let messageHtml = "";
+		messages.forEach(function (message) {
+			messageHtml += `<div class="c2m_alert ${message.type}" role="alert">${message.message}</div>`;
+		});
+		return messageHtml;
+	}
+
+
+	/**
+	 * Add an empty div.c2m_dialog to the page or empty the existing one
+	 */
+	createEmptyDialogDiv() {
+
+		// check for existing div.c2m_dialog
+		let c2mDiv = document.querySelector("div.c2m_dialog");
+
+		if (c2mDiv) {
+			// empty it
+			c2mDiv.innerHTML = "";
+		} else {
+			c2mDiv = document.createElement('div');
+			c2mDiv.classList.add("c2m_dialog");
+		}
+		return c2mDiv;
+
+	}
+
+	configureAccordions() {
+		let acc = document.getElementsByClassName("c2m_accordion");
+
+		for (let i = 0; i < acc.length; i++) {
+			acc[i].addEventListener("click", function () {
+				/* Toggle between adding and removing the "active" class,
+				to highlight the button that controls the panel */
+				this.classList.toggle("c2m_active");
+
+				/* Toggle between hiding and showing the active panel */
+				var panel = this.nextElementSibling;
+				if (panel.style.display === "block") {
+					panel.style.display = "none";
+				} else {
+					panel.style.display = "block";
+				}
+			});
+		}
+	}
+}
+
+// src/views/c2m_InitialisedView.js
+class c2m_InitialisedView extends c2m_View {
+
+
+	constructor(model, controller) {
+		super(model,controller);
+	}
+
+	render() {
+		console.log("0. Initialise");
+
+		// is there a button.add_module_link
+		let addModuleButton = document.querySelector("button.add_module_link");
+		if (addModuleButton) {
+			// Only add the add button if there's isn't one
+			let button = document.querySelector("button.c2m_word_2_module");
+			if (!button) {
+				// create a dom element button.c2m_word_2_module
+				button = document.createElement("button");
+				// add margin-right to button style
+				button.style = "margin-right: 0.2em";
+				button.classList.add("c2m_word_2_module");
+				button.classList.add("btn");
+				button.classList.add("btn-primary");
+				button.onclick = () => this.controller.handleClick(c2m_ChooseWord);
+				button.innerHTML = `
+			.docx 2 <i class="icon-plus"></i> 
+			<span class="screenreader-only">Add</span>
+			Module
+			`;
+
+				// get the collapse al button and insert + docx button before it
+				// TODO this didn't strangely work, unresovled and maybe better design
+				//let collapseAllButton = document.querySelector("button#expand_collapse_all");
+				//collapseAllButton.parentElement.insertBefore(collapseAllButton, addModuleButton);
+
+				// insert it before + Module
+				addModuleButton.parentElement.insertBefore(button, addModuleButton);
+			}
+
+			// if there is already a div.c2m_dialog, remove it.
+			let dialog = document.querySelector("div.c2m_dialog");
+			if (dialog) {
+				// remove dialog from document
+				dialog.parentElement.removeChild(dialog);
+			}
+		}
+	}
+
+}
+
+// src/views/c2m_ChooseWordView.js
 const CHOOSE_WORD_HTML = `
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 1 of 4: Provide Word document</p>
-
 
 <div class="c2m-upload">
   <p>Select a .docx file:
@@ -30,7 +150,6 @@ const CHOOSE_WORD_HTML = `
 
 <div id="c2m_choice">
   <button id="c2m-btn-close" class="btn btn-primary">Close</button>
-  <button id="c2m-btn-confirm" class="btn btn-success">Confirm</button>
 </div>
 
 <p><em>Some link to documentation</em></p>
@@ -39,6 +158,38 @@ const CHOOSE_WORD_HTML = `
 
 `;
 
+
+class c2m_ChooseWordView extends c2m_View {
+
+
+	constructor(model, controller) {
+		super(model,controller);
+	}
+
+	render() {
+		console.log("1. Choose the Word document");
+
+		let c2mDiv = this.createEmptyDialogDiv();
+		// insert the new stage html
+		c2mDiv.insertAdjacentHTML('afterbegin', CHOOSE_WORD_HTML);
+
+		// insert it before div.item-group-container
+		let itemGroupContainer = document.querySelector("div.item-group-container");
+		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+		// add onChange event handler for c2m-docx
+		let c2mDocx = document.querySelector("input#c2m-docx");
+		c2mDocx.addEventListener('change', (e) => this.controller.handleUpload(e));
+
+		// add onClick event handlers - for navigation buttons
+		let closeButton = document.getElementById("c2m-btn-close");
+		let confirmButton = document.getElementById("c2m-btn-confirm");
+		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+	}
+
+}
+
+// src/views/c2m_CheckHtmlView.js
 const CHECK_HTML_HTML = `
 <h3>Create new module from Word document</h3>
 
@@ -108,123 +259,51 @@ const CHECK_HTML_HTML = `
 </style>
 `;
 
-const CHECK_MODULE_HTML = `
-<h3>Create new module from Word document</h3>
 
-<p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
+class c2m_CheckHtmlView extends c2m_View {
 
-<div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
-  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
-  <button id="c2m-btn-close" class="btn-primary">Close</button>
-</div>
 
-<h4>Converted Canvas Module</h4>
-
-<div id="c2m_module">
-</div>
-`;
-
-const COMPLETE_HTML = `
-<h3>Create new module from Word document</h3>
-
-<p color="secondary">Step 4 of 4: Complete</p>
-
-<div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
-  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
-  <button id="c2m-btn-close" class="btn-primary">Close</button>
-</div>
-
-<div id="c2m_outcome">
-</div>
-
-`;
-
-class c2m_View {
-	/**
-	 * create view object
-	 * @param {Object} model
-	 * @param {Object} controller
-	 */
 	constructor(model, controller) {
-		this.model = model;
-		//		this.controller = controller;
-
-		// add in any CSS/JS
-		//		document.head.insertAdjacentHTML('beforeend', BOOTSTRAP_CSS);
-		//		document.body.insertAdjacentHTML('beforeend', BOOTSTRAP_JS);
-
-		this.render();
+		super(model,controller);
 	}
 
 	render() {
-		console.log(`rendering stage ${this.model.stage}`);
-		// which is kludgier
-		// - dirty big switch statement here?
-		// - data structure shenigans in click function below?
-		switch (this.model.stage) {
-			case c2m_initialise:
-				this.renderInitialise();
-				break;
-			case c2m_chooseWord:
-				this.renderChooseWord();
-				break;
-			case c2m_checkHtml:
-				this.renderCheckHtml();
-				break;
-			case c2m_checkModule:
-				this.renderCheckModule();
-				break;
-			case c2m_complete:
-				this.renderComplete();
-				break;
-			default:
-				console.log("Unknown stage");
-		}
-	}
+		console.log("2. Check the HTML");
 
-	/**
-	 * Event handler for clicks on navigation buttons between app stages.
-	 * Given the new stage, modify the model and render
-	 * @param {String} newStage 
-	 */
-	handleClick(newStage) {
-		console.log(`handle click switching to ...${newStage}`);
+		let c2mDiv = this.createEmptyDialogDiv();
+		// add the event handler for mammoth results
+		c2mDiv.addEventListener('mammoth-results', (e) => this.controller.handleMammothResult(e));
 
-		this.model.stage = newStage;
-		this.render();
+		// insert the new stage html
+		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
+
+		// insert it before div.item-group-container
+		let itemGroupContainer = document.querySelector("div.item-group-container");
+		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+		// TODO check the model's mammoth member to access the html and
+		// also to check progress
+
+		// configure accordions
+		this.configureAccordions();
+
+		// add onClick event handlers TODO fix these
+		let closeButton = document.getElementById("c2m-btn-close");
+		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+
+		let confirmButton = document.getElementById("c2m-btn-confirm");
+		confirmButton.onclick = () => this.controller.handleClick(c2m_CheckModule);
+
+		let startAgainButton = document.getElementById("c2m-btn-start-again");
+		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
 	}
 
 	/**
-	 * Event handler for uploading a Word doc
-	 * Use the model's convertWordDoc method, modify stage to checkHtml
-	 * and render
+	 * Mammoth results are in, update the messages and html with the results
 	 */
+	renderUpdateResults() {
 
-	handleUpload(event) {
-		console.log("handle upload");
-		console.log(event);
-		this.model.convertWordDoc(event);
-
-		// at this stage this.model.converter.mammothResult is defined
-		console.log("-------------------");
-		//console.log(this.model.converter.mammothResult); 
-
-		// get ready to display results
-		this.model.stage = c2m_checkHtml;
-		this.render();
-	}
-
-	/**
-	 * Handle a mammoth result becoming available
-	 * Should only happen for checkHtml
-	 */
-
-	handleMammothResult(event) {
-		console.log("XXXXXXXXX mammoth result available");
-		console.log(this.model.converter.mammothResult);
 		// TODO update the div with the results
 		// handle any error messages
 
@@ -248,125 +327,36 @@ class c2m_View {
 		document.querySelector("div.c2m-received-results").style.display = "block";
 	}
 
-	/**
-	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
-	 * HTML to add in page
-	 * @param {Array} messages 
-	 * @returns {String} html representing messages
-	 */
 
-	generateMessageHtml(messages) {
-		let messageHtml = "";
-		messages.forEach(function (message) {
-			messageHtml += `<div class="c2m_alert ${message.type}" role="alert">${message.message}</div>`;
-		});
-		return messageHtml;
+}
+
+// src/views/c2m_CheckModuleView.js
+const CHECK_MODULE_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<h4>Converted Canvas Module</h4>
+
+<div id="c2m_module">
+</div>
+`;
+
+
+class c2m_CheckModuleView extends c2m_View {
+
+
+	constructor(model, controller) {
+		super(model,controller);
 	}
 
-	/**
-	 * Add a "Word 2 Module" button" to the module creation page (if it exists)
-	 * Module page (staff view) has dev.header-bar-right that contains
-	 * button.add_module_link
-	 * Add "Word 2 Module" before that button
-	 */
-	renderInitialise() {
-		console.log("0. Initialise");
-
-		// is there a button.add_module_link
-		let addModuleButton = document.querySelector("button.add_module_link");
-		if (addModuleButton) {
-			// Only add the add button if there's isn't one
-			let button = document.querySelector("button.c2m_word_2_module");
-			if (!button) {
-				// create a dom element button.c2m_word_2_module
-				button = document.createElement("button");
-				// add margin-right to button style
-				button.style = "margin-right: 0.2em";
-				button.classList.add("c2m_word_2_module");
-				button.classList.add("btn");
-				button.classList.add("btn-primary");
-				button.onclick = () => this.handleClick(c2m_chooseWord);
-				button.innerHTML = `
-			.docx 2 <i class="icon-plus"></i> 
-			<span class="screenreader-only">Add</span>
-			Module
-			`;
-
-				// get the collapse al button and insert + docx button before it
-				// TODO this didn't strangely work, unresovled and maybe better design
-				//let collapseAllButton = document.querySelector("button#expand_collapse_all");
-				//collapseAllButton.parentElement.insertBefore(collapseAllButton, addModuleButton);
-
-				// insert it before + Module
-				addModuleButton.parentElement.insertBefore(button, addModuleButton);
-			}
-
-			// if there is already a div.c2m_dialog, remove it.
-			let dialog = document.querySelector("div.c2m_dialog");
-			if (dialog) {
-				// remove dialog from document
-				dialog.parentElement.removeChild(dialog);
-			}
-		}
-	}
-
-	/**
-	 * Open up the conversion wizard, ready to select a Word file
-	 */
-	renderChooseWord() {
-		console.log("1. Choose the Word document");
-
-		let c2mDiv = this.createEmptyDialogDiv();
-		// insert the new stage html
-		c2mDiv.insertAdjacentHTML('afterbegin', CHOOSE_WORD_HTML);
-
-		// insert it before div.item-group-container
-		let itemGroupContainer = document.querySelector("div.item-group-container");
-		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
-
-		// add onChange event handler for c2m-docx
-		let c2mDocx = document.querySelector("input#c2m-docx");
-		c2mDocx.addEventListener('change', (e) => this.handleUpload(e));
-
-		// add onClick event handlers - for navigation buttons
-		let closeButton = document.getElementById("c2m-btn-close");
-		let confirmButton = document.getElementById("c2m-btn-confirm");
-		closeButton.onclick = () => this.handleClick(c2m_initialise);
-		confirmButton.onclick = () => this.handleClick(c2m_checkHtml);
-	}
-
-	renderCheckHtml() {
-		console.log("2. Check the HTML");
-
-		let c2mDiv = this.createEmptyDialogDiv();
-		// add the event handler for mammoth results
-		c2mDiv.addEventListener('mammoth-results', (e) => this.handleMammothResult(e));
-
-		// insert the new stage html
-		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
-
-		// insert it before div.item-group-container
-		let itemGroupContainer = document.querySelector("div.item-group-container");
-		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
-
-		// TODO check the model's mammoth member to access the html and
-		// also to check progress
-
-		// configure accordions
-		this.configureAccordions();
-
-		// add onClick event handlers TODO fix these
-		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.handleClick(c2m_initialise);
-
-		let confirmButton = document.getElementById("c2m-btn-confirm");
-		confirmButton.onclick = () => this.handleClick(c2m_checkModule);
-
-		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
-	}
-
-	renderCheckModule() {
+	render() {
 		console.log("3. Check the Canvas Module");
 
 		let c2mDiv = this.createEmptyDialogDiv();
@@ -379,16 +369,41 @@ class c2m_View {
 
 		// add event handlers
 		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.handleClick(c2m_initialise);
+		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
 
 		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
+		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
 		let confirmButton = document.getElementById("c2m-btn-confirm");
-		confirmButton.onclick = () => this.handleClick(c2m_complete);
+		confirmButton.onclick = () => this.controller.handleClick(c2m_Completed);
+	}
+}
+
+// src/views/c2m_CompletedView.js
+const COMPLETE_HTML = `
+<h3>Create new module from Word document</h3>
+
+<p color="secondary">Step 4 of 4: Complete</p>
+
+<div id="c2m_choice">
+  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
+  <button id="c2m-btn-close" class="btn-primary">Close</button>
+</div>
+
+<div id="c2m_outcome">
+</div>
+
+`;
+
+class c2m_CompletedView extends c2m_View {
+
+
+	constructor(model, controller) {
+		super(model,controller);
 	}
 
-	renderComplete() {
+	render() {
 		console.log("4. Complete");
 
 		let c2mDiv = this.createEmptyDialogDiv();
@@ -401,50 +416,13 @@ class c2m_View {
 
 		// add event handlers
 		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.handleClick(c2m_initialise);
+		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
 
 		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.handleClick(c2m_chooseWord);
-	}
-
-	/**
-	 * Add an empty div.c2m_dialog to the page or empty the existing one
-	 */
-	createEmptyDialogDiv() {
-
-		// check for existing div.c2m_dialog
-		let c2mDiv = document.querySelector("div.c2m_dialog");
-
-		if (c2mDiv) {
-			// empty it
-			c2mDiv.innerHTML = "";
-		} else {
-			c2mDiv = document.createElement('div');
-			c2mDiv.classList.add("c2m_dialog");
-		}
-		return c2mDiv;
+		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
 	}
 
-	configureAccordions() {
-		let acc = document.getElementsByClassName("c2m_accordion");
-
-		for (let i = 0; i < acc.length; i++) {
-			acc[i].addEventListener("click", function () {
-				/* Toggle between adding and removing the "active" class,
-				to highlight the button that controls the panel */
-				this.classList.toggle("c2m_active");
-
-				/* Toggle between hiding and showing the active panel */
-				var panel = this.nextElementSibling;
-				if (panel.style.display === "block") {
-					panel.style.display = "none";
-				} else {
-					panel.style.display = "block";
-				}
-			});
-		}
-	}
 }
 
 // src/models/c2m_Converter.js
@@ -594,7 +572,7 @@ class c2m_Converter {
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
 		// TODO: more flexibility with choosing options
-		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
+		mammoth.convertToHtml({ arrayBuffer: arrayBuffer })//, DEFAULT_OPTIONS)
 			.then((result) => this.displayResult(result))
 			.done();
 	}
@@ -652,18 +630,12 @@ function displayResult(result) {
 
 // Define enum for stage
 
-const c2m_initialise = "initialise";
-const c2m_chooseWord = "choseWord";
-const c2m_checkHtml = "createHtml";
-const c2m_checkModule = "checkModule";
-const c2m_complete = "complete";
-const c2m_close = "close";
 
 class c2m_Model {
 	constructor( ){
 
 		// indicate which of the four stages we're up to
-		this.stage = c2m_initialise;
+//		this.stage = c2m_initialise;
 		this.converter = new c2m_Converter();
 
 	}
@@ -681,22 +653,94 @@ class c2m_Model {
  */
 
 
+//import { c2m_View } from './views/c2m_View.js';
 
 
 
 
 
-class c2m_controller {
-	constructor( ){
 
+
+
+
+
+// Define the states
+
+const c2m_Initialised = "c2m_Initialised";
+const c2m_ChooseWord = "c2m_ChooseWord";
+const c2m_CheckHtml = "c2m_CheckHtml";
+const c2m_CheckModule = "c2m_CheckModule";
+const c2m_Completed = "c2m_Completed";
+//const c2m_Close = "close";
+
+
+class c2m_Controller {
+	constructor() {
+
+		this.currentState = c2m_Initialised;
+
+		// ?? passed to views for the services it provides with
+		// Mammoth and Canvas Module converters??
 		this.model = new c2m_Model();
-		this.view = new c2m_View(this.model,this);
+		// TODO: will eventually create many different views
+//		this.view = new c2m_View(this.model, this);
 
+		// render the current state
+		this.render();
 	}
 
+	render() {
+		console.log(`rendering state ${this.currentState}`);
 
+		const view = eval(`new ${this.currentState}View(this.model, this)`);
+		view.render();
+	}
 
+	/**
+	 * Event handler for clicks on navigation buttons between app states.
+	 * Given the new state, modify the model and render
+	 * @param {String} newState 
+	 */
 
+	handleClick(newState) {
+		console.log(`handle click switching to ...${newState}`);
+
+		this.currentState = newState;
+		this.render();
+	}
+
+	/**
+	 * Event handler for uploading a Word doc
+	 * Use the model's convertWordDoc method, modify state to checkHtml
+	 * and render
+	 */
+
+	handleUpload(event) {
+		console.log("handle upload");
+		console.log(event);
+		this.model.convertWordDoc(event);
+
+		// at this state this.model.converter.mammothResult is defined
+		console.log("-------------------");
+		//console.log(this.model.converter.mammothResult); 
+
+		// get ready to display results
+		this.currentState = c2m_CheckHtml;
+		this.render();
+	}
+
+	/**
+	 * Handle a mammoth result becoming available
+	 * Should only happen for checkHtml
+	 */
+
+	handleMammothResult(event) {
+		console.log("XXXXXXXXX mammoth result available");
+		console.log(this.model.converter.mammothResult);
+
+		let view = new c2m_CheckHtmlView(this.model, this);
+		view.renderUpdateResults();
+	}
 }
 
 // src/index.js
@@ -713,7 +757,7 @@ function canvas2Module(){
         // - module content is dynamically loaded, wait (dumbly) for it to finish
         this.setTimeout(
             () => {
-                let controller = new c2m_controller();
+                let controller = new c2m_Controller();
             }, 2000);
     });
 }

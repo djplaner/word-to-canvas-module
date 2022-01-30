@@ -144,7 +144,7 @@ export default class c2m_Converter {
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
 		// TODO: more flexibility with choosing options
-		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
+		mammoth.convertToHtml({ arrayBuffer: arrayBuffer })//, DEFAULT_OPTIONS)
 			.then((result) => this.displayResult(result))
 			.done();
 	}

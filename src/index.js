@@ -15,7 +15,7 @@ function canvas2Module(){
         // - module content is dynamically loaded, wait (dumbly) for it to finish
         this.setTimeout(
             () => {
-                let controller = new c2m_controller();
+                let controller = new c2m_Controller();
             }, 2000);
     });
 }
