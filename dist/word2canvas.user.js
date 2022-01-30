@@ -29,20 +29,6 @@ class c2m_View {
 		this.controller = controller;
 	}
 
-	/**
-	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
-	 * HTML to add in page
-	 * @param {Array} messages 
-	 * @returns {String} html representing messages
-	 */
-
-	generateMessageHtml(messages) {
-		let messageHtml = "";
-		messages.forEach(function (message) {
-			messageHtml += `<div class="c2m_alert ${message.type}" role="alert">${message.message}</div>`;
-		});
-		return messageHtml;
-	}
 
 
 	/**
@@ -346,7 +332,7 @@ class c2m_CheckHtmlView extends c2m_View {
 		// Show the messages from mammoth
 		let c2m_messages = document.getElementById("c2m_messages");
 		if (c2m_messages) {
-			let messageHtml = this.generateMessageHtml(this.model.converter.mammothResult.messages);
+			let messageHtml = this.generateMessageHtml(this.model.wordConverter.mammothResult.messages);
 			c2m_messages.innerHTML = messageHtml;
 		}
 
@@ -355,6 +341,27 @@ class c2m_CheckHtmlView extends c2m_View {
 		// display div.c2m-received-results
 		document.querySelector("div.c2m-received-results").style.display = "block";
 	}
+
+		/**
+	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
+	 * HTML to add in page
+	 * @param {Array} messages 
+	 * @returns {String} html representing messages
+	 */
+
+	generateMessageHtml(messages) {
+		let messageHtml = "";
+		messages.forEach(function (message) {
+			console.log(message);
+			messageHtml += `
+			<div class="c2m-message">
+			  <span class="c2m-message-type">${message.type}</span>
+			  <span class="c2m-message-message">${message.message}</span>
+			</div>`;
+		});
+		return messageHtml;
+	}
+
 
 
 }
@@ -459,13 +466,13 @@ class c2m_CompletedView extends c2m_View {
 
 // src/models/c2m_WordConverter.js
 /**
- * Converter.js
- * Define c2m_Converter class which is responsible for doing the conversion of the
- * the new module from docx to HTML to Canvas module 
+ * WordConverter.js
+ * Define c2m_Converter class which is responsible for converting a Word doc 2 html
+ * using Mammoth.js
  */
 
 
-var DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS = {
 	styleMap: [
 		"p[style-name='Section Title'] => h1:fresh",
 		"p[style-name='Quote'] => blockquote:fresh",
@@ -513,22 +520,22 @@ var DEFAULT_OPTIONS = {
 		//"r[style-name='Activity'] => div.activity > div.instructions > p:fresh",
 		"p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
 		"p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
-		"p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+		"p[style-name='Activity'] => div.activity > div.instructions > p:fresh", 
 		/*"p[style-name='Activity'] => span.activity",*/
 		"p[style-name='Bibliography'] => div.apa > p:fresh",
 		"p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
 		"p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
 		"p[style-name='Reading'] => div.reading > div.instructions > p:fresh",
-		"p[style-name='Title'] => div.invisible",
+		"p[style-name='Title'] => div.moduleTitle",
 		"p[style-name='Card'] => div.gu_card",
 		"r[style-name='Emphasis'] => em:fresh",
 		"p[style-name='Timeout'] => span.timeout",
 		"p[style-name='Embed'] => span.embed",
 		"p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
 		"p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
-		"p[style-name='Note'] => div.ael-note > div.instructions > p:fresh",
+		"p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", 
 		/* Adding cards */
-		"p[style-name='Blackboard Card'] => div.bbCard:fresh",
+		"p[style-name='Blackboard Card'] => div.bbCard:fresh", 
 		/* Blackboard item conversion */
 		"p[style-name='Blackboard Item Heading'] => h1.blackboard",
 		"p[style-name='Blackboard Item Heading 2'] => h2.blackboard",
@@ -536,13 +543,13 @@ var DEFAULT_OPTIONS = {
 		"p[style-name='Blackboard Item Link'] => span.blackboardlink",
 		"r[style-name='Blackboard Item Link Char'] => span.blackboardLink",
 		"r[style-name='Blackboard Content Link'] => span.blackboardContentLink",
-		"r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink",
+		"r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink", 
 		/* tables?? */
 		"r[style-name='small'] => span.smallText",
 		"r[style-name='StrongCentered'] => span.strongCentered",
 		"r[style-name='Centered'] => span.centered",
 		// Underline
-		"u => u",
+//		"u => u",
 
 		// GO style
 		"p[style-name='GO Start Here'] => div.goStartHere",
@@ -552,12 +559,12 @@ var DEFAULT_OPTIONS = {
 		// TODO numbered list, need to detect the original image or order???
 		"p[style-name='GO Numbered List'] => div.goNumberedList",
 		"p[style-name='GO Activity'] => div.goActivity",
-		"p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh",
+		"p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh", 
 	],
 
 };
 
-class c2m_Converter {
+class c2m_WordConverter {
 
 	/**
 	 * construct the object
@@ -604,7 +611,7 @@ class c2m_Converter {
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
 		// TODO: more flexibility with choosing options
-		mammoth.convertToHtml({ arrayBuffer: arrayBuffer })//, DEFAULT_OPTIONS)
+		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
 			.then((result) => this.displayResult(result))
 			.done();
 	}
@@ -630,17 +637,43 @@ class c2m_Converter {
 
 }
 
-function displayResult(result) {
-	console.log(result);
+// src/models/c2m_HtmlConverter.js
+/**
+ * HtmlConverter.js
+ * - convert a section of HTML in a defined format and convert it into
+ *   a module like structure
+ */
 
-	return result;
-	/*document.getElementById("output").innerHTML = result.value;
-    
-	var messageHtml = result.messages.map(function(message) {
-		return '<li class="' + message.type + '">' + escapeHtml(message.message) + "</li>";
-	}).join("");
-    
-	document.getElementById("messages").innerHTML = "<ul>" + messageHtml + "</ul>"; */
+
+
+class c2m_HtmlConverter {
+
+	constructor(html) {
+
+		this.html = html;
+
+		this.updateModuleTitle();
+		this.updateModuleItems();
+
+	}
+
+	/**
+	 * Extract the module title from HTML
+	 * - module title will be ??
+	 * @param {String} html - collection of html to be converted
+	 */
+	updateModuleTitle( ) {
+
+	}
+
+    /**
+	 * Create an array of item objects 
+	 *    { title: '', content: '', type: '' }
+	 * from the current html.
+	 */
+	updateModuleItems() {
+
+	}
 }
 
 // src/models/c2m_Model.js
@@ -660,6 +693,7 @@ function displayResult(result) {
 
 
 
+
 // Define enum for stage
 
 
@@ -669,6 +703,8 @@ class c2m_Model {
 		// indicate which of the four stages we're up to
 //		this.stage = c2m_initialise;
 		this.wordConverter = new c2m_WordConverter();
+		this.htmlConverter = new c2m_HtmlConverter();
+//		this.moduleCreator = new c2m_ModuleCreator();
 
 
 
@@ -762,7 +798,7 @@ class c2m_Controller {
 	 * Handle a mammoth result becoming available
 	 */
 
-	handleMammothResult(event) {
+	handleMammothResult() {
 		console.log("XXXXXXXXX mammoth result available");
 		console.log(this.model.wordConverter.mammothResult);
 

@@ -13,6 +13,7 @@
 // Import the c2m_Converter class
 
 import c2m_WordConverter from './c2m_WordConverter';
+import c2m_HtmlConverter from './c2m_HtmlConverter';
 
 // Define enum for stage
 
@@ -23,6 +24,8 @@ export default class c2m_Model {
 		// indicate which of the four stages we're up to
 //		this.stage = c2m_initialise;
 		this.wordConverter = new c2m_WordConverter();
+		this.htmlConverter = new c2m_HtmlConverter();
+//		this.moduleCreator = new c2m_ModuleCreator();
 
 
 

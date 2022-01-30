@@ -5,7 +5,7 @@
  */
 
 
-var DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS = {
 	styleMap: [
 		"p[style-name='Section Title'] => h1:fresh",
 		"p[style-name='Quote'] => blockquote:fresh",
@@ -53,22 +53,22 @@ var DEFAULT_OPTIONS = {
 		//"r[style-name='Activity'] => div.activity > div.instructions > p:fresh",
 		"p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
 		"p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
-		"p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+		"p[style-name='Activity'] => div.activity > div.instructions > p:fresh", 
 		/*"p[style-name='Activity'] => span.activity",*/
 		"p[style-name='Bibliography'] => div.apa > p:fresh",
 		"p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
 		"p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
 		"p[style-name='Reading'] => div.reading > div.instructions > p:fresh",
-		"p[style-name='Title'] => div.invisible",
+		"p[style-name='Title'] => div.moduleTitle",
 		"p[style-name='Card'] => div.gu_card",
 		"r[style-name='Emphasis'] => em:fresh",
 		"p[style-name='Timeout'] => span.timeout",
 		"p[style-name='Embed'] => span.embed",
 		"p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
 		"p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
-		"p[style-name='Note'] => div.ael-note > div.instructions > p:fresh",
+		"p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", 
 		/* Adding cards */
-		"p[style-name='Blackboard Card'] => div.bbCard:fresh",
+		"p[style-name='Blackboard Card'] => div.bbCard:fresh", 
 		/* Blackboard item conversion */
 		"p[style-name='Blackboard Item Heading'] => h1.blackboard",
 		"p[style-name='Blackboard Item Heading 2'] => h2.blackboard",
@@ -76,13 +76,12 @@ var DEFAULT_OPTIONS = {
 		"p[style-name='Blackboard Item Link'] => span.blackboardlink",
 		"r[style-name='Blackboard Item Link Char'] => span.blackboardLink",
 		"r[style-name='Blackboard Content Link'] => span.blackboardContentLink",
-		"r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink",
+		"r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink", 
 		/* tables?? */
 		"r[style-name='small'] => span.smallText",
 		"r[style-name='StrongCentered'] => span.strongCentered",
 		"r[style-name='Centered'] => span.centered",
 		// Underline
-		"u => u",
 
 		// GO style
 		"p[style-name='GO Start Here'] => div.goStartHere",
@@ -92,7 +91,7 @@ var DEFAULT_OPTIONS = {
 		// TODO numbered list, need to detect the original image or order???
 		"p[style-name='GO Numbered List'] => div.goNumberedList",
 		"p[style-name='GO Activity'] => div.goActivity",
-		"p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh",
+		"p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh", 
 	],
 
 };
@@ -144,7 +143,7 @@ export default class c2m_WordConverter {
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
 		// TODO: more flexibility with choosing options
-		mammoth.convertToHtml({ arrayBuffer: arrayBuffer })//, DEFAULT_OPTIONS)
+		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
 			.then((result) => this.displayResult(result))
 			.done();
 	}

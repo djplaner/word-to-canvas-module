@@ -156,7 +156,7 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		// Show the messages from mammoth
 		let c2m_messages = document.getElementById("c2m_messages");
 		if (c2m_messages) {
-			let messageHtml = this.generateMessageHtml(this.model.converter.mammothResult.messages);
+			let messageHtml = this.generateMessageHtml(this.model.wordConverter.mammothResult.messages);
 			c2m_messages.innerHTML = messageHtml;
 		}
 
@@ -165,6 +165,27 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		// display div.c2m-received-results
 		document.querySelector("div.c2m-received-results").style.display = "block";
 	}
+
+		/**
+	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
+	 * HTML to add in page
+	 * @param {Array} messages 
+	 * @returns {String} html representing messages
+	 */
+
+	generateMessageHtml(messages) {
+		let messageHtml = "";
+		messages.forEach(function (message) {
+			console.log(message);
+			messageHtml += `
+			<div class="c2m-message">
+			  <span class="c2m-message-type">${message.type}</span>
+			  <span class="c2m-message-message">${message.message}</span>
+			</div>`;
+		});
+		return messageHtml;
+	}
+
 
 
 }

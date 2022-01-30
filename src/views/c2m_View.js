@@ -17,20 +17,6 @@ export default class c2m_View {
 		this.controller = controller;
 	}
 
-	/**
-	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
-	 * HTML to add in page
-	 * @param {Array} messages 
-	 * @returns {String} html representing messages
-	 */
-
-	generateMessageHtml(messages) {
-		let messageHtml = "";
-		messages.forEach(function (message) {
-			messageHtml += `<div class="c2m_alert ${message.type}" role="alert">${message.message}</div>`;
-		});
-		return messageHtml;
-	}
 
 
 	/**
