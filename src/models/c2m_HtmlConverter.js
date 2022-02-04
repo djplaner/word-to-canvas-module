@@ -55,7 +55,8 @@ export default class c2m_HtmlConverter {
 		this.moduleItems = [];
 
 		// for each h1, get the following siblings until the next h1
-		h1s.forEach((h1, index) => {
+		//h1s.forEach((h1, index) => {
+		h1s.forEach((h1) => {
 			let item = {};
 			item.title = h1.innerText;
 //			item.type = this.getType(h1);

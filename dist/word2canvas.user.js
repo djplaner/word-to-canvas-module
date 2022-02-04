@@ -520,7 +520,7 @@ const DEFAULT_OPTIONS = {
 		//"r[style-name='Activity'] => div.activity > div.instructions > p:fresh",
 		"p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
 		"p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
-		"p[style-name='Activity'] => div.activity > div.instructions > p:fresh", 
+		"p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
 		/*"p[style-name='Activity'] => span.activity",*/
 		"p[style-name='Bibliography'] => div.apa > p:fresh",
 		"p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
@@ -533,9 +533,9 @@ const DEFAULT_OPTIONS = {
 		"p[style-name='Embed'] => span.embed",
 		"p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
 		"p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
-		"p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", 
+		"p[style-name='Note'] => div.ael-note > div.instructions > p:fresh",
 		/* Adding cards */
-		"p[style-name='Blackboard Card'] => div.bbCard:fresh", 
+		"p[style-name='Blackboard Card'] => div.bbCard:fresh",
 		/* Blackboard item conversion */
 		"p[style-name='Blackboard Item Heading'] => h1.blackboard",
 		"p[style-name='Blackboard Item Heading 2'] => h2.blackboard",
@@ -543,7 +543,7 @@ const DEFAULT_OPTIONS = {
 		"p[style-name='Blackboard Item Link'] => span.blackboardlink",
 		"r[style-name='Blackboard Item Link Char'] => span.blackboardLink",
 		"r[style-name='Blackboard Content Link'] => span.blackboardContentLink",
-		"r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink", 
+		"r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink",
 		/* tables?? */
 		"r[style-name='small'] => span.smallText",
 		"r[style-name='StrongCentered'] => span.strongCentered",
@@ -558,7 +558,7 @@ const DEFAULT_OPTIONS = {
 		// TODO numbered list, need to detect the original image or order???
 		"p[style-name='GO Numbered List'] => div.goNumberedList",
 		"p[style-name='GO Activity'] => div.goActivity",
-		"p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh", 
+		"p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh",
 	],
 
 };
@@ -609,10 +609,16 @@ class c2m_WordConverter {
 
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
-		// TODO: more flexibility with choosing options
-		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
-			.then((result) => this.displayResult(result))
-			.done();
+
+		try {
+			// TODO: more flexibility with choosing options
+			mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
+				.then((result) => this.displayResult(result))
+				.done();
+		}
+		catch (e) {
+			console.error(`Error converting file: ${e}`);
+		}
 	}
 
 	/**
@@ -694,7 +700,8 @@ class c2m_HtmlConverter {
 		this.moduleItems = [];
 
 		// for each h1, get the following siblings until the next h1
-		h1s.forEach((h1, index) => {
+		//h1s.forEach((h1, index) => {
+		h1s.forEach((h1) => {
 			let item = {};
 			item.title = h1.innerText;
 //			item.type = this.getType(h1);
@@ -794,12 +801,12 @@ class c2m_HtmlConverter {
 
 
 class c2m_Model {
-	constructor( ){
+	constructor() {
 
 		// indicate which of the four stages we're up to
-//		this.stage = c2m_initialise;
+		//		this.stage = c2m_initialise;
 		this.wordConverter = new c2m_WordConverter();
-//		this.moduleCreator = new c2m_ModuleCreator();
+		//		this.moduleCreator = new c2m_ModuleCreator();
 
 
 
@@ -808,7 +815,12 @@ class c2m_Model {
 	convertWordDoc(event) {
 		console.log('c2m_Model -> convertWordDoc')
 
-		this.wordConverter.handleFileSelect(event);
+		try {
+			this.wordConverter.handleFileSelect(event);
+		}
+		catch (e) {
+			console.error(`c2m_Model -> convertWordDoc error: ${e}`);
+		}
 	}
 
 	/**
@@ -818,19 +830,20 @@ class c2m_Model {
 	testHtmlToModule() {
 		// if there's no result in the mammoth object, error
 		if (
-			! Object.prototype.hasOwnProperty.call(this.wordConverter, 'mammothResult') || 
-			! Object.prototype.hasOwnProperty.call(this.wordConverter.mammothResult,'value')) {
-				console.error('c2m_Model -> testHtmlToModule: no mammoth result');
-				return;
+			!Object.prototype.hasOwnProperty.call(this.wordConverter, 'mammothResult') ||
+			!Object.prototype.hasOwnProperty.call(this.wordConverter.mammothResult, 'value')) {
+			console.error('c2m_Model -> testHtmlToModule: no mammoth result');
+			return;
 		}
 
-		this.htmlConverter = new c2m_HtmlConverter(this.wordConverter.mammothResult.value );
+		this.htmlConverter = new c2m_HtmlConverter(this.wordConverter.mammothResult.value);
 		this.htmlConverter.dump();
 
 	}
 }
 
 // src/c2m_controller.js
+/* eslint-disable no-unused-vars */
 /**
  * c2m_controller.js
  */

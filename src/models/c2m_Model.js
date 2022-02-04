@@ -19,12 +19,12 @@ import c2m_HtmlConverter from './c2m_HtmlConverter';
 
 
 export default class c2m_Model {
-	constructor( ){
+	constructor() {
 
 		// indicate which of the four stages we're up to
-//		this.stage = c2m_initialise;
+		//		this.stage = c2m_initialise;
 		this.wordConverter = new c2m_WordConverter();
-//		this.moduleCreator = new c2m_ModuleCreator();
+		//		this.moduleCreator = new c2m_ModuleCreator();
 
 
 
@@ -33,7 +33,12 @@ export default class c2m_Model {
 	convertWordDoc(event) {
 		console.log('c2m_Model -> convertWordDoc')
 
-		this.wordConverter.handleFileSelect(event);
+		try {
+			this.wordConverter.handleFileSelect(event);
+		}
+		catch (e) {
+			console.error(`c2m_Model -> convertWordDoc error: ${e}`);
+		}
 	}
 
 	/**
@@ -43,13 +48,13 @@ export default class c2m_Model {
 	testHtmlToModule() {
 		// if there's no result in the mammoth object, error
 		if (
-			! Object.prototype.hasOwnProperty.call(this.wordConverter, 'mammothResult') || 
-			! Object.prototype.hasOwnProperty.call(this.wordConverter.mammothResult,'value')) {
-				console.error('c2m_Model -> testHtmlToModule: no mammoth result');
-				return;
+			!Object.prototype.hasOwnProperty.call(this.wordConverter, 'mammothResult') ||
+			!Object.prototype.hasOwnProperty.call(this.wordConverter.mammothResult, 'value')) {
+			console.error('c2m_Model -> testHtmlToModule: no mammoth result');
+			return;
 		}
 
-		this.htmlConverter = new c2m_HtmlConverter(this.wordConverter.mammothResult.value );
+		this.htmlConverter = new c2m_HtmlConverter(this.wordConverter.mammothResult.value);
 		this.htmlConverter.dump();
 
 	}
