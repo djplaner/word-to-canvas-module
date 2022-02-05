@@ -35,6 +35,10 @@ export default class c2m_HtmlConverter {
 		// if only 1 titleDiv set it
 		if (titleDivs.length === 1) {
 			this.moduleTitle = titleDivs[0].innerText;
+			// if the moduleTitle remains empty (or just whitespace) set it to Untitled
+			if (this.moduleTitle.trim() === '') {
+				this.moduleTitle = 'Untitled';
+			}
 		} else {
 			console.error(
 				`c2m_HtmlConverter -> updateModuleTitle: wrong # (${titleDivs.length}) div.moduleTitle found `);
@@ -59,7 +63,7 @@ export default class c2m_HtmlConverter {
 		h1s.forEach((h1) => {
 			let item = {};
 			item.title = h1.innerText;
-//			item.type = this.getType(h1);
+			//			item.type = this.getType(h1);
 			item.content = this.getContent(h1);
 			// TODO set type from the class of h1
 			this.moduleItems.push(item);
@@ -79,14 +83,15 @@ export default class c2m_HtmlConverter {
 		return content;
 	}
 
-	/*!
- * Get all following siblings of each element up to but not including the element matched by the selector
- * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
- * @param  {Node}   elem     The element
- * @param  {String} selector The selector to stop at
- * @param  {String} filter   The selector to match siblings against [optional]
- * @return {Array}           The siblings
- */
+	/** 
+	 * 
+     * Get all following siblings of each element up to but not including the element matched by the selector
+     * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
+     * @param  {Node}   elem     The element
+     * @param  {String} selector The selector to stop at
+     * @param  {String} filter   The selector to match siblings against [optional]
+     * @return {Array}           The siblings
+     */
 	nextUntil(elem, selector, filter) {
 
 		// Setup siblings array
