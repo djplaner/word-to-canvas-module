@@ -9,7 +9,7 @@ const CHECK_HTML_HTML = `
 
 
 <div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-confirm" class="btn-success" style="display:none">Confirm</button>
   <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
   <button id="c2m-btn-close" class="btn-primary">Close</button>
 </div>
@@ -38,11 +38,24 @@ const CHECK_HTML_HTML = `
 <div class="c2m_panel" id="c2m_html"></div>
 </div>
 
+<div class="c2m-error" style="display:none">
+  <h4>Problem with conversion</h4>
+  <p>Unable to convert the Word document. Erorr message:
+  <blockquote><span class="text-error" id="c2m_error_message"></span></blockquote>
+  </p>
+
+  <h5>What next?</h5>
+  <p class="text-warning">
+  <i class="icon-Solid icon-warning" aria-hidden="true"></i>
+  Some <em>.docx</em> files format may be "off". A solution
+  for some has been to save the document again using the Word app (i.e. not in the browser)
+  ensuring it's saved as a Word 2007-365 .docx file.</p>
+</div>
 </div>
 
 <style>
 
-.c2m-received-results {
+.c2m-received-results .c2m-error {
 	margin-top: 0.5em;
 }
 
@@ -116,6 +129,7 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		let c2mDiv = this.createEmptyDialogDiv();
 		// add the event handler for mammoth results
 		c2mDiv.addEventListener('mammoth-results', (e) => this.controller.handleMammothResult(e));
+		c2mDiv.addEventListener('mammoth-error', (e) => this.controller.handleMammothError(e));
 
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
@@ -146,9 +160,7 @@ export default class c2m_CheckHtmlView extends c2m_View {
 	 * Mammoth results are in, update the messages and html with the results
 	 */
 	renderUpdateResults() {
-
 		// TODO update the div with the results
-		// handle any error messages
 
 		// Show the converted html
 		// update div#c2m_html with the result html
@@ -168,13 +180,14 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		document.querySelector("div.c2m-waiting-results").style.display = "none";
 		// display div.c2m-received-results
 		document.querySelector("div.c2m-received-results").style.display = "block";
+		document.querySelector("button#c2m-btn-confirm").style.display = "inline";
 	}
 
-		/**
-	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
-	 * HTML to add in page
+	/**
+	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate 
+	 * HTML to add in page 
 	 * @param {Array} messages 
-	 * @returns {String} html representing messages
+	 * @returns {String} html representing messages 
 	 */
 
 	generateMessageHtml(messages) {
@@ -190,6 +203,30 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		return messageHtml;
 	}
 
+	/**
+	 * Mammoth results are in, update the messages and html with the results
+	 */
+	renderUpdateError() {
+		// TODO update the div with the results
+
+		// Show the converted html
+		// update div#c2m_html with the result html
+		let c2m_html = document.getElementById("c2m_html");
+		if (c2m_html) {
+			c2m_html.innerHTML = `<p>Error while converting the Word document</p>`;
+		}
+
+		// Show the messages from mammoth
+		let c2m_messages = document.getElementById("c2m_error_message");
+		if (c2m_messages) {
+			c2m_messages.innerHTML = this.model.wordConverter.mammothError;
+		}
+
+		// hide div.c2m-waiting-results
+		document.querySelector("div.c2m-waiting-results").style.display = "none";
+		// display div.c2m-received-results
+		document.querySelector("div.c2m-error").style.display = "block";
+	}
 
 
 }

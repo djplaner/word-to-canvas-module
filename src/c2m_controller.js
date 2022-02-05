@@ -9,8 +9,8 @@
 import { c2m_InitialisedView } from './views/c2m_InitialisedView.js';
 import { c2m_ChooseWordView } from './views/c2m_ChooseWordView.js';
 import { c2m_CheckHtmlView } from './views/c2m_CheckHtmlView.js';
-import { c2m_CheckModuleView} from './views/c2m_CheckModuleView.js';
-import { c2m_CompletedView} from './views/c2m_CompletedView.js';
+import { c2m_CheckModuleView } from './views/c2m_CheckModuleView.js';
+import { c2m_CompletedView } from './views/c2m_CompletedView.js';
 
 import { c2m_Model } from './models/c2m_Model.js';
 
@@ -29,8 +29,8 @@ export default class c2m_Controller {
 	constructor() {
 
 		this.currentState = c2m_Initialised;
-		this.csrfToken = this.ou_getCsrfToken();
-		this.courseId = 115; // TODO actually get the course id
+		this.csrfToken = this.getCsrfToken();
+		this.courseId = this.getCourseId(); // TODO actually get the course id
 
 		// ?? passed to views for the services it provides with
 		// Mammoth and Canvas Module converters??
@@ -45,25 +45,45 @@ export default class c2m_Controller {
 	 * https://community.canvaslms.com/thread/22500-mobile-javascript-development
 	 * @returns {string} csrf token
 	 */
-	ou_getCsrfToken() {
-        var csrfRegex = new RegExp('^_csrf_token=(.*)$');
-        var csrf;
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            var match = csrfRegex.exec(cookie);
-            if (match) {
-                csrf = decodeURIComponent(match[1]);
-                break;
-            }
-        }
-        return csrf;
-    }
+	getCsrfToken() {
+		var csrfRegex = new RegExp('^_csrf_token=(.*)$');
+		var csrf;
+		var cookies = document.cookie.split(';');
+		for (var i = 0; i < cookies.length; i++) {
+			var cookie = cookies[i].trim();
+			var match = csrfRegex.exec(cookie);
+			if (match) {
+				csrf = decodeURIComponent(match[1]);
+				break;
+			}
+		}
+		return csrf;
+	}
+
+	/**
+	* Following adapted from https://github.com/msdlt/canvas-where-am-I
+	* Function which gets find course id from wherever it is available - currently ONLY ON WEB
+	* @returns {string} id of course
+	*/
+
+	getCourseId() {
+		var courseId = ENV.COURSE_ID || ENV.course_id;
+		if (!courseId) {
+			var urlPartIncludingCourseId = window.location.href.split("courses/")[1];
+			if (urlPartIncludingCourseId) {
+				courseId = urlPartIncludingCourseId.split("/")[0];
+			}
+		}
+		return courseId;
+	}
 
 	render() {
 		console.log('----------------- render -----------------');
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
+
+		console.log("ALL MODULES");
+		console.log(this.model.canvasModules.allModules);
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
@@ -104,11 +124,24 @@ export default class c2m_Controller {
 	 * Handle a mammoth result becoming available
 	 */
 
-	handleMammothResult() {
+	handleMammothResult(e) {
 		console.log("XXXXXXXXX mammoth result available");
 		console.log(this.model.wordConverter.mammothResult);
 
 		let view = new c2m_CheckHtmlView(this.model, this);
 		view.renderUpdateResults();
 	}
+
+	/**
+	 * Handle a mammoth result becoming available
+	 */
+
+	handleMammothError(e) {
+		console.log("XXXXXXXXX mammoth error available");
+		console.log(this.model.wordConverter.mammothError);
+
+		let view = new c2m_CheckHtmlView(this.model, this);
+		view.renderUpdateError();
+	}
+
 }

@@ -110,8 +110,13 @@ export default class c2m_WordConverter {
 		//		this.handleFileSelect(event);
 	}
 
+	/**
+	 * Called when mammoth is complete.  Will set the mammoth response
+	 * as a data member and then dispatch an event on div.c2m_dialog 
+	 * to spark the view into displaying the results 
+	 * @param {Object} result Mammoth result response
+	 */
 	displayResult(result) {
-		console.log("Converter display result");
 
 		this.mammothResult = result;
 
@@ -122,6 +127,25 @@ export default class c2m_WordConverter {
 			c2m_dialog.dispatchEvent(event);
 		}
 	}
+
+	/**
+	 * There was an error converting the file, generate event
+	 * indicating error
+	 * @param {Object} result Mammoth result response
+	 */
+
+	displayError(error) {
+		this.mammothError = error;
+		this.mammothResult = undefined;
+
+		// generate mammoth-results event
+		const event = new Event('mammoth-error');
+		let c2m_dialog = document.querySelector('div.c2m_dialog');
+		if (c2m_dialog) {
+			c2m_dialog.dispatchEvent(event);
+		}
+	}
+
 
 	/**
 	 * Grab the content of a file selector and run it thru Mammoth
@@ -143,15 +167,16 @@ export default class c2m_WordConverter {
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
 
-		try {
-			// TODO: more flexibility with choosing options
-			mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
-				.then((result) => this.displayResult(result))
-				.done();
-		}
-		catch (e) {
-			console.error(`Error converting file: ${e}`);
-		}
+		console.log('-------------- doing the call back');
+
+		// TODO: more flexibility with choosing options
+		// Call mammoth, if successful display result
+		// but fail otherise
+		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
+			.then((result) => this.displayResult(result))
+			.catch((error) => this.displayError(error))
+			.done();
+		console.log('-------------- done the call back');
 	}
 
 	/**

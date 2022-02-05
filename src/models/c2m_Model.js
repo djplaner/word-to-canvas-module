@@ -30,7 +30,11 @@ export default class c2m_Model {
 		this.canvasModules = new c2m_Modules(
 			this.controller.courseId, this.controller.csrfToken
 			);
-		this.canvasModules.getModules();
+		this.canvasModules.getAllModules()
+		.then(() => {
+			console.log(`c2m_Model -> getAllModules: finished `);
+			console.log(this.canvasModules.allModules);
+		});
 
 	}
 

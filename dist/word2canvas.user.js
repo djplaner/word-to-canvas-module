@@ -195,7 +195,7 @@ const CHECK_HTML_HTML = `
 
 
 <div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
+  <button id="c2m-btn-confirm" class="btn-success" style="display:none">Confirm</button>
   <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
   <button id="c2m-btn-close" class="btn-primary">Close</button>
 </div>
@@ -224,11 +224,22 @@ const CHECK_HTML_HTML = `
 <div class="c2m_panel" id="c2m_html"></div>
 </div>
 
+<div class="c2m-error" style="display:none">
+  <h4>Problem with conversion</h4>
+  <p>Unable to convert the Word document. Erorr message:
+  <blockquote><span class="text-error" id="c2m_error_message"></span></blockquote>
+  </p>
+
+  <h5>What next?</h5>
+  <p class="text-info">Appears some <em>.docx</em> files format may be "off". A solution
+  for some has been to save the document again using the Word app (i.e. not in the browser)
+  ensuring it's saved as a Word 2007-365 .docx file.</p>
+</div>
 </div>
 
 <style>
 
-.c2m-received-results {
+.c2m-received-results .c2m-error {
 	margin-top: 0.5em;
 }
 
@@ -302,6 +313,7 @@ class c2m_CheckHtmlView extends c2m_View {
 		let c2mDiv = this.createEmptyDialogDiv();
 		// add the event handler for mammoth results
 		c2mDiv.addEventListener('mammoth-results', (e) => this.controller.handleMammothResult(e));
+		c2mDiv.addEventListener('mammoth-error', (e) => this.controller.handleMammothError(e));
 
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
@@ -332,9 +344,7 @@ class c2m_CheckHtmlView extends c2m_View {
 	 * Mammoth results are in, update the messages and html with the results
 	 */
 	renderUpdateResults() {
-
 		// TODO update the div with the results
-		// handle any error messages
 
 		// Show the converted html
 		// update div#c2m_html with the result html
@@ -354,13 +364,14 @@ class c2m_CheckHtmlView extends c2m_View {
 		document.querySelector("div.c2m-waiting-results").style.display = "none";
 		// display div.c2m-received-results
 		document.querySelector("div.c2m-received-results").style.display = "block";
+		document.querySelector("button#c2m-btn-confirm").style.display = "inline";
 	}
 
-		/**
-	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate
-	 * HTML to add in page
+	/**
+	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate 
+	 * HTML to add in page 
 	 * @param {Array} messages 
-	 * @returns {String} html representing messages
+	 * @returns {String} html representing messages 
 	 */
 
 	generateMessageHtml(messages) {
@@ -376,6 +387,30 @@ class c2m_CheckHtmlView extends c2m_View {
 		return messageHtml;
 	}
 
+	/**
+	 * Mammoth results are in, update the messages and html with the results
+	 */
+	renderUpdateError() {
+		// TODO update the div with the results
+
+		// Show the converted html
+		// update div#c2m_html with the result html
+		let c2m_html = document.getElementById("c2m_html");
+		if (c2m_html) {
+			c2m_html.innerHTML = `<p>Error while converting the Word document</p>`;
+		}
+
+		// Show the messages from mammoth
+		let c2m_messages = document.getElementById("c2m_error_message");
+		if (c2m_messages) {
+			c2m_messages.innerHTML = this.model.wordConverter.mammothError;
+		}
+
+		// hide div.c2m-waiting-results
+		document.querySelector("div.c2m-waiting-results").style.display = "none";
+		// display div.c2m-received-results
+		document.querySelector("div.c2m-error").style.display = "block";
+	}
 
 
 }
@@ -924,8 +959,13 @@ class c2m_WordConverter {
 		//		this.handleFileSelect(event);
 	}
 
+	/**
+	 * Called when mammoth is complete.  Will set the mammoth response
+	 * as a data member and then dispatch an event on div.c2m_dialog 
+	 * to spark the view into displaying the results 
+	 * @param {Object} result Mammoth result response
+	 */
 	displayResult(result) {
-		console.log("Converter display result");
 
 		this.mammothResult = result;
 
@@ -936,6 +976,25 @@ class c2m_WordConverter {
 			c2m_dialog.dispatchEvent(event);
 		}
 	}
+
+	/**
+	 * There was an error converting the file, generate event
+	 * indicating error
+	 * @param {Object} result Mammoth result response
+	 */
+
+	displayError(error) {
+		this.mammothError = error;
+		this.mammothResult = undefined;
+
+		// generate mammoth-results event
+		const event = new Event('mammoth-error');
+		let c2m_dialog = document.querySelector('div.c2m_dialog');
+		if (c2m_dialog) {
+			c2m_dialog.dispatchEvent(event);
+		}
+	}
+
 
 	/**
 	 * Grab the content of a file selector and run it thru Mammoth
@@ -957,15 +1016,16 @@ class c2m_WordConverter {
 	callBack(loadEvent) {
 		let arrayBuffer = loadEvent.target.result;
 
-		try {
-			// TODO: more flexibility with choosing options
-			mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
-				.then((result) => this.displayResult(result))
-				.done();
-		}
-		catch (e) {
-			console.error(`Error converting file: ${e}`);
-		}
+		console.log('-------------- doing the call back');
+
+		// TODO: more flexibility with choosing options
+		// Call mammoth, if successful display result
+		// but fail otherise
+		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
+			.then((result) => this.displayResult(result))
+			.catch((error) => this.displayError(error))
+			.done();
+		console.log('-------------- done the call back');
 	}
 
 	/**
@@ -1135,58 +1195,79 @@ class c2m_HtmlConverter {
 /**
  * Model object for dealing with Canvas modules via the 
  * Canvas API
+ * 
+ * Data members
+ * - csrfToken - Canvas API token
+ * - courseId - Canvas course ID 
+ * - allModules - JSON for all modules in course - results of getAllModules
  */
 
 
 class c2m_Modules {
-	constructor(courseId,token) {
+	constructor(courseId, token) {
 		this.courseId = courseId;
 		this.csrfToken = token;
 
 	}
 
-	getModules() { 
-		let callUrl = `/api/v1/courses/${this.courseId}/modules?include=items&per_page=100`;
+	/**
+	 * Canvas API to get info on all modules for the courseId
+	 * - async function to simplify handling the results???
+	 * @param {Boolean} items default true - include items for each module 
+	 */
+	async getAllModules(items = true) {
+		// handle the options
+		let itemsOption = "?include=items";
+		let pagesOption = "&per_page=100";
+		if (!items) {
+			itemsOption = "";
+			pagesOption = "?per_page=100";
+		}
 
-		fetch(callUrl, {
+		let callUrl = `/api/v1/courses/${this.courseId}/modules${itemsOption}${pagesOption}`;
+
+
+		await fetch(callUrl, {
 			method: 'GET', credentials: 'include',
 			headers: {
 				"Accept": "application/json",
 				"X-CSRF-Token": this.csrfToken
 			}
 		})
-		.then(this.status)
-		.then(this.json)
-		.then( function(data) {
-			console.log('c2m_Model -> getModules -> then');
-			console.log(data);
-		})
-		.catch(function(error) {
-			console.error('c2m_Model -> getModules -> catch');
-			console.error(error);
-		});
+			.then(this.status)
+			.then((response) => {
+				return response.json();
+			})
+			.then((json) => {
+				this.allModules = json;
+				console.log(`c2m_Modules -> getAllModules: ${this.allModules}`);
+				console.log(json);
+			})
+			.catch((error => {
+				console.error(`c2m_Modules -> getAllModules error: ${error}`);
+			}));
 	}
 
 	/*
-     * Function which returns a promise (and error if rejected) if response status is OK
-     * @param {Object} response
-     * @returns {Promise} either error or response
-     */
-    status(response) {
-        if (response.status >= 200 && response.status < 300) {
-            return Promise.resolve(response)
-        } else {
-            return Promise.reject(new Error(response.statusText))
-        }
-    }
-    /*
-     * Function which returns json from response
-     * @param {Object} response
-     * @returns {string} json from response
-     */
-    json(response) {
-        return response.json();
-    }
+	 * Function which returns a promise (and error if rejected) if response status is OK
+	 * @param {Object} response
+	 * @returns {Promise} either error or response
+	 */
+	status(response) {
+		if (response.status >= 200 && response.status < 300) {
+			return Promise.resolve(response)
+		} else {
+			return Promise.reject(new Error(response.statusText))
+		}
+	}
+	/*
+	 * Function which returns json from response
+	 * @param {Object} response
+	 * @returns {string} json from response
+	 */
+	json(response) {
+		return response.json();
+	}
 }
 
 // src/models/c2m_Model.js
@@ -1222,7 +1303,11 @@ class c2m_Model {
 		this.canvasModules = new c2m_Modules(
 			this.controller.courseId, this.controller.csrfToken
 			);
-		this.canvasModules.getModules();
+		this.canvasModules.getAllModules()
+		.then(() => {
+			console.log(`c2m_Model -> getAllModules: finished `);
+			console.log(this.canvasModules.allModules);
+		});
 
 	}
 
@@ -1288,8 +1373,8 @@ class c2m_Controller {
 	constructor() {
 
 		this.currentState = c2m_Initialised;
-		this.csrfToken = this.ou_getCsrfToken();
-		this.courseId = 115; // TODO actually get the course id
+		this.csrfToken = this.getCsrfToken();
+		this.courseId = this.getCourseId(); // TODO actually get the course id
 
 		// ?? passed to views for the services it provides with
 		// Mammoth and Canvas Module converters??
@@ -1304,25 +1389,45 @@ class c2m_Controller {
 	 * https://community.canvaslms.com/thread/22500-mobile-javascript-development
 	 * @returns {string} csrf token
 	 */
-	ou_getCsrfToken() {
-        var csrfRegex = new RegExp('^_csrf_token=(.*)$');
-        var csrf;
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            var match = csrfRegex.exec(cookie);
-            if (match) {
-                csrf = decodeURIComponent(match[1]);
-                break;
-            }
-        }
-        return csrf;
-    }
+	getCsrfToken() {
+		var csrfRegex = new RegExp('^_csrf_token=(.*)$');
+		var csrf;
+		var cookies = document.cookie.split(';');
+		for (var i = 0; i < cookies.length; i++) {
+			var cookie = cookies[i].trim();
+			var match = csrfRegex.exec(cookie);
+			if (match) {
+				csrf = decodeURIComponent(match[1]);
+				break;
+			}
+		}
+		return csrf;
+	}
+
+	/**
+	* Following adapted from https://github.com/msdlt/canvas-where-am-I
+	* Function which gets find course id from wherever it is available - currently ONLY ON WEB
+	* @returns {string} id of course
+	*/
+
+	getCourseId() {
+		var courseId = ENV.COURSE_ID || ENV.course_id;
+		if (!courseId) {
+			var urlPartIncludingCourseId = window.location.href.split("courses/")[1];
+			if (urlPartIncludingCourseId) {
+				courseId = urlPartIncludingCourseId.split("/")[0];
+			}
+		}
+		return courseId;
+	}
 
 	render() {
 		console.log('----------------- render -----------------');
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
+
+		console.log("ALL MODULES");
+		console.log(this.model.canvasModules.allModules);
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
@@ -1363,13 +1468,26 @@ class c2m_Controller {
 	 * Handle a mammoth result becoming available
 	 */
 
-	handleMammothResult() {
+	handleMammothResult(e) {
 		console.log("XXXXXXXXX mammoth result available");
 		console.log(this.model.wordConverter.mammothResult);
 
 		let view = new c2m_CheckHtmlView(this.model, this);
 		view.renderUpdateResults();
 	}
+
+	/**
+	 * Handle a mammoth result becoming available
+	 */
+
+	handleMammothError(e) {
+		console.log("XXXXXXXXX mammoth error available");
+		console.log(this.model.wordConverter.mammothError);
+
+		let view = new c2m_CheckHtmlView(this.model, this);
+		view.renderUpdateError();
+	}
+
 }
 
 // src/index.js
