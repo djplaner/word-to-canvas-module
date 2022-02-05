@@ -4,7 +4,7 @@ import { c2m_ModuleView} from './canvas/c2m_ModuleView.js';
 
 
 const CHECK_MODULE_HTML = `
-<div class="border border-trbl c2m_dialog">
+<div class="border border-trbl pad-box">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
@@ -34,11 +34,7 @@ const CHECK_MODULE_HTML = `
 
 </div>
 
-
 <style>
-.c2m_dialog { 
-	padding: 1em;
-}
 
 .c2m-received-results {
 	margin-top: 0.5em;

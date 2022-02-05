@@ -3,7 +3,7 @@
 import { c2m_View } from './c2m_View.js';
 
 const CHOOSE_WORD_HTML = `
-<div class="border border-trbl c2m_dialog">
+<div class="border border-trbl pad-box">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 1 of 4: Provide Word document</p>
@@ -23,12 +23,6 @@ const CHOOSE_WORD_HTML = `
 <p><em>Visual indication of process - e.g. tabs</em></p>
 
 </div>
-
-<style>
-.c2m_dialog { 
-	padding: 1em;
-}
-</style>
 
 `;
 

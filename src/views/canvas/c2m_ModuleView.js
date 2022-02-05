@@ -27,6 +27,11 @@ export default class c2m_ModuleView extends c2m_View {
 			<p>With ${this.model.moduleItems.length} items</p>
 			`; */
         return `
+		<p class="text-warning">
+		<i class="icon-Solid icon-warning" aria-hidden="true"></i> Still
+		under construction. Doesn't distinguish between different item types.
+		</p>
+
 <div class="item-group-container">
 <div class="ig-list ui-sortable"> <!-- overall list of modules (1 here) div -->
 
@@ -213,7 +218,6 @@ export default class c2m_ModuleView extends c2m_View {
     </ul>
 	<div class="footer"></div>
 	</div>
-</div>
 </div>
 </div>
   `;

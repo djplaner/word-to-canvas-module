@@ -132,7 +132,7 @@ class c2m_InitialisedView extends c2m_View {
 
 // src/views/c2m_ChooseWordView.js
 const CHOOSE_WORD_HTML = `
-<div class="border border-trbl c2m_dialog">
+<div class="border border-trbl pad-box">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 1 of 4: Provide Word document</p>
@@ -232,7 +232,6 @@ const CHECK_HTML_HTML = `
 
 </div>
 
-<style>
 <style>
 .c2m_dialog { 
 	padding: 1em;
@@ -420,6 +419,11 @@ class c2m_ModuleView extends c2m_View {
 			<p>With ${this.model.moduleItems.length} items</p>
 			`; */
         return `
+		<p class="text-warning">
+		<i class="icon-Solid icon-warning" aria-hidden="true"></i> Still
+		under construction. Doesn't distinguish between different item types.
+		</p>
+
 <div class="item-group-container">
 <div class="ig-list ui-sortable"> <!-- overall list of modules (1 here) div -->
 
@@ -606,7 +610,6 @@ class c2m_ModuleView extends c2m_View {
     </ul>
 	<div class="footer"></div>
 	</div>
-</div>
 </div>
 </div>
   `;
