@@ -28,6 +28,7 @@ The controller is responsible for:
     The ```currentState``` property.
 - How to render the different states and perform additional tasks.
     Achieved by using state specific views.
+- extracting canvas token
 
 ### Views - representation
 

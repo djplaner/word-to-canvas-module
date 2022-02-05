@@ -14,19 +14,23 @@
 
 import c2m_WordConverter from './c2m_WordConverter';
 import c2m_HtmlConverter from './c2m_HtmlConverter';
+import c2m_Modules from './canvas/c2m_Modules';
 
 // Define enum for stage
 
 
 export default class c2m_Model {
-	constructor() {
+	constructor(controller) {
 
+		this.controller = controller;
 		// indicate which of the four stages we're up to
 		//		this.stage = c2m_initialise;
 		this.wordConverter = new c2m_WordConverter();
 		//		this.moduleCreator = new c2m_ModuleCreator();
-
-
+		this.canvasModules = new c2m_Modules(
+			this.controller.courseId, this.controller.csrfToken
+			);
+		this.canvasModules.getModules();
 
 	}
 

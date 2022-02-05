@@ -153,12 +153,6 @@ const CHOOSE_WORD_HTML = `
 
 </div>
 
-<style>
-.c2m_dialog { 
-	padding: 1em;
-}
-</style>
-
 `;
 
 
@@ -194,7 +188,7 @@ class c2m_ChooseWordView extends c2m_View {
 
 // src/views/c2m_CheckHtmlView.js
 const CHECK_HTML_HTML = `
-<div class="border border-trbl c2m_dialog">
+<div class="border border-trbl pad-box">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 2 of 4: Check HTML conversion</p>
@@ -233,9 +227,6 @@ const CHECK_HTML_HTML = `
 </div>
 
 <style>
-.c2m_dialog { 
-	padding: 1em;
-}
 
 .c2m-received-results {
 	margin-top: 0.5em;
@@ -618,7 +609,7 @@ class c2m_ModuleView extends c2m_View {
 
 // src/views/c2m_CheckModuleView.js
 const CHECK_MODULE_HTML = `
-<div class="border border-trbl c2m_dialog">
+<div class="border border-trbl pad-box">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
@@ -648,11 +639,7 @@ const CHECK_MODULE_HTML = `
 
 </div>
 
-
 <style>
-.c2m_dialog { 
-	padding: 1em;
-}
 
 .c2m-received-results {
 	margin-top: 0.5em;
@@ -777,7 +764,7 @@ class c2m_CheckModuleView extends c2m_View {
 
 // src/views/c2m_CompletedView.js
 const COMPLETE_HTML = `
-<div class="border border-trbl c2m_dialog">
+<div class="border border-trbl pad-box">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 4 of 4: Complete</p>
@@ -792,12 +779,6 @@ const COMPLETE_HTML = `
 </div>
 
 </div>
-
-<style>
-.c2m_dialog {
-	  padding: 1em;
-}
-</style>
 
 `;
 
@@ -1150,6 +1131,64 @@ class c2m_HtmlConverter {
 	}
 }
 
+// src/models/canvas/c2m_Modules.js
+/**
+ * Model object for dealing with Canvas modules via the 
+ * Canvas API
+ */
+
+
+class c2m_Modules {
+	constructor(courseId,token) {
+		this.courseId = courseId;
+		this.csrfToken = token;
+
+	}
+
+	getModules() { 
+		let callUrl = `/api/v1/courses/${this.courseId}/modules?include=items&per_page=100`;
+
+		fetch(callUrl, {
+			method: 'GET', credentials: 'include',
+			headers: {
+				"Accept": "application/json",
+				"X-CSRF-Token": this.csrfToken
+			}
+		})
+		.then(this.status)
+		.then(this.json)
+		.then( function(data) {
+			console.log('c2m_Model -> getModules -> then');
+			console.log(data);
+		})
+		.catch(function(error) {
+			console.error('c2m_Model -> getModules -> catch');
+			console.error(error);
+		});
+	}
+
+	/*
+     * Function which returns a promise (and error if rejected) if response status is OK
+     * @param {Object} response
+     * @returns {Promise} either error or response
+     */
+    status(response) {
+        if (response.status >= 200 && response.status < 300) {
+            return Promise.resolve(response)
+        } else {
+            return Promise.reject(new Error(response.statusText))
+        }
+    }
+    /*
+     * Function which returns json from response
+     * @param {Object} response
+     * @returns {string} json from response
+     */
+    json(response) {
+        return response.json();
+    }
+}
+
 // src/models/c2m_Model.js
 /**
  * Model used to 
@@ -1168,18 +1207,22 @@ class c2m_HtmlConverter {
 
 
 
+
 // Define enum for stage
 
 
 class c2m_Model {
-	constructor() {
+	constructor(controller) {
 
+		this.controller = controller;
 		// indicate which of the four stages we're up to
 		//		this.stage = c2m_initialise;
 		this.wordConverter = new c2m_WordConverter();
 		//		this.moduleCreator = new c2m_ModuleCreator();
-
-
+		this.canvasModules = new c2m_Modules(
+			this.controller.courseId, this.controller.csrfToken
+			);
+		this.canvasModules.getModules();
 
 	}
 
@@ -1245,16 +1288,41 @@ class c2m_Controller {
 	constructor() {
 
 		this.currentState = c2m_Initialised;
+		this.csrfToken = this.ou_getCsrfToken();
+		this.courseId = 115; // TODO actually get the course id
 
 		// ?? passed to views for the services it provides with
 		// Mammoth and Canvas Module converters??
-		this.model = new c2m_Model();
+		this.model = new c2m_Model(this);
 
 		this.render();
 	}
 
+	/**
+	 * Following adapted from https://github.com/msdlt/canvas-where-am-I
+	 * Function which returns csrf_token from cookie see: 
+	 * https://community.canvaslms.com/thread/22500-mobile-javascript-development
+	 * @returns {string} csrf token
+	 */
+	ou_getCsrfToken() {
+        var csrfRegex = new RegExp('^_csrf_token=(.*)$');
+        var csrf;
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            var match = csrfRegex.exec(cookie);
+            if (match) {
+                csrf = decodeURIComponent(match[1]);
+                break;
+            }
+        }
+        return csrf;
+    }
+
 	render() {
+		console.log('----------------- render -----------------');
 		console.log(`rendering state ${this.currentState}`);
+		console.log(` -- token ${this.csrfToken}`);
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();

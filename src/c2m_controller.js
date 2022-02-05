@@ -29,16 +29,41 @@ export default class c2m_Controller {
 	constructor() {
 
 		this.currentState = c2m_Initialised;
+		this.csrfToken = this.ou_getCsrfToken();
+		this.courseId = 115; // TODO actually get the course id
 
 		// ?? passed to views for the services it provides with
 		// Mammoth and Canvas Module converters??
-		this.model = new c2m_Model();
+		this.model = new c2m_Model(this);
 
 		this.render();
 	}
 
+	/**
+	 * Following adapted from https://github.com/msdlt/canvas-where-am-I
+	 * Function which returns csrf_token from cookie see: 
+	 * https://community.canvaslms.com/thread/22500-mobile-javascript-development
+	 * @returns {string} csrf token
+	 */
+	ou_getCsrfToken() {
+        var csrfRegex = new RegExp('^_csrf_token=(.*)$');
+        var csrf;
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            var match = csrfRegex.exec(cookie);
+            if (match) {
+                csrf = decodeURIComponent(match[1]);
+                break;
+            }
+        }
+        return csrf;
+    }
+
 	render() {
+		console.log('----------------- render -----------------');
 		console.log(`rendering state ${this.currentState}`);
+		console.log(` -- token ${this.csrfToken}`);
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
