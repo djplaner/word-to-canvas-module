@@ -3,6 +3,7 @@ import { c2m_View } from './c2m_View.js';
 
 
 const COMPLETE_HTML = `
+<div class="border border-trbl c2m_dialog">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 4 of 4: Complete</p>
@@ -15,6 +16,14 @@ const COMPLETE_HTML = `
 
 <div id="c2m_outcome">
 </div>
+
+</div>
+
+<style>
+.c2m_dialog {
+	  padding: 1em;
+}
+</style>
 
 `;
 

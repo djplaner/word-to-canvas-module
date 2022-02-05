@@ -2,6 +2,7 @@
 import { c2m_View } from './c2m_View.js';
 
 const CHECK_HTML_HTML = `
+<div class="border border-trbl c2m_dialog">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 2 of 4: Check HTML conversion</p>
@@ -37,7 +38,13 @@ const CHECK_HTML_HTML = `
 <div class="c2m_panel" id="c2m_html"></div>
 </div>
 
+</div>
+
 <style>
+.c2m_dialog { 
+	padding: 1em;
+}
+
 .c2m-received-results {
 	margin-top: 0.5em;
 }
@@ -79,7 +86,7 @@ const CHECK_HTML_HTML = `
 /* Style the accordion panel. Note: hidden by default */
 .c2m_panel {
   padding: 0 18px;
-  background-color: white;
+  background-color: #eeeeee;
   display: none;
   overflow: hidden;
 }

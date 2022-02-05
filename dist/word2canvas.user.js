@@ -132,6 +132,7 @@ class c2m_InitialisedView extends c2m_View {
 
 // src/views/c2m_ChooseWordView.js
 const CHOOSE_WORD_HTML = `
+<div class="border border-trbl c2m_dialog">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 1 of 4: Provide Word document</p>
@@ -149,6 +150,14 @@ const CHOOSE_WORD_HTML = `
 <p><em>Some link to documentation</em></p>
 <p><em>Some method to cancel operation</em></p>
 <p><em>Visual indication of process - e.g. tabs</em></p>
+
+</div>
+
+<style>
+.c2m_dialog { 
+	padding: 1em;
+}
+</style>
 
 `;
 
@@ -185,6 +194,7 @@ class c2m_ChooseWordView extends c2m_View {
 
 // src/views/c2m_CheckHtmlView.js
 const CHECK_HTML_HTML = `
+<div class="border border-trbl c2m_dialog">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 2 of 4: Check HTML conversion</p>
@@ -220,7 +230,14 @@ const CHECK_HTML_HTML = `
 <div class="c2m_panel" id="c2m_html"></div>
 </div>
 
+</div>
+
 <style>
+<style>
+.c2m_dialog { 
+	padding: 1em;
+}
+
 .c2m-received-results {
 	margin-top: 0.5em;
 }
@@ -262,7 +279,7 @@ const CHECK_HTML_HTML = `
 /* Style the accordion panel. Note: hidden by default */
 .c2m_panel {
   padding: 0 18px;
-  background-color: white;
+  background-color: #eeeeee;
   display: none;
   overflow: hidden;
 }
@@ -403,6 +420,7 @@ class c2m_ModuleView extends c2m_View {
 			<p>With ${this.model.moduleItems.length} items</p>
 			`; */
         return `
+<div class="item-group-container">
 <div class="ig-list ui-sortable"> <!-- overall list of modules (1 here) div -->
 
 <!-- start of module div -->
@@ -427,7 +445,6 @@ class c2m_ModuleView extends c2m_View {
     <div class="requirements_message"><!-- TODO --></div>
 
   </div>
-</div>
 
 <!-- add the items -->
     <!-- start of the items -->
@@ -436,7 +453,7 @@ class c2m_ModuleView extends c2m_View {
     <ul class="ig-list items context_module_items manageable ui-sortable">
 
   ${items.map(item => `
-      <li id="${item.title}" style="" class="context_module_item external_url indent_0          _requirement     ExternalUrl_0" >
+      <li id="${item.title}" style="" class="context_module_item external_url">
         <div class="ig-row">
           <a aria-label="${item.title}" tabindex="-1" class="for-nvda">
 		    ${item.title}
@@ -591,12 +608,14 @@ class c2m_ModuleView extends c2m_View {
 	</div>
 </div>
 </div>
+</div>
   `;
 	}
 }
 
 // src/views/c2m_CheckModuleView.js
 const CHECK_MODULE_HTML = `
+<div class="border border-trbl c2m_dialog">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 3 of 4: Check Canvas Module conversion</p>
@@ -624,7 +643,14 @@ const CHECK_MODULE_HTML = `
 <div class="c2m_panel" id="c2m_module"></div>
 </div>
 
+</div>
+
+
 <style>
+.c2m_dialog { 
+	padding: 1em;
+}
+
 .c2m-received-results {
 	margin-top: 0.5em;
 }
@@ -651,7 +677,7 @@ const CHECK_MODULE_HTML = `
 /* Style the accordion panel. Note: hidden by default */
 .c2m_panel {
   padding: 0 18px;
-  background-color: white;
+  background-color: #eeeeee;
   display: none;
   overflow: hidden;
 }
@@ -748,6 +774,7 @@ class c2m_CheckModuleView extends c2m_View {
 
 // src/views/c2m_CompletedView.js
 const COMPLETE_HTML = `
+<div class="border border-trbl c2m_dialog">
 <h3>Create new module from Word document</h3>
 
 <p color="secondary">Step 4 of 4: Complete</p>
@@ -760,6 +787,14 @@ const COMPLETE_HTML = `
 
 <div id="c2m_outcome">
 </div>
+
+</div>
+
+<style>
+.c2m_dialog {
+	  padding: 1em;
+}
+</style>
 
 `;
 

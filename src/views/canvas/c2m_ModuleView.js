@@ -27,6 +27,7 @@ export default class c2m_ModuleView extends c2m_View {
 			<p>With ${this.model.moduleItems.length} items</p>
 			`; */
         return `
+<div class="item-group-container">
 <div class="ig-list ui-sortable"> <!-- overall list of modules (1 here) div -->
 
 <!-- start of module div -->
@@ -51,7 +52,6 @@ export default class c2m_ModuleView extends c2m_View {
     <div class="requirements_message"><!-- TODO --></div>
 
   </div>
-</div>
 
 <!-- add the items -->
     <!-- start of the items -->
@@ -60,7 +60,7 @@ export default class c2m_ModuleView extends c2m_View {
     <ul class="ig-list items context_module_items manageable ui-sortable">
 
   ${items.map(item => `
-      <li id="${item.title}" style="" class="context_module_item external_url indent_0          _requirement     ExternalUrl_0" >
+      <li id="${item.title}" style="" class="context_module_item external_url">
         <div class="ig-row">
           <a aria-label="${item.title}" tabindex="-1" class="for-nvda">
 		    ${item.title}
@@ -213,6 +213,7 @@ export default class c2m_ModuleView extends c2m_View {
     </ul>
 	<div class="footer"></div>
 	</div>
+</div>
 </div>
 </div>
   `;
