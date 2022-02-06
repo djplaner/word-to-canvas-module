@@ -33,19 +33,43 @@ export default class c2m_Model {
 
 	}
 
-	createModule() {
+	getCurrentModules() {
 		// TODO check for existence of canvasModules
 		this.canvasModules.getAllModules()
 			.then(() => {
 				console.log(`c2m_Model -> getAllModules: finished `);
 				console.log(this.canvasModules.allModules);
-				const event = new Event('c2m-module-created');
-				let c2m_dialog = document.querySelector('div.c2m_dialog');
-				if (c2m_dialog) {
-					c2m_dialog.dispatchEvent(event);
-					console.log('c2m_Model -> createModule: event dispatched');
-				}
 
+			});
+		// TODO catch any errors???
+	}
+
+	/**
+	 * Harness to create modules within context of this app
+	 * TODO after creating the module, should check to see if the
+	 * module response is okay and then generate the appropriate event
+	 * Not just automatically 
+	 */
+	createModule() {
+		this.canvasModules.createModule(this.htmlConverter)
+			.then(() => {
+				// if createdModules is defined generated created event
+				if (this.canvasModules.createdModule) {
+					const event = new Event('c2m-module-created');
+					let c2m_dialog = document.querySelector('div.c2m_dialog');
+					if (c2m_dialog) {
+						c2m_dialog.dispatchEvent(event);
+						console.log('c2m_Model -> createModule: event dispatched');
+					}
+				} else {
+					console.error(`c2m_Model -> createModule error: `);
+					const event = new Event('c2m-module-error');
+					let c2m_dialog = document.querySelector('div.c2m_dialog');
+					if (c2m_dialog) {
+						c2m_dialog.dispatchEvent(event);
+						console.log('c2m_Model -> createModule: ERROR event dispatched');
+					}
+				}
 			});
 	}
 

@@ -54,6 +54,45 @@ export default class c2m_Modules {
 			}));
 	}
 
+	/**
+	 * Use Canvas API create a new module with current name in 
+	 * first place ready to be populate with item
+	 * 
+	 */
+	async createModule(newModule) {
+
+		let callUrl = `/api/v1/courses/${this.courseId}/modules`;
+
+		// clear the error ready for any fresh error
+		this.createdModuleError = undefined;
+		this.createdModule = undefined;
+
+		await fetch(callUrl, {
+			method: 'POST', credentials: 'include',
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json",
+				"X-CSRF-Token": this.csrfToken
+			},
+			body: JSON.stringify({
+				"module": {
+					"name": newModule.name, 
+					"position": 1
+				}
+			})
+		})
+			.then(this.status)
+			.then((response) => {
+				return response.json();
+			})
+			.then((json) => {
+				this.createdModule = json;
+				console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
+				console.log(json);
+			})
+	}
+
+
 	/*
 	 * Function which returns a promise (and error if rejected) if response status is OK
 	 * @param {Object} response
@@ -63,6 +102,8 @@ export default class c2m_Modules {
 		if (response.status >= 200 && response.status < 300) {
 			return Promise.resolve(response)
 		} else {
+			console.log("---- STATUS bad response status");
+			console.log(response);
 			return Promise.reject(new Error(response.statusText))
 		}
 	}

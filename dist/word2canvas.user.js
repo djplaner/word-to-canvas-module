@@ -933,10 +933,11 @@ class c2m_CompletedView extends c2m_View {
 
 	renderCreationError() {
 		let receivedDiv = document.querySelector("div.c2m-error");
+		const error = this.model.canvasModules.createdModuleError;
 
 		// populate recievedDiv with error message
-		receivedDiv.innerHTML = `<h1>Error</h1>
-		 <p>some bug</p>`;
+		receivedDiv.innerHTML = `<h4>Error</h4>
+		 <p class="text-warning">${error}</p>`;
 
 
 		// hide div.c2m-waiting-results
@@ -1476,6 +1477,45 @@ class c2m_Modules {
 			}));
 	}
 
+	/**
+	 * Use Canvas API create a new module with current name in 
+	 * first place ready to be populate with item
+	 * 
+	 */
+	async createModule(newModule) {
+
+		let callUrl = `/api/v1/courses/${this.courseId}/modules`;
+
+		// clear the error ready for any fresh error
+		this.createdModuleError = undefined;
+		this.createdModule = undefined;
+
+		await fetch(callUrl, {
+			method: 'POST', credentials: 'include',
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json",
+				"X-CSRF-Token": this.csrfToken
+			},
+			body: JSON.stringify({
+				"module": {
+					"name": newModule.name, 
+					"position": 1
+				}
+			})
+		})
+			.then(this.status)
+			.then((response) => {
+				return response.json();
+			})
+			.then((json) => {
+				this.createdModule = json;
+				console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
+				console.log(json);
+			})
+	}
+
+
 	/*
 	 * Function which returns a promise (and error if rejected) if response status is OK
 	 * @param {Object} response
@@ -1485,6 +1525,8 @@ class c2m_Modules {
 		if (response.status >= 200 && response.status < 300) {
 			return Promise.resolve(response)
 		} else {
+			console.log("---- STATUS bad response status");
+			console.log(response);
 			return Promise.reject(new Error(response.statusText))
 		}
 	}
@@ -1534,19 +1576,43 @@ class c2m_Model {
 
 	}
 
-	createModule() {
+	getCurrentModules() {
 		// TODO check for existence of canvasModules
 		this.canvasModules.getAllModules()
 			.then(() => {
 				console.log(`c2m_Model -> getAllModules: finished `);
 				console.log(this.canvasModules.allModules);
-				const event = new Event('c2m-module-created');
-				let c2m_dialog = document.querySelector('div.c2m_dialog');
-				if (c2m_dialog) {
-					c2m_dialog.dispatchEvent(event);
-					console.log('c2m_Model -> createModule: event dispatched');
-				}
 
+			});
+		// TODO catch any errors???
+	}
+
+	/**
+	 * Harness to create modules within context of this app
+	 * TODO after creating the module, should check to see if the
+	 * module response is okay and then generate the appropriate event
+	 * Not just automatically 
+	 */
+	createModule() {
+		this.canvasModules.createModule(this.htmlConverter)
+			.then(() => {
+				// if createdModules is defined generated created event
+				if (this.canvasModules.createdModule) {
+					const event = new Event('c2m-module-created');
+					let c2m_dialog = document.querySelector('div.c2m_dialog');
+					if (c2m_dialog) {
+						c2m_dialog.dispatchEvent(event);
+						console.log('c2m_Model -> createModule: event dispatched');
+					}
+				} else {
+					console.error(`c2m_Model -> createModule error: `);
+					const event = new Event('c2m-module-error');
+					let c2m_dialog = document.querySelector('div.c2m_dialog');
+					if (c2m_dialog) {
+						c2m_dialog.dispatchEvent(event);
+						console.log('c2m_Model -> createModule: ERROR event dispatched');
+					}
+				}
 			});
 	}
 

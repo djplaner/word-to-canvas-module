@@ -138,10 +138,11 @@ export default class c2m_CompletedView extends c2m_View {
 
 	renderCreationError() {
 		let receivedDiv = document.querySelector("div.c2m-error");
+		const error = this.model.canvasModules.createdModuleError;
 
 		// populate recievedDiv with error message
-		receivedDiv.innerHTML = `<h1>Error</h1>
-		 <p>some bug</p>`;
+		receivedDiv.innerHTML = `<h4>Error</h4>
+		 <p class="text-warning">${error}</p>`;
 
 
 		// hide div.c2m-waiting-results
