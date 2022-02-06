@@ -82,8 +82,6 @@ export default class c2m_Controller {
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
 
-		console.log("ALL MODULES");
-		console.log(this.model.canvasModules.allModules);
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();

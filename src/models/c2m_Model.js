@@ -29,13 +29,24 @@ export default class c2m_Model {
 		//		this.moduleCreator = new c2m_ModuleCreator();
 		this.canvasModules = new c2m_Modules(
 			this.controller.courseId, this.controller.csrfToken
-			);
-		this.canvasModules.getAllModules()
-		.then(() => {
-			console.log(`c2m_Model -> getAllModules: finished `);
-			console.log(this.canvasModules.allModules);
-		});
+		);
 
+	}
+
+	createModule() {
+		// TODO check for existence of canvasModules
+		this.canvasModules.getAllModules()
+			.then(() => {
+				console.log(`c2m_Model -> getAllModules: finished `);
+				console.log(this.canvasModules.allModules);
+				const event = new Event('c2m-module-created');
+				let c2m_dialog = document.querySelector('div.c2m_dialog');
+				if (c2m_dialog) {
+					c2m_dialog.dispatchEvent(event);
+					console.log('c2m_Model -> createModule: event dispatched');
+				}
+
+			});
 	}
 
 	convertWordDoc(event) {
