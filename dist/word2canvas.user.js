@@ -314,8 +314,9 @@ class c2m_CheckHtmlView extends c2m_View {
 
 		let c2mDiv = this.createEmptyDialogDiv();
 		// add the event handler for mammoth results
-		c2mDiv.addEventListener('mammoth-results', (e) => this.controller.handleMammothResult(e));
-		c2mDiv.addEventListener('mammoth-error', (e) => this.controller.handleMammothError(e));
+		c2mDiv.addEventListener('mammoth-results', this.renderUpdateResults.bind(this));
+		//c2mDiv.addEventListener('mammoth-results', (e) => this.controller.handleMammothResult(e));
+		c2mDiv.addEventListener('mammoth-error', this.renderUpdateError.bind(this));
 
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
@@ -1664,8 +1665,6 @@ class c2m_Controller {
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
 
-		console.log("ALL MODULES");
-		console.log(this.model.canvasModules.allModules);
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
@@ -1700,30 +1699,6 @@ class c2m_Controller {
 		// move the state on and render, ready for the results
 		this.currentState = c2m_CheckHtml;
 		this.render();
-	}
-
-	/**
-	 * Handle a mammoth result becoming available
-	 */
-
-	handleMammothResult(e) {
-		console.log("XXXXXXXXX mammoth result available");
-		console.log(this.model.wordConverter.mammothResult);
-
-		let view = new c2m_CheckHtmlView(this.model, this);
-		view.renderUpdateResults();
-	}
-
-	/**
-	 * Handle a mammoth result becoming available
-	 */
-
-	handleMammothError(e) {
-		console.log("XXXXXXXXX mammoth error available");
-		console.log(this.model.wordConverter.mammothError);
-
-		let view = new c2m_CheckHtmlView(this.model, this);
-		view.renderUpdateError();
 	}
 
 }

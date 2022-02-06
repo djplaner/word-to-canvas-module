@@ -118,28 +118,4 @@ export default class c2m_Controller {
 		this.render();
 	}
 
-	/**
-	 * Handle a mammoth result becoming available
-	 */
-
-	handleMammothResult(e) {
-		console.log("XXXXXXXXX mammoth result available");
-		console.log(this.model.wordConverter.mammothResult);
-
-		let view = new c2m_CheckHtmlView(this.model, this);
-		view.renderUpdateResults();
-	}
-
-	/**
-	 * Handle a mammoth result becoming available
-	 */
-
-	handleMammothError(e) {
-		console.log("XXXXXXXXX mammoth error available");
-		console.log(this.model.wordConverter.mammothError);
-
-		let view = new c2m_CheckHtmlView(this.model, this);
-		view.renderUpdateError();
-	}
-
 }

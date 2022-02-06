@@ -128,8 +128,9 @@ export default class c2m_CheckHtmlView extends c2m_View {
 
 		let c2mDiv = this.createEmptyDialogDiv();
 		// add the event handler for mammoth results
-		c2mDiv.addEventListener('mammoth-results', (e) => this.controller.handleMammothResult(e));
-		c2mDiv.addEventListener('mammoth-error', (e) => this.controller.handleMammothError(e));
+		c2mDiv.addEventListener('mammoth-results', this.renderUpdateResults.bind(this));
+		//c2mDiv.addEventListener('mammoth-results', (e) => this.controller.handleMammothResult(e));
+		c2mDiv.addEventListener('mammoth-error', this.renderUpdateError.bind(this));
 
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
