@@ -96,6 +96,11 @@ export default class c2m_Controller {
 	handleClick(newState) {
 		console.log(`handle click switching to ...${newState}`);
 
+		// if c2m_completed moving to c2m_initialised, reload the page
+		if (this.currentState===c2m_Completed && newState===c2m_Initialised) {
+			window.location.reload();
+		}
+
 		this.currentState = newState;
 		this.render();
 	}

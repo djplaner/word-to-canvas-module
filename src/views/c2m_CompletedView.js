@@ -29,7 +29,10 @@ const COMPLETE_HTML = `
 <div class="c2m-received-results" style="display:none">
   <h4>Module created</h4>
   <div id="c2m_summary">
-  <p><em>insert some info and link to the new module</em></p>
+  <p>The module "<span id="c2m_module_name"></span>" was created with 
+  <span id="c2m_module_num_items"></span> items.</p>
+  <p>Close this dialog to view the module and <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-move-or-reorder-a-module/ta-p/1150">
+  move it</a> to its proper place.</p>
   </div>
 </div>
 
@@ -126,8 +129,12 @@ export default class c2m_CompletedView extends c2m_View {
 	renderCreationResults() {
 		let receivedDiv = document.querySelector("div.c2m-received-results");
 
-		receivedDiv.innerHTML = `<h1>Succeess</h1>
-		<p>Module created</p>`;
+		const result = this.model.canvasModules.createdModule;
+
+		let nameSpan = document.getElementById("c2m_module_name");
+		nameSpan.innerHTML = result.name;
+		let numItemsSpan = document.getElementById("c2m_module_num_items");
+		numItemsSpan.innerHTML = result.items_count;
 
 		// hide div.c2m-waiting-results
 		let waitingDiv = document.querySelector("div.c2m-waiting-results");
