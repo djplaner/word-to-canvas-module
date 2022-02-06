@@ -1496,6 +1496,7 @@ class c2m_Modules {
 		// clear the error ready for any fresh error
 		this.createdModuleError = undefined;
 		this.createdModule = undefined;
+		this.createdModuleItems = [];
 
 		await fetch(callUrl, {
 			method: 'POST', credentials: 'include',
@@ -1520,6 +1521,52 @@ class c2m_Modules {
 				console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
 				console.log(json);
 			})
+	}
+
+	/**
+	 * Create the item for item object
+	 * - create/link to the existing element of that type
+	 * - create the item for the module 
+	 * @param {Object} item - object describing the item to create 
+	 */
+
+	async createModuleItem(moduleId, position, item) {
+		let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
+
+		// clear the error ready for any fresh error
+		// TODO how for this
+//		this.createdModuleError = undefined;
+//		this.createdModule = undefined;
+
+		await fetch(callUrl, {
+			method: 'POST', credentials: 'include',
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json",
+				"X-CSRF-Token": this.csrfToken
+			},
+			body: JSON.stringify({
+				"module_item" : {
+					"title": item.title,
+					"type": "SubHeader", // for testing -- item.type,
+					// "content_id": ??  required for everything but:
+					//   ExternalUrl, Page, SubHeader
+					//"page_url": item.page_url, required for page
+					//"external_url": item.external_url, required for page
+				}
+			})
+		})
+			.then(this.status)
+			.then((response) => {
+				return response.json();
+			})
+			.then((json) => {
+				// push json onto this.createdItems array
+				this.createdModuleItems.push(json);
+				console.log(`c2m_Modules -> createItems: ${this.createdModuleItems}`);
+				console.log(json);
+			})
+
 	}
 
 
@@ -1602,25 +1649,53 @@ class c2m_Model {
 	 */
 	createModule() {
 		this.canvasModules.createModule(this.htmlConverter)
+			.then(this.createModuleItems.bind(this));
+		/*				() => {
+						// if createdModules is defined generated created event
+						if (this.canvasModules.createdModule) {
+							const event = new Event('c2m-module-created');
+							let c2m_dialog = document.querySelector('div.c2m_dialog');
+							if (c2m_dialog) {
+								c2m_dialog.dispatchEvent(event);
+								console.log('c2m_Model -> createModule: event dispatched');
+							}
+						} else {
+							console.error(`c2m_Model -> createModule error: `);
+							const event = new Event('c2m-module-error');
+							let c2m_dialog = document.querySelector('div.c2m_dialog');
+							if (c2m_dialog) {
+								c2m_dialog.dispatchEvent(event);
+								console.log('c2m_Model -> createModule: ERROR event dispatched');
+							}
+						}
+					}); */
+	}
+
+	/**
+	 * create all the items for a given module
+	 * TODO everything 
+	 * https://github.com/gqmaguirejr/E-learning/blob/master/setup-degree-project-course-from-JSON-file.py
+	 */
+	createModuleItems() {
+		console.log('c2m_Model -> createModuleItems');
+		console.log('Shogin htmlConverter with item information')
+		console.log(this.htmlConverter);
+
+		console.log('Shogin createdModule')
+		console.log(this.canvasModules.createdModule);
+		const newModuleId = this.canvasModules.createdModule.id;
+		// now can loop thru and create each item???
+		// this.htmlConverter.items is an array of objects
+		//   { title: type: content: }
+
+		// may need to pass in item order
+		this.canvasModules.createModuleItem(newModuleId, 1, this.htmlConverter.items[0])
 			.then(() => {
-				// if createdModules is defined generated created event
-				if (this.canvasModules.createdModule) {
-					const event = new Event('c2m-module-created');
-					let c2m_dialog = document.querySelector('div.c2m_dialog');
-					if (c2m_dialog) {
-						c2m_dialog.dispatchEvent(event);
-						console.log('c2m_Model -> createModule: event dispatched');
-					}
-				} else {
-					console.error(`c2m_Model -> createModule error: `);
-					const event = new Event('c2m-module-error');
-					let c2m_dialog = document.querySelector('div.c2m_dialog');
-					if (c2m_dialog) {
-						c2m_dialog.dispatchEvent(event);
-						console.log('c2m_Model -> createModule: ERROR event dispatched');
-					}
-				}
+				console.log('c2m_Model -> createModuleItems: item 1 created');
+				console.log(this.canvasModules.createdModuleItems);
+
 			});
+
 	}
 
 	convertWordDoc(event) {

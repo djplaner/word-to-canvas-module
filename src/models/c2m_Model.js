@@ -52,25 +52,53 @@ export default class c2m_Model {
 	 */
 	createModule() {
 		this.canvasModules.createModule(this.htmlConverter)
+			.then(this.createModuleItems.bind(this));
+		/*				() => {
+						// if createdModules is defined generated created event
+						if (this.canvasModules.createdModule) {
+							const event = new Event('c2m-module-created');
+							let c2m_dialog = document.querySelector('div.c2m_dialog');
+							if (c2m_dialog) {
+								c2m_dialog.dispatchEvent(event);
+								console.log('c2m_Model -> createModule: event dispatched');
+							}
+						} else {
+							console.error(`c2m_Model -> createModule error: `);
+							const event = new Event('c2m-module-error');
+							let c2m_dialog = document.querySelector('div.c2m_dialog');
+							if (c2m_dialog) {
+								c2m_dialog.dispatchEvent(event);
+								console.log('c2m_Model -> createModule: ERROR event dispatched');
+							}
+						}
+					}); */
+	}
+
+	/**
+	 * create all the items for a given module
+	 * TODO everything 
+	 * https://github.com/gqmaguirejr/E-learning/blob/master/setup-degree-project-course-from-JSON-file.py
+	 */
+	createModuleItems() {
+		console.log('c2m_Model -> createModuleItems');
+		console.log('Shogin htmlConverter with item information')
+		console.log(this.htmlConverter);
+
+		console.log('Shogin createdModule')
+		console.log(this.canvasModules.createdModule);
+		const newModuleId = this.canvasModules.createdModule.id;
+		// now can loop thru and create each item???
+		// this.htmlConverter.items is an array of objects
+		//   { title: type: content: }
+
+		// may need to pass in item order
+		this.canvasModules.createModuleItem(newModuleId, 1, this.htmlConverter.items[0])
 			.then(() => {
-				// if createdModules is defined generated created event
-				if (this.canvasModules.createdModule) {
-					const event = new Event('c2m-module-created');
-					let c2m_dialog = document.querySelector('div.c2m_dialog');
-					if (c2m_dialog) {
-						c2m_dialog.dispatchEvent(event);
-						console.log('c2m_Model -> createModule: event dispatched');
-					}
-				} else {
-					console.error(`c2m_Model -> createModule error: `);
-					const event = new Event('c2m-module-error');
-					let c2m_dialog = document.querySelector('div.c2m_dialog');
-					if (c2m_dialog) {
-						c2m_dialog.dispatchEvent(event);
-						console.log('c2m_Model -> createModule: ERROR event dispatched');
-					}
-				}
+				console.log('c2m_Model -> createModuleItems: item 1 created');
+				console.log(this.canvasModules.createdModuleItems);
+
 			});
+
 	}
 
 	convertWordDoc(event) {
