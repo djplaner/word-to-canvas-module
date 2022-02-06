@@ -11,14 +11,17 @@ Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) t
 Rough user interface supports:
 
 1. Addition of _.docx 2 + Module_ button on Canvas modules pages
-2. Clicking it to choose and upload a Word document to the browser
+2. Clicking it to choose and upload a Word document to the browser 
 3. Converting that Word document to HTML and visualising the conversion
-4. Early start on splitting the HTML into a module data structure
+    Recognising specific Word styles to be converted to HTML classess for creating Canvas items.
+4. HTML split and converted into collection of Javascript objects largely matching the Canvas API JSON
+5. Module with title from Word document being created.
+6. Limited adding of item to the module.
 
 To be done
 
-1. Visualise the module data structure for checking
-2. Using the Canvas API to add a new module with that structure
+1. Be able to create items for each new item and then add them to the module.
+2. Tidy up the user interface.
 
 ## Development
 
