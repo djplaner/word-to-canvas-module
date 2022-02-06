@@ -117,7 +117,7 @@ export default class c2m_CheckModuleView extends c2m_View {
 		// does the model have a htmlConvert property
 		if (
 			Object.prototype.hasOwnProperty.call(this.model, "htmlConverter") &&
-			this.model.htmlConverter.moduleItems.length > 0
+			this.model.htmlConverter.items_count > 0
 			) { 
 				// if so, show the results 
 				this.renderConversionResults(); 
@@ -140,11 +140,9 @@ export default class c2m_CheckModuleView extends c2m_View {
 		// update div#c2m_html with the result html
 		let c2m_html = document.getElementById("c2m_module");
 		if (c2m_html) {
-
 			let moduleView = new c2m_ModuleView(converter);
 			// TODO need to call a module view
 			c2m_html.innerHTML = moduleView.renderString();
-		
 		}
 
 		// Show the messages from mammoth

@@ -19,8 +19,8 @@ export default class c2m_ModuleView extends c2m_View {
 	 */
 
 	renderString() {
-		const title = this.model.moduleTitle;
-		const items = this.model.moduleItems;
+		const name = this.model.name;
+		const items = this.model.items;
 /*		return `
 			<h4>${this.model.moduleTitle}</h4>
 
@@ -37,13 +37,13 @@ export default class c2m_ModuleView extends c2m_View {
 
 <!-- start of module div -->
 <div class="item-group-condensed context_module"
-  aria-label="${title}" data-workflow-state="active" style="">
+  aria-label="${name}" data-workflow-state="active" style="">
   <a id="c2m_sample_module"></a>
 
   <!-- start of module title/name div -->
   <div class="ig-header header" id="c2m_sample_module_header">
-    <h2 class="screenreader-only">${title}</h2>
-	<span class="name" title="${title}">${title}</span>
+    <h2 class="screenreader-only">${name}</h2>
+	<span class="name" title="${name}">${name}</span>
 
     <!-- prerequisites -->
 
@@ -103,7 +103,7 @@ export default class c2m_ModuleView extends c2m_View {
                   ${item.title} 
                 </a>
                 <span title="{item.title}" class="title locked_title">
-                  ${item.title}
+                  ${item.title} - (${item.type})
                   </span>
                 <span class="points_possible" style="display: none;">TODO</span>
                 <span class="requirement" style="display: none;">TODO</span>

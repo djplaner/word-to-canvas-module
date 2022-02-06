@@ -7,6 +7,8 @@
 
 const DEFAULT_OPTIONS = {
 	styleMap: [
+		"p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
+
 		"p[style-name='Section Title'] => h1:fresh",
 		"p[style-name='Quote'] => blockquote:fresh",
 		"p[style-name='Quotations'] => blockquote:fresh",
