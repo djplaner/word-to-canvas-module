@@ -91,8 +91,53 @@ export default class c2m_Model {
 		const moduleId = this.canvasModules.createdModule.id;
 
 		for (let i = 0; i < items.length; i++) {
-			this.createModuleItem( moduleId, items[i], i);
+			// find the item we're trying to link to
+			items[i] = this.findOrCreateItem(items[i]);
+			// create the matching item
+			this.createModuleItem(moduleId, items[i], i);
 		}
+
+		console.log("------------- END of create module items")
+		console.log(items)
+	}
+
+	/**
+	 * Determine the type of item the is required and then either
+	 * search for the matching item or create it
+	 * Exactly what happens will be dependent upon type of item
+	 * - Page - create a new page (always)
+	 * - SubHead - nothing to do
+	 * - External Url - nothing to create
+	 * - File - need to find - can't create
+	 * - Discussion - find or create
+	 * - ExternalTool - ???
+	 * - Quiz - find
+	 * Default - if unable to find or create the necessary type
+	 * then create a sub-head with an error message
+	 * @param {Object} item - details of the module item to create
+	 * @return {Object} item modified to include details of created item 
+	 */
+
+	findOrCreateItem(item) {
+		// switch on item.type
+		console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		console.log("findORCreateItem");
+
+		switch (item.type) {
+			case 'Page':
+				// create a new page
+				this.canvasModules.createPage(item).then(() => {
+					console.log('c2m_Model -> findOrCreateItem: page created');
+					item.item = this.canvasModules.createdItem;
+					console.log(item);
+				});
+				break;
+			default:
+				console.log(`Not yet creating items of type ${item.type}`);
+				break;
+		}
+
+		return item;
 	}
 
 	/**
@@ -101,14 +146,14 @@ export default class c2m_Model {
 	 * @param {Object} item detail about the item to add
 	 * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
 	 */
-	createModuleItem(moduleId, item,itemIndex) {
+	createModuleItem(moduleId, item, itemIndex) {
 
 		console.log('Shogin createdModuleItem')
 
 		// may need to pass in item order
-		this.canvasModules.createModuleItem(moduleId, itemIndex+1, item )
+		this.canvasModules.createModuleItem(moduleId, itemIndex + 1, item)
 			.then(() => {
-				console.log(`c2m_Model -> createModuleItems: item ${itemIndex+1} - ${item.title} created`);
+				console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
 				console.log(this.canvasModules.createdModuleItems);
 			});
 

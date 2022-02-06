@@ -77,7 +77,7 @@ export default class c2m_Modules {
 			},
 			body: JSON.stringify({
 				"module": {
-					"name": newModule.name, 
+					"name": newModule.name,
 					"position": 1
 				}
 			})
@@ -105,62 +105,102 @@ export default class c2m_Modules {
 
 		// clear the error ready for any fresh error
 		// TODO how for this
-//		this.createdModuleError = undefined;
-//		this.createdModule = undefined;
+		//		this.createdModuleError = undefined;
+		//		this.createdModule = undefined;
+
+		let body = {
+			"module_item": {
+				"title": item.title,
+				"position": position,
+				"type": item.type, 
+			}
+		};
+
+		if (item.type==="Page") {
+			body.module_item['content_id'] = item.item.page_id
+		}
+		console.log('creating module item');
+		console.log(body);
 
 		await fetch(callUrl, {
-			method: 'POST', credentials: 'include',
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/json",
-				"X-CSRF-Token": this.csrfToken
-			},
-			body: JSON.stringify({
-				"module_item" : {
-					"title": item.title,
-					"position": position,
-					"type": "SubHeader", // for testing -- item.type,
-					// "content_id": ??  required for everything but:
-					//   ExternalUrl, Page, SubHeader
-					//"page_url": item.page_url, required for page
-					//"external_url": item.external_url, required for page
-				}
+				method: 'POST', credentials: 'include',
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json",
+					"X-CSRF-Token": this.csrfToken
+				},
+				body: JSON.stringify( body)
 			})
-		})
-			.then(this.status)
-			.then((response) => {
-				return response.json();
-			})
-			.then((json) => {
-				// push json onto this.createdItems array
-				this.createdModuleItems.push(json);
-				console.log(`c2m_Modules -> createItems: ${this.createdModuleItems}`);
-				console.log(json);
-			})
+				.then(this.status)
+				.then((response) => {
+					return response.json();
+				})
+				.then((json) => {
+					// push json onto this.createdItems array
+					this.createdModuleItems.push(json);
+					console.log(`c2m_Modules -> createItems: ${this.createdModuleItems}`);
+					console.log(json);
+				})
 
-	}
+		}
 
 
-	/*
-	 * Function which returns a promise (and error if rejected) if response status is OK
-	 * @param {Object} response
-	 * @returns {Promise} either error or response
+	/**
+	 * Create anew page using the title and the content of the item object
+	 * @param {Object} item basic information about page to create
 	 */
-	status(response) {
-		if (response.status >= 200 && response.status < 300) {
-			return Promise.resolve(response)
-		} else {
-			console.log("---- STATUS bad response status");
-			console.log(response);
-			return Promise.reject(new Error(response.statusText))
+	async createPage(item) {
+			let callUrl = `/api/v1/courses/${this.courseId}/pages`;
+
+			await fetch(callUrl, {
+				method: 'POST', credentials: 'include',
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json",
+					"X-CSRF-Token": this.csrfToken
+				},
+				body: JSON.stringify({
+					"wiki_page": {
+						"title": item.title,
+						"body": item.content,
+						"editing_roles": "teachers"
+					}
+				})
+			})
+				.then(this.status)
+				.then((response) => {
+					return response.json();
+				})
+				.then((json) => {
+					// push json onto this.createdItems array
+					this.createdItem = json;
+					console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
+					console.log(json);
+				})
+
+		}
+
+
+		/*
+		 * Function which returns a promise (and error if rejected) if response status is OK
+		 * @param {Object} response
+		 * @returns {Promise} either error or response
+		 */
+		status(response) {
+			if (response.status >= 200 && response.status < 300) {
+				return Promise.resolve(response)
+			} else {
+				console.log("---- STATUS bad response status");
+				console.log(response);
+				return Promise.reject(new Error(response.statusText))
+			}
+		}
+		/*
+		 * Function which returns json from response
+		 * @param {Object} response
+		 * @returns {string} json from response
+		 */
+		json(response) {
+			return response.json();
 		}
 	}
-	/*
-	 * Function which returns json from response
-	 * @param {Object} response
-	 * @returns {string} json from response
-	 */
-	json(response) {
-		return response.json();
-	}
-}

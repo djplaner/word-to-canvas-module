@@ -1507,7 +1507,7 @@ class c2m_Modules {
 			},
 			body: JSON.stringify({
 				"module": {
-					"name": newModule.name, 
+					"name": newModule.name,
 					"position": 1
 				}
 			})
@@ -1535,65 +1535,105 @@ class c2m_Modules {
 
 		// clear the error ready for any fresh error
 		// TODO how for this
-//		this.createdModuleError = undefined;
-//		this.createdModule = undefined;
+		//		this.createdModuleError = undefined;
+		//		this.createdModule = undefined;
+
+		let body = {
+			"module_item": {
+				"title": item.title,
+				"position": position,
+				"type": item.type, 
+			}
+		};
+
+		if (item.type==="Page") {
+			body.module_item['content_id'] = item.item.page_id
+		}
+		console.log('creating module item');
+		console.log(body);
 
 		await fetch(callUrl, {
-			method: 'POST', credentials: 'include',
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/json",
-				"X-CSRF-Token": this.csrfToken
-			},
-			body: JSON.stringify({
-				"module_item" : {
-					"title": item.title,
-					"position": position,
-					"type": "SubHeader", // for testing -- item.type,
-					// "content_id": ??  required for everything but:
-					//   ExternalUrl, Page, SubHeader
-					//"page_url": item.page_url, required for page
-					//"external_url": item.external_url, required for page
-				}
+				method: 'POST', credentials: 'include',
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json",
+					"X-CSRF-Token": this.csrfToken
+				},
+				body: JSON.stringify( body)
 			})
-		})
-			.then(this.status)
-			.then((response) => {
-				return response.json();
-			})
-			.then((json) => {
-				// push json onto this.createdItems array
-				this.createdModuleItems.push(json);
-				console.log(`c2m_Modules -> createItems: ${this.createdModuleItems}`);
-				console.log(json);
-			})
+				.then(this.status)
+				.then((response) => {
+					return response.json();
+				})
+				.then((json) => {
+					// push json onto this.createdItems array
+					this.createdModuleItems.push(json);
+					console.log(`c2m_Modules -> createItems: ${this.createdModuleItems}`);
+					console.log(json);
+				})
 
-	}
+		}
 
 
-	/*
-	 * Function which returns a promise (and error if rejected) if response status is OK
-	 * @param {Object} response
-	 * @returns {Promise} either error or response
+	/**
+	 * Create anew page using the title and the content of the item object
+	 * @param {Object} item basic information about page to create
 	 */
-	status(response) {
-		if (response.status >= 200 && response.status < 300) {
-			return Promise.resolve(response)
-		} else {
-			console.log("---- STATUS bad response status");
-			console.log(response);
-			return Promise.reject(new Error(response.statusText))
+	async createPage(item) {
+			let callUrl = `/api/v1/courses/${this.courseId}/pages`;
+
+			await fetch(callUrl, {
+				method: 'POST', credentials: 'include',
+				headers: {
+					"Content-Type": "application/json",
+					"Accept": "application/json",
+					"X-CSRF-Token": this.csrfToken
+				},
+				body: JSON.stringify({
+					"wiki_page": {
+						"title": item.title,
+						"body": item.content,
+						"editing_roles": "teachers"
+					}
+				})
+			})
+				.then(this.status)
+				.then((response) => {
+					return response.json();
+				})
+				.then((json) => {
+					// push json onto this.createdItems array
+					this.createdItem = json;
+					console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
+					console.log(json);
+				})
+
+		}
+
+
+		/*
+		 * Function which returns a promise (and error if rejected) if response status is OK
+		 * @param {Object} response
+		 * @returns {Promise} either error or response
+		 */
+		status(response) {
+			if (response.status >= 200 && response.status < 300) {
+				return Promise.resolve(response)
+			} else {
+				console.log("---- STATUS bad response status");
+				console.log(response);
+				return Promise.reject(new Error(response.statusText))
+			}
+		}
+		/*
+		 * Function which returns json from response
+		 * @param {Object} response
+		 * @returns {string} json from response
+		 */
+		json(response) {
+			return response.json();
 		}
 	}
-	/*
-	 * Function which returns json from response
-	 * @param {Object} response
-	 * @returns {string} json from response
-	 */
-	json(response) {
-		return response.json();
-	}
-}
 
 // src/models/c2m_Model.js
 /**
@@ -1689,8 +1729,53 @@ class c2m_Model {
 		const moduleId = this.canvasModules.createdModule.id;
 
 		for (let i = 0; i < items.length; i++) {
-			this.createModuleItem( moduleId, items[i], i);
+			// find the item we're trying to link to
+			items[i] = this.findOrCreateItem(items[i]);
+			// create the matching item
+			this.createModuleItem(moduleId, items[i], i);
 		}
+
+		console.log("------------- END of create module items")
+		console.log(items)
+	}
+
+	/**
+	 * Determine the type of item the is required and then either
+	 * search for the matching item or create it
+	 * Exactly what happens will be dependent upon type of item
+	 * - Page - create a new page (always)
+	 * - SubHead - nothing to do
+	 * - External Url - nothing to create
+	 * - File - need to find - can't create
+	 * - Discussion - find or create
+	 * - ExternalTool - ???
+	 * - Quiz - find
+	 * Default - if unable to find or create the necessary type
+	 * then create a sub-head with an error message
+	 * @param {Object} item - details of the module item to create
+	 * @return {Object} item modified to include details of created item 
+	 */
+
+	findOrCreateItem(item) {
+		// switch on item.type
+		console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+		console.log("findORCreateItem");
+
+		switch (item.type) {
+			case 'Page':
+				// create a new page
+				this.canvasModules.createPage(item).then(() => {
+					console.log('c2m_Model -> findOrCreateItem: page created');
+					item.item = this.canvasModules.createdItem;
+					console.log(item);
+				});
+				break;
+			default:
+				console.log(`Not yet creating items of type ${item.type}`);
+				break;
+		}
+
+		return item;
 	}
 
 	/**
@@ -1699,14 +1784,14 @@ class c2m_Model {
 	 * @param {Object} item detail about the item to add
 	 * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
 	 */
-	createModuleItem(moduleId, item,itemIndex) {
+	createModuleItem(moduleId, item, itemIndex) {
 
 		console.log('Shogin createdModuleItem')
 
 		// may need to pass in item order
-		this.canvasModules.createModuleItem(moduleId, itemIndex+1, item )
+		this.canvasModules.createModuleItem(moduleId, itemIndex + 1, item)
 			.then(() => {
-				console.log(`c2m_Model -> createModuleItems: item ${itemIndex+1} - ${item.title} created`);
+				console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
 				console.log(this.canvasModules.createdModuleItems);
 			});
 

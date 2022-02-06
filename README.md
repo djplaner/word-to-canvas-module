@@ -15,8 +15,7 @@ Rough user interface supports:
 3. Converting that Word document to HTML and visualising the conversion
     Recognising specific Word styles to be converted to HTML classess for creating Canvas items.
 4. HTML split and converted into collection of Javascript objects largely matching the Canvas API JSON
-5. Module with title from Word document being created.
-6. Limited adding of item to the module.
+5. Module being created, pages being created, and not quite adding those pages as items
 
 To be done
 
