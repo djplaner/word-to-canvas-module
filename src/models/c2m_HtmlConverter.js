@@ -102,7 +102,7 @@ const HTML_CLASS_TO_ITEM_TYPE = {
 	'canvasAssignment' : 'Assignment',
 	'canvasQuiz': 'Quiz',
 	'canvasSubHeader' : 'SubHeader',
-	'canvasExternUrl': 'ExternalUrl'
+	'canvasExternalUrl': 'ExternalUrl'
 };
 
 export default class c2m_HtmlConverter {
@@ -130,7 +130,7 @@ export default class c2m_HtmlConverter {
 	 */
 	updateModuleTitle() {
 		// get all the div.name
-		let titleDivs = this.htmlDiv.querySelectorAll('div.name');
+		let titleDivs = this.htmlDiv.querySelectorAll('div.moduleTitle');
 		// if only 1 titleDiv set it
 		if (titleDivs.length === 1) {
 			this.name = titleDivs[0].innerText;

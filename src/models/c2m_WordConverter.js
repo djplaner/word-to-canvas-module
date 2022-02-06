@@ -8,6 +8,11 @@
 const DEFAULT_OPTIONS = {
 	styleMap: [
 		"p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
+		"p[style-name='Canvas Assignment'] => h1.canvasAssignment",
+		"p[style-name='Canvas Quiz'] => h1.canvasQuiz",
+		"p[style-name='Canvas File'] => h1.canvasFile",
+		"p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
+		"p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
 
 		"p[style-name='Section Title'] => h1:fresh",
 		"p[style-name='Quote'] => blockquote:fresh",

@@ -441,6 +441,25 @@ class c2m_ModuleView extends c2m_View {
 	renderString() {
 		const name = this.model.name;
 		const items = this.model.items;
+    const typeToIcon = {
+      'Page' : 'icon-document',
+      'File' : 'icon-paperclip',
+      'Discussion' : 'icon-discussion',
+      'Assignment' : 'icon-assignment',
+      'Quiz': 'icon-quiz',    // TODO not sure we can add these
+      'ExternalUrl': 'icon-link',
+      'SubHeader': 'icon-subheader'
+    }
+    const typeToItemClass = {
+      'Page' : 'wiki_page',
+      'File' : 'attachment',
+      'Discussion' : 'discussion-topic',
+      'Assignment' : 'assignment',
+      'Quiz': 'lti-quiz',
+      'ExternalUrl': 'external_url',
+      'SubHeader': 'context_module_sub_header'
+    }
+
 /*		return `
 			<h4>${this.model.moduleTitle}</h4>
 
@@ -485,42 +504,21 @@ class c2m_ModuleView extends c2m_View {
     <ul class="ig-list items context_module_items manageable ui-sortable">
 
   ${items.map(item => `
-      <li id="${item.title}" style="" class="context_module_item external_url">
+      <li id="${item.title}" style="" class="context_module_item ${typeToItemClass[item.type]}">
         <div class="ig-row">
           <a aria-label="${item.title}" tabindex="-1" class="for-nvda">
 		    ${item.title}
           </a>
 
-          <div aria-hidden="true" class="ig-handle">
-            <span
-              class="draggable-handle move_item_link"
-              title="Drag to reorder or move item to another module"
-            >
-              <i class="icon-drag-handle" aria-hidden="true"></i>
+            <span class="type_icon" role="none">
+              <i class="${typeToIcon[item.type]}" style="display:inline-block !important"></i>
             </span>
-          </div> 
-
-          <!-- the type icon - keep, but maybe add tooltip?? -->
-          <span class="type_icon" title="External Url" role="none">
-		  <!-- TODO somethign for screen reader -->
-            <span class="screenreader-only"></span>
-            <span class="ig-type-icon">
-              <i class="icon-document"></i>
-              <i class="icon-paperclip"></i>
-              <i class="icon-discussion"></i>
-              <i class="icon-assignment"></i>
-              <i class="icon-quiz"></i>
-              <i class="icon-quiz icon-Solid"></i>
-              <i class="icon-link"></i>  
--             <img id="mc_icon" src="/images/icons/mc_icon_unpub.svg" alt="Mastery Connect" style="display: none; width: 1rem; height: 1rem;" /> 
-            </span>
-          </span>
-
+ 
           <div class="ig-info">
             <div class="module-item-title">
               <span class="item_name">
                 <a title="${item.title}" class="ig-title title item_link">
-                  ${item.title} 
+                  ${item.title}  - (${item.type})
                 </a>
                 <span title="{item.title}" class="title locked_title">
                   ${item.title} - (${item.type})
@@ -759,7 +757,7 @@ class c2m_CheckModuleView extends c2m_View {
 		// does the model have a htmlConvert property
 		if (
 			Object.prototype.hasOwnProperty.call(this.model, "htmlConverter") &&
-			this.model.htmlConverter.moduleItems.length > 0
+			this.model.htmlConverter.items_count > 0
 			) { 
 				// if so, show the results 
 				this.renderConversionResults(); 
@@ -782,11 +780,9 @@ class c2m_CheckModuleView extends c2m_View {
 		// update div#c2m_html with the result html
 		let c2m_html = document.getElementById("c2m_module");
 		if (c2m_html) {
-
 			let moduleView = new c2m_ModuleView(converter);
 			// TODO need to call a module view
 			c2m_html.innerHTML = moduleView.renderString();
-		
 		}
 
 		// Show the messages from mammoth
@@ -859,6 +855,11 @@ class c2m_CompletedView extends c2m_View {
 const DEFAULT_OPTIONS = {
 	styleMap: [
 		"p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
+		"p[style-name='Canvas Assignment'] => h1.canvasAssignment",
+		"p[style-name='Canvas Quiz'] => h1.canvasQuiz",
+		"p[style-name='Canvas File'] => h1.canvasFile",
+		"p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
+		"p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
 
 		"p[style-name='Section Title'] => h1:fresh",
 		"p[style-name='Quote'] => blockquote:fresh",
@@ -1158,7 +1159,7 @@ const HTML_CLASS_TO_ITEM_TYPE = {
 	'canvasAssignment' : 'Assignment',
 	'canvasQuiz': 'Quiz',
 	'canvasSubHeader' : 'SubHeader',
-	'canvasExternUrl': 'ExternalUrl'
+	'canvasExternalUrl': 'ExternalUrl'
 };
 
 class c2m_HtmlConverter {
@@ -1186,7 +1187,7 @@ class c2m_HtmlConverter {
 	 */
 	updateModuleTitle() {
 		// get all the div.name
-		let titleDivs = this.htmlDiv.querySelectorAll('div.name');
+		let titleDivs = this.htmlDiv.querySelectorAll('div.moduleTitle');
 		// if only 1 titleDiv set it
 		if (titleDivs.length === 1) {
 			this.name = titleDivs[0].innerText;

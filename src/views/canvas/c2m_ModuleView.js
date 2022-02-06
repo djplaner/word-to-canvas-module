@@ -21,16 +21,31 @@ export default class c2m_ModuleView extends c2m_View {
 	renderString() {
 		const name = this.model.name;
 		const items = this.model.items;
+    const typeToIcon = {
+      'Page' : 'icon-document',
+      'File' : 'icon-paperclip',
+      'Discussion' : 'icon-discussion',
+      'Assignment' : 'icon-assignment',
+      'Quiz': 'icon-quiz',    // TODO not sure we can add these
+      'ExternalUrl': 'icon-link',
+      'SubHeader': 'icon-subheader'
+    }
+    const typeToItemClass = {
+      'Page' : 'wiki_page',
+      'File' : 'attachment',
+      'Discussion' : 'discussion-topic',
+      'Assignment' : 'assignment',
+      'Quiz': 'lti-quiz',
+      'ExternalUrl': 'external_url',
+      'SubHeader': 'context_module_sub_header'
+    }
+
 /*		return `
 			<h4>${this.model.moduleTitle}</h4>
 
 			<p>With ${this.model.moduleItems.length} items</p>
 			`; */
         return `
-		<p class="text-warning">
-		<i class="icon-Solid icon-warning" aria-hidden="true"></i> Still
-		under construction. Doesn't distinguish between different item types.
-		</p>
 
 <div class="item-group-container">
 <div class="ig-list ui-sortable"> <!-- overall list of modules (1 here) div -->
@@ -65,42 +80,21 @@ export default class c2m_ModuleView extends c2m_View {
     <ul class="ig-list items context_module_items manageable ui-sortable">
 
   ${items.map(item => `
-      <li id="${item.title}" style="" class="context_module_item external_url">
+      <li id="${item.title}" style="" class="context_module_item ${typeToItemClass[item.type]}">
         <div class="ig-row">
           <a aria-label="${item.title}" tabindex="-1" class="for-nvda">
 		    ${item.title}
           </a>
 
-          <div aria-hidden="true" class="ig-handle">
-            <span
-              class="draggable-handle move_item_link"
-              title="Drag to reorder or move item to another module"
-            >
-              <i class="icon-drag-handle" aria-hidden="true"></i>
+            <span class="type_icon" role="none">
+              <i class="${typeToIcon[item.type]}" style="display:inline-block !important"></i>
             </span>
-          </div> 
-
-          <!-- the type icon - keep, but maybe add tooltip?? -->
-          <span class="type_icon" title="External Url" role="none">
-		  <!-- TODO somethign for screen reader -->
-            <span class="screenreader-only"></span>
-            <span class="ig-type-icon">
-              <i class="icon-document"></i>
-              <i class="icon-paperclip"></i>
-              <i class="icon-discussion"></i>
-              <i class="icon-assignment"></i>
-              <i class="icon-quiz"></i>
-              <i class="icon-quiz icon-Solid"></i>
-              <i class="icon-link"></i>  
--             <img id="mc_icon" src="/images/icons/mc_icon_unpub.svg" alt="Mastery Connect" style="display: none; width: 1rem; height: 1rem;" /> 
-            </span>
-          </span>
-
+ 
           <div class="ig-info">
             <div class="module-item-title">
               <span class="item_name">
                 <a title="${item.title}" class="ig-title title item_link">
-                  ${item.title} 
+                  ${item.title}  - (${item.type})
                 </a>
                 <span title="{item.title}" class="title locked_title">
                   ${item.title} - (${item.type})
