@@ -118,6 +118,7 @@ export default class c2m_Modules {
 			body: JSON.stringify({
 				"module_item" : {
 					"title": item.title,
+					"position": position,
 					"type": "SubHeader", // for testing -- item.type,
 					// "content_id": ??  required for everything but:
 					//   ExternalUrl, Page, SubHeader

@@ -1548,6 +1548,7 @@ class c2m_Modules {
 			body: JSON.stringify({
 				"module_item" : {
 					"title": item.title,
+					"position": position,
 					"type": "SubHeader", // for testing -- item.type,
 					// "content_id": ??  required for everything but:
 					//   ExternalUrl, Page, SubHeader
@@ -1672,28 +1673,41 @@ class c2m_Model {
 	}
 
 	/**
-	 * create all the items for a given module
-	 * TODO everything 
-	 * https://github.com/gqmaguirejr/E-learning/blob/master/setup-degree-project-course-from-JSON-file.py
+	 * create each of the module items for the newly created
+	 *   this.canvasModules.createdModule
+	 * Loop thru each this.htmlConverter.items and create the item
+	 * and create the moduleItem
 	 */
 	createModuleItems() {
 		console.log('c2m_Model -> createModuleItems');
 		console.log('Shogin htmlConverter with item information')
 		console.log(this.htmlConverter);
 
-		console.log('Shogin createdModule')
-		console.log(this.canvasModules.createdModule);
-		const newModuleId = this.canvasModules.createdModule.id;
-		// now can loop thru and create each item???
-		// this.htmlConverter.items is an array of objects
-		//   { title: type: content: }
+		// loop thru array this.htmlConverter.items and
+		// call createModuleItem
+		let items = this.htmlConverter.items;
+		const moduleId = this.canvasModules.createdModule.id;
+
+		for (let i = 0; i < items.length; i++) {
+			this.createModuleItem( moduleId, items[i], i);
+		}
+	}
+
+	/**
+	 * Create a specific module item
+	 * @param {Integer} moduleId id module to add item to
+	 * @param {Object} item detail about the item to add
+	 * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
+	 */
+	createModuleItem(moduleId, item,itemIndex) {
+
+		console.log('Shogin createdModuleItem')
 
 		// may need to pass in item order
-		this.canvasModules.createModuleItem(newModuleId, 1, this.htmlConverter.items[0])
+		this.canvasModules.createModuleItem(moduleId, itemIndex+1, item )
 			.then(() => {
-				console.log('c2m_Model -> createModuleItems: item 1 created');
+				console.log(`c2m_Model -> createModuleItems: item ${itemIndex+1} - ${item.title} created`);
 				console.log(this.canvasModules.createdModuleItems);
-
 			});
 
 	}
