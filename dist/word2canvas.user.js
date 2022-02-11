@@ -1078,6 +1078,13 @@ class c2m_WordConverter {
 		//		this.handleFileSelect(event);
 	}
 
+
+    decodeEntities(encodedString) {
+        let textArea = document.createElement('textarea');
+        textArea.innerHTML = encodedString;
+        return textArea.value;
+    }
+
 	/**
 	 * Called when mammoth is complete.  Will set the mammoth response
 	 * as a data member and then dispatch an event on div.c2m_dialog 
@@ -1087,6 +1094,20 @@ class c2m_WordConverter {
 	displayResult(result) {
 
 		this.mammothResult = result;
+
+		// TODO do Content Interface translations here??
+		// find all span.embed in mammothResult and log innerhtml
+        // parse the string 
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(this.mammothResult.value, "text/html");
+		let embeds = doc.querySelectorAll('span.embed');
+        // iterate over the embeds and use this.decodeEntities to decode the innerHTML
+        for (let i = 0; i < embeds.length; i++) {
+            let embed = embeds[i];
+            embed.innerHTML = this.decodeEntities(embed.innerHTML);
+        }
+        // convert the doc back to a string
+        this.mammothResult.value = doc.documentElement.outerHTML;
 
 		// generate mammoth-results event
 		const event = new Event('mammoth-results');
