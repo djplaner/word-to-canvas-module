@@ -1,6 +1,6 @@
 # Word to Canvas Module
 
-Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) to create a new [Canvas LMS](https://canvas.instructure.com/) module from a Word document (using some specific Word styles) - see [sample w2c.docx](./sample w2c.docx) for an annotated example.
+Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) to create a new [Canvas LMS](https://canvas.instructure.com/) module from a Word document (using some specific Word styles) - see [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) for an annotated example.
 
 > :secret: The contents of the Word document always remain on your computer, your web browser, or eventually as a Module in the Canvas instance you are working with.
 
