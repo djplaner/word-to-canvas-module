@@ -23,7 +23,13 @@ const COMPLETE_HTML = `
 
 <div class="c2m-waiting-results">
 <p><em>Waiting for creation of new module "<span id="c2m-module-name"></span>"</em></p>
-<div class="c2m-loading"></div>
+<!-- <div class="c2m-loading"></div> -->
+</div>
+
+<div class="w2c-progress">
+<ul id="w2c-progress-list">
+  <li> <span class="w2c-progress-step">1</span> <span class="w2c-progress-label">Module creationg started</span> </li>
+</ul>
 </div>
 
 <div class="c2m-received-results" style="display:none">
@@ -96,8 +102,13 @@ export default class c2m_CompletedView extends c2m_View {
 
 		// register the event handlers for module creation
 		//c2mDiv.addEventListener('c2m_module_created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-error', this.renderCreationError.bind(this));
+		c2mDiv.addEventListener(
+            'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
+		c2mDiv.addEventListener(
+            'w2c-item-found-created', this.checkItemFoundCreated.bind(this));
+//		c2mDiv.addEventListener(
+//            'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
+		c2mDiv.addEventListener('w2c-module-error', this.renderCreationError.bind(this));
 
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
@@ -118,6 +129,61 @@ export default class c2m_CompletedView extends c2m_View {
 		console.log("---- trying to create the module");
 		this.model.createModule();
 	}
+
+    /**
+     * Event handler for w2c-empty-module-created event.
+     * Indicates that an empty Canvas module has been created.
+     * - Update the w2c-progress-list and call this.model.findOrCreateItems
+     */
+    checkEmptyModuleCreated() {
+        // get and check the module name
+        let moduleName = this.model.canvasModules.createdModule.name;
+        let id = this.model.canvasModules.createdModule.id;
+
+        // TODO some sort of check that the module is actually created
+
+        console.log(`created new module ${moduleName} with id ${id}`);
+
+        this.addProgressList( `Empty module create: <em>${moduleName}</em>`);
+
+        this.model.findOrCreateItems();
+    }
+
+    /**
+     * 
+     */
+    checkItemFoundCreated(e) {
+        // get the details of the item that was created --
+        // Should be in the event
+        console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
+        console.log(e)
+
+        this.addProgressList( `item found or created`);
+
+        // if all items have been created, then call next step
+        // Test ou the last step in the pipeline...
+        // TODO replace this with the next call to add items when
+        //  all the items have been created
+        this.renderCreationResults();
+    }
+
+
+    /**
+     * Update the ul#w2c-progress-list with a new message
+     * @param {String} message
+     */
+    addProgressList(message ) {
+        let progressList = document.getElementById("w2c-progress-list");
+        // get number of items in progressList
+        let numItems = progressList.children.length;
+        let li = document.createElement("li");
+        li.innerHTML = `
+        <span class="w2c-progress-step">${numItems+=1}</span> 
+        <span class="w2c-progress-label">${message}</span>
+        `;
+        // add li to progressList
+        progressList.appendChild(li);
+    }
 
 	/**
 	 * Update the view based on the completed creation of the module

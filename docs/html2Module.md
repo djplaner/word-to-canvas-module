@@ -32,6 +32,24 @@ Questions
 - Create the items for the module
   - then ```this.createModuleItems```
 
+
+Events to be handled
+- w2c-empty-module-created
+- w2c-item-found-created
+- w2c-module-item-added
+- w2c-module-created _not needed as item added check will do this in view_
+
+Workflow
+- CompletedView::render > this.model.createModule
+- createModule > w2c-empty-module-created > view.checkEmptyModuleCreated
+- checkEmptyModuleCreate - does checks > model.findOrCreateModuleItems OR error
+- findOrCreateModuleItems > many model.findOrCreateItem > w2c-item-found-created > view.checkItemFoundCreated
+- checkItemFoundCreate - does checks > updates view about num created items > if all created model.addItemsToModule
+
+<ul id="w2c-progress-list">
+  <li> <span class="w2c-progress-step">1</span> <span class="w2c-progress-label">Module creationg started</span> </li>
+</ul>
+
 Should be
   createModule.then(  
     signal module created
@@ -46,8 +64,12 @@ Should be
 
   moduleItemsCreated {
     check the items, see that we have everything
+    Actually a harness to findOrCreateItem
     addItemsToModule.then(
       signal module items added
+      // there are multiple items to be created.  The handler of this signal
+      // should only signal the next step once all the items have been found/created
+      // ??? maybe 
     )
   }
 

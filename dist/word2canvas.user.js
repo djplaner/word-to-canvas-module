@@ -821,6 +821,12 @@ const COMPLETE_HTML = `
 <div class="c2m-loading"></div>
 </div>
 
+<div class="w2c-progress">
+<ul id="w2c-progress-list">
+  <li> <span class="w2c-progress-step">1</span> <span class="w2c-progress-label">Module creationg started</span> </li>
+</ul>
+</div>
+
 <div class="c2m-received-results" style="display:none">
   <h4>Module created</h4>
   <div id="c2m_summary">
@@ -891,10 +897,13 @@ class c2m_CompletedView extends c2m_View {
 
 		// register the event handlers for module creation
 		//c2mDiv.addEventListener('c2m_module_created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-error', this.renderCreationError.bind(this));
-
-
+		c2mDiv.addEventListener(
+            'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
+		c2mDiv.addEventListener(
+            'w2c-item-found-created', this.checkItemFoundCreated.bind(this));
+//		c2mDiv.addEventListener(
+//            'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
+		c2mDiv.addEventListener('w2c-module-error', this.renderCreationError.bind(this));
 
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
@@ -915,6 +924,61 @@ class c2m_CompletedView extends c2m_View {
 		console.log("---- trying to create the module");
 		this.model.createModule();
 	}
+
+    /**
+     * Event handler for w2c-empty-module-created event.
+     * Indicates that an empty Canvas module has been created.
+     * - Update the w2c-progress-list and call this.model.findOrCreateItems
+     */
+    checkEmptyModuleCreated() {
+        // get and check the module name
+        let moduleName = this.model.canvasModules.createdModule.name;
+        let id = this.model.canvasModules.createdModule.id;
+
+        // TODO some sort of check that the module is actually created
+
+        console.log(`created new module ${moduleName} with id ${id}`);
+
+        this.addProgressList( `Empty module create: <em>${moduleName}</em>`);
+
+        this.model.findOrCreateItems();
+    }
+
+    /**
+     * 
+     */
+    checkItemFoundCreated(e) {
+        // get the details of the item that was created --
+        // Should be in the event
+        console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
+        console.log(e)
+
+        this.addProgressList( `item found or created`);
+
+        // if all items have been created, then call next step
+        // Test ou the last step in the pipeline...
+        // TODO replace this with the next call to add items when
+        //  all the items have been created
+        this.renderCreationResults();
+    }
+
+
+    /**
+     * Update the ul#w2c-progress-list with a new message
+     * @param {String} message
+     */
+    addProgressList(message ) {
+        let progressList = document.getElementById("w2c-progress-list");
+        // get number of items in progressList
+        let numItems = progressList.children.length;
+        let li = document.createElement("li");
+        li.innerHTML = `
+        <span class="w2c-progress-step">${numItems+=1}</span> 
+        <span class="w2c-progress-label">${message}</span>
+        `;
+        // add li to progressList
+        progressList.appendChild(li);
+    }
 
 	/**
 	 * Update the view based on the completed creation of the module
@@ -1096,6 +1160,7 @@ class c2m_WordConverter {
 		this.mammothResult = result;
 
 		// TODO do Content Interface translations here??
+        // TODO move this out an additional class
 		// find all span.embed in mammothResult and log innerhtml
         // parse the string 
         let parser = new DOMParser();
@@ -1545,13 +1610,13 @@ class c2m_Modules {
 	}
 
 	/**
-	 * Create the item for item object
-	 * - create/link to the existing element of that type
-	 * - create the item for the module 
+	 * Add the item to te given module
+     * @param {int} moduleId - module id
+     * @param {int} position - position in module
 	 * @param {Object} item - object describing the item to create 
 	 */
 
-	async createModuleItem(moduleId, position, item) {
+	async addModuleItem(moduleId, position, item) {
 		let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
 
 		// clear the error ready for any fresh error
@@ -1704,33 +1769,17 @@ class c2m_Model {
 	}
 
 	/**
-	 * Harness to create modules within context of this app
-	 * TODO after creating the module, should check to see if the
-	 * module response is okay and then generate the appropriate event
-	 * Not just automatically 
+     * Generate API request to create new module based on module title
+     * in this.htmlConverter. When finished will generate a signal accepted
+     * by View that will call createModuleItems
 	 */
 	createModule() {
+        // No need to do a check - previous step should take care of this
 		this.canvasModules.createModule(this.htmlConverter)
-			.then(this.createModuleItems.bind(this));
-		/*				() => {
-						// if createdModules is defined generated created event
-						if (this.canvasModules.createdModule) {
-							const event = new Event('c2m-module-created');
-							let c2m_dialog = document.querySelector('div.c2m_dialog');
-							if (c2m_dialog) {
-								c2m_dialog.dispatchEvent(event);
-								console.log('c2m_Model -> createModule: event dispatched');
-							}
-						} else {
-							console.error(`c2m_Model -> createModule error: `);
-							const event = new Event('c2m-module-error');
-							let c2m_dialog = document.querySelector('div.c2m_dialog');
-							if (c2m_dialog) {
-								c2m_dialog.dispatchEvent(event);
-								console.log('c2m_Model -> createModule: ERROR event dispatched');
-							}
-						}
-					}); */
+			.then(
+                // signal module created
+//				this.createModuleItems.bind(this));
+            )
 	}
 
 	/**
@@ -1739,30 +1788,30 @@ class c2m_Model {
 	 * Loop thru each this.htmlConverter.items and create the item
 	 * and create the moduleItem
 	 */
-	createModuleItems() {
-		console.log('c2m_Model -> createModuleItems');
-		console.log('Shogin htmlConverter with item information')
-		console.log(this.htmlConverter);
+	findOrCreateModuleItems() {
+		console.log('c2m_Model -> findOrCreateModuleItems');
+//		console.log('Shogin htmlConverter with item information')
+//		console.log(this.htmlConverter);
 
 		// loop thru array this.htmlConverter.items and
 		// call createModuleItem
 		let items = this.htmlConverter.items;
-		const moduleId = this.canvasModules.createdModule.id;
+//		const moduleId = this.canvasModules.createdModule.id;
 
 		for (let i = 0; i < items.length; i++) {
 			// find the item we're trying to link to
-			items[i] = this.findOrCreateItem(items[i]);
-			// create the matching item
-			this.createModuleItem(moduleId, items[i], i);
+			this.findOrCreateItem(items[i]);
 		}
-
 		console.log("------------- END of create module items")
-		console.log(items)
 	}
 
 	/**
-	 * Determine the type of item the is required and then either
-	 * search for the matching item or create it
+     * Depending on item type and contents, either find the matching
+     * existing item or create a new item
+     * When item found/created 
+     * - update the local item data structure
+     * - generate signal indicating done 
+     * 
 	 * Exactly what happens will be dependent upon type of item
 	 * - Page - create a new page (always)
 	 * - SubHead - nothing to do
@@ -1774,7 +1823,6 @@ class c2m_Model {
 	 * Default - if unable to find or create the necessary type
 	 * then create a sub-head with an error message
 	 * @param {Object} item - details of the module item to create
-	 * @return {Object} item modified to include details of created item 
 	 */
 
 	findOrCreateItem(item) {
@@ -1784,34 +1832,57 @@ class c2m_Model {
 
 		switch (item.type) {
 			case 'Page':
+                // TODO could do check of item to see if trying to find
+                // an existing page
 				// create a new page
 				this.canvasModules.createPage(item).then(() => {
 					console.log('c2m_Model -> findOrCreateItem: page created');
 					item.item = this.canvasModules.createdItem;
 					console.log(item);
+                    // signal item found/created
 				});
 				break;
 			default:
 				console.log(`Not yet creating items of type ${item.type}`);
 				break;
 		}
-
-		return item;
 	}
 
+    /**
+     * called once module has been created and all items found or created
+     * Will loop through all the items of the new module and generate
+     * API calls to add them in order to the module 
+	 */
+	addItemsToModule() {
+		console.log('c2m_Model -> addItemsToModule');
+
+		// loop thru array this.htmlConverter.items and
+		// call createModuleItem
+		let items = this.htmlConverter.items;
+		const moduleId = this.canvasModules.createdModule.id;
+
+		for (let i = 0; i < items.length; i++) {
+			// find the item we're trying to link to
+			this.addModuleItem(moduleId, items[i], i);
+		}
+		console.log("------------- END of create module items")
+	}
+
+
 	/**
-	 * Create a specific module item
+	 * Add an existing item to the current module
 	 * @param {Integer} moduleId id module to add item to
 	 * @param {Object} item detail about the item to add
 	 * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
 	 */
-	createModuleItem(moduleId, item, itemIndex) {
+	addModuleItem(moduleId, item, itemIndex) {
 
 		console.log('Shogin createdModuleItem')
 
 		// may need to pass in item order
-		this.canvasModules.createModuleItem(moduleId, itemIndex + 1, item)
+		this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
 			.then(() => {
+                // TODO generate signal when item is added
 				console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
 				console.log(this.canvasModules.createdModuleItems);
 			});
