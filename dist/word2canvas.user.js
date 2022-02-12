@@ -1006,19 +1006,21 @@ class c2m_CompletedView extends c2m_View {
             </span>`
             );
             this.addProgressList('Starting to add items to the module');
+            // numAddedItems counts number already added and used to
+            // identify which item to add next
             this.numAddedItems = 0;
             this.model.addItemsToModule();
         }
-
-        // if all items have been created, then call next step
-        // Test ou the last step in the pipeline...
-        // TODO replace this with the next call to add items when
-        //  all the items have been created
     }
 
     /**
-     * Handle events for adding items to the module. Track the number
-     * added and once done, call renderResults
+     * Called everytime an item successfully added to the current module.
+     * - check whether the addition worked (or not)
+     *   TODO need to handle this better
+     * - update the progress list
+     * - increment num added
+     * - if not all items added
+     *   - call addItemToModule
      * @param {Event} e - the generated event, include detail object
      * with properly item
      * 
@@ -2140,12 +2142,13 @@ class c2m_Model {
      * @param {Object} item detail about the item to add
      * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
      */
-    addModuleItem(moduleId, item, itemIndex) {
+    addModuleItem(itemIndex) {
 
         console.log('Shogin createdModuleItem')
 
         // may need to pass in item order
-        this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
+        //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
+        this.canvasModules.addModuleItem(itemIndex)
             .then(() => {
                 // TODO generate signal when item is added
 //                console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);

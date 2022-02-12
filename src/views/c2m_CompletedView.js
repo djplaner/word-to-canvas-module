@@ -209,19 +209,22 @@ export default class c2m_CompletedView extends c2m_View {
             </span>`
             );
             this.addProgressList('Starting to add items to the module');
+            // numAddedItems counts number already added and used to
+            // identify which item to add next
             this.numAddedItems = 0;
-            this.model.addItemsToModule();
+            //this.model.addItemsToModule();
+            this.model.addModuleItem(this.numAddedItems);
         }
-
-        // if all items have been created, then call next step
-        // Test ou the last step in the pipeline...
-        // TODO replace this with the next call to add items when
-        //  all the items have been created
     }
 
     /**
-     * Handle events for adding items to the module. Track the number
-     * added and once done, call renderResults
+     * Called everytime an item successfully added to the current module.
+     * - check whether the addition worked (or not)
+     *   TODO need to handle this better
+     * - update the progress list
+     * - increment num added
+     * - if not all items added
+     *   - call addItemToModule
      * @param {Event} e - the generated event, include detail object
      * with properly item
      * 
@@ -243,10 +246,13 @@ export default class c2m_CompletedView extends c2m_View {
         );
 
         // TODO check the JSON in item.createdItem
+        // this is where error checking should happen
 
         // increment the number of found/created items
         // check if all items have been found/created
-        if (this.numAddedItems == this.model.canvasModules.items.length) {
+        if (this.numAddedItems != this.model.canvasModules.items.length) {
+            this.model.addModuleItem(this.numAddedItems);
+        } else {
             this.addProgressList(`
             <span class="text-success">
               All ${this.numFoundCreatedItems} items added to the module
@@ -256,7 +262,6 @@ export default class c2m_CompletedView extends c2m_View {
             this.addProgressList(`<span class="text-success">Module created!</span>`);
             this.renderCreationResults();
         }
-
     }
 
 

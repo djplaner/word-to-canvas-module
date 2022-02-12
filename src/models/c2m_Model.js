@@ -167,12 +167,13 @@ export default class c2m_Model {
      * @param {Object} item detail about the item to add
      * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
      */
-    addModuleItem(moduleId, item, itemIndex) {
+    addModuleItem(itemIndex) {
 
         console.log('Shogin createdModuleItem')
 
         // may need to pass in item order
-        this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
+        //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
+        this.canvasModules.addModuleItem(itemIndex)
             .then(() => {
                 // TODO generate signal when item is added
 //                console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
