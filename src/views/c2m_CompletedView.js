@@ -23,13 +23,14 @@ const COMPLETE_HTML = `
 
 <div class="c2m-waiting-results">
 <p><em>Waiting for creation of new module "<span id="c2m-module-name"></span>"</em></p>
-<!-- <div class="c2m-loading"></div> -->
+<div class="c2m-loading"></div>
 </div>
 
 <div class="w2c-progress">
-<ul id="w2c-progress-list">
-  <li> <span class="w2c-progress-step">1</span> <span class="w2c-progress-label">Module creationg started</span> </li>
-</ul>
+<h4>Progress</h4>
+<ol id="w2c-progress-list">
+  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
+</ol>
 </div>
 
 <div class="c2m-received-results" style="display:none">
@@ -146,25 +147,51 @@ export default class c2m_CompletedView extends c2m_View {
 
         this.addProgressList( `Empty module create: <em>${moduleName}</em>`);
 
+        this.numFoundCreatedItems = 0;
         this.model.findOrCreateModuleItems();
     }
 
     /**
-     * 
+     * Event handler for w2c-item-found-created event.
+     * The event (e) detail property contains index for the item that was
+     * created
+     * return by the model
+     * @param {Event} e
      */
     checkItemFoundCreated(e) {
-        // get the details of the item that was created --
-        // Should be in the event
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
         console.log(e)
 
-        this.addProgressList( `item found or created`);
+        let index = e.detail;
+        // TODO what if index greater than # items
+        let item = this.model.canvasModules.items[e.detail];
+        this.numFoundCreatedItems++;
+
+//        console.log(`created item ${item.createdItem}`);
+        this.addProgressList( 
+            `item found or created
+              (created ${this.numFoundCreatedItems} out of 
+                ${this.model.canvasModules.items.length})`
+        );
+
+        // TODO check the JSON in item.createdItem
+
+        // increment the number of found/created items
+        // check if all items have been found/created
+        if (this.numFoundCreatedItems == this.model.canvasModules.items.length) {
+            this.addProgressList(`
+            <span class="text-success">
+              All ${this.numFoundCreatedItems} items found or created
+              (created ${this.numFoundCreatedItems} out of ${this.model.canvasModules.items.length})
+            </span>`
+            );
+            this.renderCreationResults();
+        }
 
         // if all items have been created, then call next step
         // Test ou the last step in the pipeline...
         // TODO replace this with the next call to add items when
         //  all the items have been created
-        this.renderCreationResults();
     }
 
 
@@ -178,7 +205,7 @@ export default class c2m_CompletedView extends c2m_View {
         let numItems = progressList.children.length;
         let li = document.createElement("li");
         li.innerHTML = `
-        <span class="w2c-progress-step">${numItems+=1}</span> 
+<!--        <span class="w2c-progress-step">${numItems+=1}</span>  -->
         <span class="w2c-progress-label">${message}</span>
         `;
         // add li to progressList

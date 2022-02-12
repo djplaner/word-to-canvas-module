@@ -34,7 +34,8 @@ export default class c2m_Model {
 	}
 
 	getCurrentModules() {
-		// TODO check for existence of canvasModules
+        // pre-populate canvasModules with the items
+        // it will add the property createdItem to each item
 		this.canvasModules.getAllModules()
 			.then(() => {
 				console.log(`c2m_Model -> getAllModules: finished `);
@@ -51,6 +52,7 @@ export default class c2m_Model {
 	 */
 	createModule() {
         // No need to do a check - previous step should take care of this
+        this.canvasModules.items = this.htmlConverter.items;
 		this.canvasModules.createModule(this.htmlConverter)
 			.then(
                 // this is done in modules, because that's where it 
@@ -77,7 +79,7 @@ export default class c2m_Model {
 
 		for (let i = 0; i < items.length; i++) {
 			// find the item we're trying to link to
-			this.findOrCreateItem(items[i]);
+			this.findOrCreateItem(i);
 		}
 		console.log("------------- END of create module items")
 	}
@@ -99,10 +101,11 @@ export default class c2m_Model {
 	 * - Quiz - find
 	 * Default - if unable to find or create the necessary type
 	 * then create a sub-head with an error message
-	 * @param {Object} item - details of the module item to create
+	 * @param {Number} index - indicate into items list for the item being found/created
 	 */
 
-	findOrCreateItem(item) {
+	findOrCreateItem(index) {
+        let item = this.canvasModules.items[index];
 		// switch on item.type
 		console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCC");
 		console.log("findORCreateItem");
@@ -112,13 +115,15 @@ export default class c2m_Model {
                 // TODO could do check of item to see if trying to find
                 // an existing page
 				// create a new page
-				this.canvasModules.createPage(item).then(() => {
-					console.log('c2m_Model -> findOrCreateItem: page created');
-					item.item = this.canvasModules.createdItem;
-					console.log(item);
-                    // signal item found/created
+				this.canvasModules.createPage(index).then(() => {
 				});
 				break;
+            case 'SubHeader':
+                // go directly to addModule item because no other found/create
+                // is possible or necessary
+                this.canvasModules.addModuleItem(index).then(() => {
+                });
+                break;
 			default:
 				console.log(`Not yet creating items of type ${item.type}`);
 				break;

@@ -95,24 +95,21 @@ export default class c2m_Modules {
     }
 
     /**
-     * Add the item to te given module
-     * @param {int} moduleId - module id
-     * @param {int} position - position in module
-     * @param {Object} item - object describing the item to create 
+     * Add an existing item to the current createdModule
+     * @param {int} index - position in module
      */
 
-    async addModuleItem(moduleId, position, item) {
-        let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
+    async addModuleItem(index) {
+        // TODO check index within items.length
+        let item = this.items[index];
+        let moduleId = this.createdModule.id;
 
-        // clear the error ready for any fresh error
-        // TODO how for this
-        //		this.createdModuleError = undefined;
-        //		this.createdModule = undefined;
+        let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
 
         let body = {
             "module_item": {
                 "title": item.title,
-                "position": position,
+                "position": index+1, // index+1 because position is 1-based, not 0
                 "type": item.type,
             }
         };
@@ -120,8 +117,8 @@ export default class c2m_Modules {
         if (item.type === "Page") {
             body.module_item['content_id'] = item.item.page_id
         }
-        console.log('creating module item');
-        console.log(body);
+//        console.log('creating module item');
+//        console.log(body);
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',
@@ -137,10 +134,15 @@ export default class c2m_Modules {
                 return response.json();
             })
             .then((json) => {
-                // push json onto this.createdItems array
-                this.createdModuleItems.push(json);
-                console.log(`c2m_Modules -> createItems: ${this.createdModuleItems}`);
-                console.log(json);
+                // update the createdItem property for the item 
+                // with the results of the JSON call
+
+                // if we have a SubHeader dispatch('w2c-item-found-created')
+                if (item.type === "SubHeader") {
+                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+                } else {
+                    // dispatch another type of event, event name is 'w2c-item-created'
+                }
             })
 
     }
@@ -148,9 +150,10 @@ export default class c2m_Modules {
 
     /**
      * Create anew page using the title and the content of the item object
-     * @param {Object} item basic information about page to create
+     * @param {Number} index basic information about page to create
      */
-    async createPage(item) {
+    async createPage(index) {
+        let item = this.items[index];
         let callUrl = `/api/v1/courses/${this.courseId}/pages`;
 
         await fetch(callUrl, {
@@ -174,10 +177,10 @@ export default class c2m_Modules {
             })
             .then((json) => {
                 // push json onto this.createdItems array
-                this.createdItem = json;
+                item.createdItem = json;
                 console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
                 console.log(json);
-                this.dispatchEvent( 'w2c-item-found-created',{'item':this.createdItem});
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
             })
 
     }
