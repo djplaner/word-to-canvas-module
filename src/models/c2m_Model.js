@@ -127,6 +127,9 @@ export default class c2m_Model {
 //                this.canvasModules.addModuleItem(index).then(() => {
 //                });
                 break;
+            case 'File':
+                this.canvasModules.findFile(index).then(() => {});
+                break;
             default:
                 console.log(`Not yet creating items of type ${item.type}`);
                 break;

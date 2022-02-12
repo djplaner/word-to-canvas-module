@@ -1717,6 +1717,10 @@ class c2m_Modules {
             }
         };
 
+        if (item.type==="File" ) {
+            body.module_item['content_id'] = item.createdItem.id;
+        }
+
         if (item.type === "Page" || item.type==="ExistingPage") {
 //            body.module_item['content_id'] = item.createdItem.page_id;
             body.module_item['page_url'] = item.createdItem.url;
@@ -1741,6 +1745,7 @@ class c2m_Modules {
             .then((json) => {
                 // update the createdItem property for the item 
                 // with the results of the JSON call
+                item['addedItem'] = json;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
 //                if (item.type === "SubHeader") {
@@ -1825,6 +1830,70 @@ class c2m_Modules {
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
             })
     }
+
+    /**
+     * Find a file matching the title/name of this.items[index]
+     * Set the createdItem to some sort of FAILURE if didn't find
+     * @param {Number} index basic information about page to create
+     */
+    async findFile(index) {
+        let item = this.items[index];
+
+        // do a List pages api call
+        // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
+        let callUrl = `/api/v1/courses/${this.courseId}/files`;
+
+        await fetch(callUrl, {
+            method: 'GET', credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken,
+                "search-term": item.title
+            }
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                // JSON now contains list of Page objects
+                // need to search them for a match and return
+                // the matched Page object
+                this.findFileInFileList(json, index);
+                // do the same event, regardless, the content of item.createdItem
+                // will indicate failure or not
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+            })
+    }
+
+    /**
+     * Search through a list of File objects to find a File that matches
+     * (exactly) the title for the item at index
+     * If found, set the page object, otherwise not found error
+     * https://canvas.instructure.com/doc/api/plagiarism_detection_submissions.html#File
+     * @param {Array} files - list of File objects
+     * @param {Number} index - to item object
+     */
+
+    findFileInFileList(files, index) {
+        let item = this.items[index];
+
+        // loop through the pages
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            // trim both titles and if the page title matches, 
+            // set the createdItem to the page object
+            if (file.filename.trim() === item.title.trim()) {
+                item.createdItem = file;
+                return;
+            }
+        }
+        item.createdItem = {
+            "error": `file not found: ${item.title}`    
+        }
+    }
+
 
     /**
      * Search through a list of Page objects to find a page that matches
@@ -2021,6 +2090,9 @@ class c2m_Model {
                 this.dispatchEvent('w2c-item-found-created', { item: index });
 //                this.canvasModules.addModuleItem(index).then(() => {
 //                });
+                break;
+            case 'File':
+                this.canvasModules.findFile(index).then(() => {});
                 break;
             default:
                 console.log(`Not yet creating items of type ${item.type}`);
