@@ -146,7 +146,7 @@ export default class c2m_CompletedView extends c2m_View {
 
         this.addProgressList( `Empty module create: <em>${moduleName}</em>`);
 
-        this.model.findOrCreateItems();
+        this.model.findOrCreateModuleItems();
     }
 
     /**

@@ -941,7 +941,7 @@ class c2m_CompletedView extends c2m_View {
 
         this.addProgressList( `Empty module create: <em>${moduleName}</em>`);
 
-        this.model.findOrCreateItems();
+        this.model.findOrCreateModuleItems();
     }
 
     /**
@@ -1693,6 +1693,7 @@ class c2m_Modules {
                 this.createdItem = json;
                 console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
                 console.log(json);
+                this.dispatchEvent( 'w2c-item-found-created',{'item':this.createdItem});
             })
 
     }
@@ -1793,7 +1794,9 @@ class c2m_Model {
         // No need to do a check - previous step should take care of this
 		this.canvasModules.createModule(this.htmlConverter)
 			.then(
-                this.dispatchEvent('w2c-empty-module-created')
+                // this is done in modules, because that's where it 
+                // actually waits
+//                this.dispatchEvent('w2c-empty-module-created')
             )
 	}
 
@@ -1932,21 +1935,6 @@ class c2m_Model {
 		this.htmlConverter.dump();
 
 	}
-
-    /**
-     * dispatch an event on the w2c_dialog box 
-     * @param {String} eventName 
-     * @param {Object} eventData 
-     */
-    dispatchEvent(eventName, eventData={}) {
-        const event = new CustomEvent(eventName, {
-            detail: eventData
-        });
-		let c2m_dialog = document.querySelector('div.c2m_dialog');
-		if (c2m_dialog) {
-			c2m_dialog.dispatchEvent(event);
-		}
-    }
 }
 
 // src/c2m_controller.js

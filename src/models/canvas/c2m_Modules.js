@@ -177,6 +177,7 @@ export default class c2m_Modules {
                 this.createdItem = json;
                 console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
                 console.log(json);
+                this.dispatchEvent( 'w2c-item-found-created',{'item':this.createdItem});
             })
 
     }
