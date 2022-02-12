@@ -15,11 +15,13 @@ Rough user interface supports:
 3. Converting that Word document to HTML and visualising the conversion
     Recognising specific Word styles to be converted to HTML classess for creating Canvas items.
 4. HTML split and converted into collection of Javascript objects largely matching the Canvas API JSON
-5. Module being created, pages being created, and not quite adding those pages as items
+5. Module being created and items being added
+  - Currently only supporting creating new pages, adding sub-headers
+  - TODO: pages: link to existing, external url, external tool, file, assignment, quiz
 
 To be done
 
-1. Be able to create items for each new item and then add them to the module.
+1. Complete ability to add all items to module
 2. Tidy up the user interface.
 
 ## Development

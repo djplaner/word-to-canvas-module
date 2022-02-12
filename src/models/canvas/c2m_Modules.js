@@ -115,7 +115,8 @@ export default class c2m_Modules {
         };
 
         if (item.type === "Page") {
-            body.module_item['content_id'] = item.item.page_id
+            body.module_item['content_id'] = item.createdItem.page_id
+            body.module_item['page_url'] = item.createdItem.url
         }
 //        console.log('creating module item');
 //        console.log(body);
@@ -138,11 +139,11 @@ export default class c2m_Modules {
                 // with the results of the JSON call
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
-                if (item.type === "SubHeader") {
-                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-                } else {
-                    // dispatch another type of event, event name is 'w2c-item-created'
-                }
+//                if (item.type === "SubHeader") {
+//                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+ //               } else {
+                this.dispatchEvent( 'w2c-module-item-added',{'item':index});
+  //              }
             })
 
     }

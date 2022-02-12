@@ -29,7 +29,7 @@ const COMPLETE_HTML = `
 <div class="w2c-progress">
 <h4>Progress</h4>
 <ol id="w2c-progress-list">
-  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
+  <li> <span class="w2c-progress-label text-info"><small>Module creationg started</small></span> </li>
 </ol>
 </div>
 
@@ -107,8 +107,8 @@ export default class c2m_CompletedView extends c2m_View {
             'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
 		c2mDiv.addEventListener(
             'w2c-item-found-created', this.checkItemFoundCreated.bind(this));
-//		c2mDiv.addEventListener(
-//            'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
+		c2mDiv.addEventListener(
+            'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
 		c2mDiv.addEventListener('w2c-module-error', this.renderCreationError.bind(this));
 
 		// insert the new stage html
@@ -162,9 +162,10 @@ export default class c2m_CompletedView extends c2m_View {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
         console.log(e)
 
-        let index = e.detail;
+        let index = e.detail.item;
         // TODO what if index greater than # items
-        let item = this.model.canvasModules.items[e.detail];
+        let item = this.model.canvasModules.items[index];
+        // TODO check the content of the item, esp. createdItem (the JSON)
         this.numFoundCreatedItems++;
 
 //        console.log(`created item ${item.createdItem}`);
@@ -185,13 +186,55 @@ export default class c2m_CompletedView extends c2m_View {
               (created ${this.numFoundCreatedItems} out of ${this.model.canvasModules.items.length})
             </span>`
             );
-            this.renderCreationResults();
+            this.addProgressList('Starting to add items to the module');
+            this.numAddedItems=0;
+            this.model.addItemsToModule();
         }
 
         // if all items have been created, then call next step
         // Test ou the last step in the pipeline...
         // TODO replace this with the next call to add items when
         //  all the items have been created
+    }
+
+    /**
+     * Handle events for adding items to the module. Track the number
+     * added and once done, call renderResults
+     * @param {Event} e - the generated event, include detail object
+     * with properly item
+     * 
+     */
+
+    checkModuleItemAdded(e) {
+        console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
+        console.log(e)
+
+        let index = e.detail.item;
+        // TODO what if index greater than # items
+        let item = this.model.canvasModules.items[index];
+        this.numAddedItems++;
+
+//        console.log(`created item ${item.createdItem}`);
+        this.addProgressList( 
+            `item (${item.title}) added to module in position ${index} 
+            (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
+        );
+
+        // TODO check the JSON in item.createdItem
+
+        // increment the number of found/created items
+        // check if all items have been found/created
+        if (this.numAddedItems == this.model.canvasModules.items.length) {
+            this.addProgressList(`
+            <span class="text-success">
+              All ${this.numFoundCreatedItems} items added to the module
+              (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
+            </span>`
+            );
+            this.addProgressList(`<span class="text-success">Module created!</span>`);
+            this.renderCreationResults();
+        }
+
     }
 
 
@@ -205,8 +248,7 @@ export default class c2m_CompletedView extends c2m_View {
         let numItems = progressList.children.length;
         let li = document.createElement("li");
         li.innerHTML = `
-<!--        <span class="w2c-progress-step">${numItems+=1}</span>  -->
-        <span class="w2c-progress-label">${message}</span>
+        <span class="w2c-progress-label text-info"><small>${message}</small></span>
         `;
         // add li to progressList
         progressList.appendChild(li);
