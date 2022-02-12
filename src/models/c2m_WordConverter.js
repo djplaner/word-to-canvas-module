@@ -7,6 +7,7 @@
 
 const DEFAULT_OPTIONS = {
 	styleMap: [
+		"p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
 		"p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
 		"p[style-name='Canvas Assignment'] => h1.canvasAssignment",
 		"p[style-name='Canvas Quiz'] => h1.canvasQuiz",

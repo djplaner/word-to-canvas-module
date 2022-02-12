@@ -444,6 +444,7 @@ class c2m_ModuleView extends c2m_View {
 		const items = this.model.items;
     const typeToIcon = {
       'Page' : 'icon-document',
+      'ExistingPage' : 'icon-document',
       'File' : 'icon-paperclip',
       'Discussion' : 'icon-discussion',
       'Assignment' : 'icon-assignment',
@@ -453,6 +454,7 @@ class c2m_ModuleView extends c2m_View {
     }
     const typeToItemClass = {
       'Page' : 'wiki_page',
+      'ExistingPage' : 'wiki_page',
       'File' : 'attachment',
       'Discussion' : 'discussion-topic',
       'Assignment' : 'assignment',
@@ -824,7 +826,7 @@ const COMPLETE_HTML = `
 <div class="w2c-progress">
 <h4>Progress</h4>
 <ol id="w2c-progress-list">
-  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
+  <li> <span class="w2c-progress-label text-info"><small>Module creationg started</small></span> </li>
 </ol>
 </div>
 
@@ -1043,8 +1045,7 @@ class c2m_CompletedView extends c2m_View {
         let numItems = progressList.children.length;
         let li = document.createElement("li");
         li.innerHTML = `
-<!--        <span class="w2c-progress-step">${numItems+=1}</span>  -->
-        <span class="w2c-progress-label">${message}</span>
+        <span class="w2c-progress-label text-info"><small>${message}</small></span>
         `;
         // add li to progressList
         progressList.appendChild(li);
@@ -1102,6 +1103,7 @@ class c2m_CompletedView extends c2m_View {
 
 const DEFAULT_OPTIONS = {
 	styleMap: [
+		"p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
 		"p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
 		"p[style-name='Canvas Assignment'] => h1.canvasAssignment",
 		"p[style-name='Canvas Quiz'] => h1.canvasQuiz",
@@ -1425,6 +1427,7 @@ class c2m_WordConverter {
 const HTML_CLASS_TO_ITEM_TYPE = {
 	'canvasFile' : 'File',
 	'canvasPage' : 'Page',
+	'existingCanvasPage': 'ExistingPage',
 	'canvasDiscussion' :'Discussion',
 	'canvasAssignment' : 'Assignment',
 	'canvasQuiz': 'Quiz',
