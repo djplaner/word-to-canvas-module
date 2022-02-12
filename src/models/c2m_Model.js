@@ -94,7 +94,7 @@ export default class c2m_Model {
 			// find the item we're trying to link to
 			items[i] = this.findOrCreateItem(items[i]);
 			// create the matching item
-			this.createModuleItem(moduleId, items[i], i);
+			this.addModuleItem(moduleId, items[i], i);
 		}
 
 		console.log("------------- END of create module items")
@@ -141,17 +141,17 @@ export default class c2m_Model {
 	}
 
 	/**
-	 * Create a specific module item
+	 * Add an existing item to the current module
 	 * @param {Integer} moduleId id module to add item to
 	 * @param {Object} item detail about the item to add
 	 * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
 	 */
-	createModuleItem(moduleId, item, itemIndex) {
+	addModuleItem(moduleId, item, itemIndex) {
 
 		console.log('Shogin createdModuleItem')
 
 		// may need to pass in item order
-		this.canvasModules.createModuleItem(moduleId, itemIndex + 1, item)
+		this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
 			.then(() => {
 				console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
 				console.log(this.canvasModules.createdModuleItems);

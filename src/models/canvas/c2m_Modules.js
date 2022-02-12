@@ -94,13 +94,13 @@ export default class c2m_Modules {
 	}
 
 	/**
-	 * Create the item for item object
-	 * - create/link to the existing element of that type
-	 * - create the item for the module 
+	 * Add the item to te given module
+     * @param {int} moduleId - module id
+     * @param {int} position - position in module
 	 * @param {Object} item - object describing the item to create 
 	 */
 
-	async createModuleItem(moduleId, position, item) {
+	async addModuleItem(moduleId, position, item) {
 		let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
 
 		// clear the error ready for any fresh error

@@ -99,8 +99,6 @@ export default class c2m_CompletedView extends c2m_View {
 		c2mDiv.addEventListener('c2m-module-created', this.renderCreationResults.bind(this));
 		c2mDiv.addEventListener('c2m-module-error', this.renderCreationError.bind(this));
 
-
-
 		// insert the new stage html
 		c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
 

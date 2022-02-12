@@ -19,6 +19,64 @@ Questions
 
 - If and how to do anything about indented items
 
+## Current instantation
+
+```CompletedView::render```
+- setup interface
+- add event listeners for module-created ```renderCreationResults``` and module-error ```renderCreationError```
+- As last step calls ```this.model.createModule```
+
+```Model::createModule``` 
+- Create the new module
+  - async ```this.canvasModules.createModule(this.htmlConverter)```
+- Create the items for the module
+  - then ```this.createModuleItems```
+
+Should be
+  createModule.then(  
+    signal module created
+  )
+
+  moduleCreate {
+    check the creation, that we have everything
+    createModuleItems.then(
+      signal module items created
+    )
+  }
+
+  moduleItemsCreated {
+    check the items, see that we have everything
+    addItemsToModule.then(
+      signal module items added
+    )
+  }
+
+  moduleItemsAdded{
+    this is really creation success
+  }
+
+
+```Module::createModuleItems``` 
+- can access the newly created module ```this.canvasModules.createModule.id```
+- for each item from ```this.htmlConvertere.items```
+  - find or create the item ```this.findOrCreateItem``` 
+  - add the found/created item to the module ```this.createModuleItem```
+
+```Module::findOrCreateItem```
+- determine type of item
+- call appropriate function from ```this.canvasModules```
+  TODO
+  - create page needs to get passed back and handed to create Module item
+
+```Module::addModuleItem```
+- add a module item to the module - it already knows the item
+  - calls ```this.canvasModules.addModuleItem``` to do the API stuff
+
+Thinking
+- Question is whether or not the async APIs are happening in the right order.
+
+
+
 ## Rough design
 
 Module object
