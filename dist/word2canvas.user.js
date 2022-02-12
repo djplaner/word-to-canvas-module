@@ -826,7 +826,7 @@ const COMPLETE_HTML = `
 <div class="w2c-progress">
 <h4>Progress</h4>
 <ol id="w2c-progress-list">
-  <li> <span class="w2c-progress-label text-info"><small>Module creationg started</small></span> </li>
+  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
 </ol>
 </div>
 
@@ -859,6 +859,14 @@ const COMPLETE_HTML = `
 
 .c2m-received-results .c2m-error {
 	margin-top: 0.5em;
+}
+
+#w2c-progress-list {
+    font-size: small;
+}
+
+.w2c-progress-label {
+    font-size: small;
 }
 
 .c2m-loading {
@@ -1059,7 +1067,7 @@ class c2m_CompletedView extends c2m_View {
         let numItems = progressList.children.length;
         let li = document.createElement("li");
         li.innerHTML = `
-        <span class="w2c-progress-label text-info"><small>${message}</small></span>
+        <span class="w2c-progress-label text-info">${message}</span>
         `;
         // add li to progressList
         progressList.appendChild(li);
@@ -1805,7 +1813,8 @@ class c2m_Modules {
 
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = `/api/v1/courses/${this.courseId}/pages`;
+        let callUrl = `/api/v1/courses/${this.courseId}/pages?` +
+                    new URLSearchParams({'search_term': item.title});
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -1813,7 +1822,6 @@ class c2m_Modules {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "X-CSRF-Token": this.csrfToken,
-                "search-term": item.title
             }
         })
             .then(this.status)
@@ -1841,7 +1849,8 @@ class c2m_Modules {
 
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = `/api/v1/courses/${this.courseId}/files`;
+        let callUrl = `/api/v1/courses/${this.courseId}/files?` +
+                    new URLSearchParams({'search_term': item.title});
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -1849,7 +1858,6 @@ class c2m_Modules {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "X-CSRF-Token": this.csrfToken,
-                "search-term": item.title
             }
         })
             .then(this.status)
@@ -1882,9 +1890,10 @@ class c2m_Modules {
         // loop through the pages
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
-            // trim both titles and if the page title matches, 
-            // set the createdItem to the page object
-            if (file.filename.trim() === item.title.trim()) {
+            const fileName = file.display_name.trim();
+            const itemName = item.title.trim();
+            // if itemName is substr of fileName
+            if ( fileName.includes(itemName)) {
                 item.createdItem = file;
                 return;
             }

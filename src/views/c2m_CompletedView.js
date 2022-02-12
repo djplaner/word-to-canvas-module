@@ -29,7 +29,7 @@ const COMPLETE_HTML = `
 <div class="w2c-progress">
 <h4>Progress</h4>
 <ol id="w2c-progress-list">
-  <li> <span class="w2c-progress-label text-info"><small>Module creationg started</small></span> </li>
+  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
 </ol>
 </div>
 
@@ -62,6 +62,14 @@ const COMPLETE_HTML = `
 
 .c2m-received-results .c2m-error {
 	margin-top: 0.5em;
+}
+
+#w2c-progress-list {
+    font-size: small;
+}
+
+.w2c-progress-label {
+    font-size: small;
 }
 
 .c2m-loading {
@@ -262,7 +270,7 @@ export default class c2m_CompletedView extends c2m_View {
         let numItems = progressList.children.length;
         let li = document.createElement("li");
         li.innerHTML = `
-        <span class="w2c-progress-label text-info"><small>${message}</small></span>
+        <span class="w2c-progress-label text-info">${message}</span>
         `;
         // add li to progressList
         progressList.appendChild(li);

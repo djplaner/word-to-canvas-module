@@ -202,7 +202,8 @@ export default class c2m_Modules {
 
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = `/api/v1/courses/${this.courseId}/pages`;
+        let callUrl = `/api/v1/courses/${this.courseId}/pages?` +
+                    new URLSearchParams({'search_term': item.title});
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -210,7 +211,6 @@ export default class c2m_Modules {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "X-CSRF-Token": this.csrfToken,
-                "search-term": item.title
             }
         })
             .then(this.status)
@@ -238,7 +238,8 @@ export default class c2m_Modules {
 
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = `/api/v1/courses/${this.courseId}/files`;
+        let callUrl = `/api/v1/courses/${this.courseId}/files?` +
+                    new URLSearchParams({'search_term': item.title});
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -246,7 +247,6 @@ export default class c2m_Modules {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
                 "X-CSRF-Token": this.csrfToken,
-                "search-term": item.title
             }
         })
             .then(this.status)
@@ -279,9 +279,10 @@ export default class c2m_Modules {
         // loop through the pages
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
-            // trim both titles and if the page title matches, 
-            // set the createdItem to the page object
-            if (file.filename.trim() === item.title.trim()) {
+            const fileName = file.display_name.trim();
+            const itemName = item.title.trim();
+            // if itemName is substr of fileName
+            if ( fileName.includes(itemName)) {
                 item.createdItem = file;
                 return;
             }
