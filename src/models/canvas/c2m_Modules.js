@@ -114,9 +114,10 @@ export default class c2m_Modules {
             }
         };
 
-        if (item.type === "Page") {
-            body.module_item['content_id'] = item.createdItem.page_id
-            body.module_item['page_url'] = item.createdItem.url
+        if (item.type === "Page" || item.type==="ExistingPage") {
+//            body.module_item['content_id'] = item.createdItem.page_id;
+            body.module_item['page_url'] = item.createdItem.url;
+            body.module_item['type'] = 'Page';
         }
 //        console.log('creating module item');
 //        console.log(body);
@@ -184,6 +185,68 @@ export default class c2m_Modules {
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
             })
 
+    }
+
+    /**
+     * Find a page matching the title/name of this.items[index]
+     * Set the createdItem to some sort of FAILURE if didn't find
+     * @param {Number} index basic information about page to create
+     */
+    async findPage(index) {
+        let item = this.items[index];
+
+        // do a List pages api call
+        // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
+        let callUrl = `/api/v1/courses/${this.courseId}/pages`;
+
+        await fetch(callUrl, {
+            method: 'GET', credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken,
+                "search-term": item.title
+            }
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                // JSON now contains list of Page objects
+                // need to search them for a match and return
+                // the matched Page object
+                this.findPageInPageList(json, index);
+                // do the same event, regardless, the content of item.createdItem
+                // will indicate failure or not
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+            })
+    }
+
+    /**
+     * Search through a list of Page objects to find a page that matches
+     * (exactly) the title for the item at index
+     * If found, set the page object, otherwise not found error
+     * @param {Array} pages - list of Page objects
+     * @param {Number} index - to item object
+     */
+
+    findPageInPageList(pages, index) {
+        let item = this.items[index];
+
+        // loop through the pages
+        for (let i = 0; i < pages.length; i++) {
+            let page = pages[i];
+            // trim both titles and if the page title matches, 
+            // set the createdItem to the page object
+            if (page.title.trim() === item.title.trim()) {
+                item.createdItem = page;
+                return;
+            }
+        }
+        item.createdItem = {
+            "error": `Page not found: ${item.title}`    
+        }
     }
 
 

@@ -118,6 +118,9 @@ export default class c2m_Model {
                 this.canvasModules.createPage(index).then(() => {
                 });
                 break;
+            case 'ExistingPage':
+                this.canvasModules.findPage(index).then(() => {});
+                break;
             case 'SubHeader':
                 // Don't need to find/create just generate event
                 this.dispatchEvent('w2c-item-found-created', { item: index });
