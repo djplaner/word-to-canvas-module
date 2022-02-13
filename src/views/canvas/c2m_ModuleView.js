@@ -23,6 +23,7 @@ export default class c2m_ModuleView extends c2m_View {
 		const items = this.model.items;
     const typeToIcon = {
       'Page' : 'icon-document',
+      'ExistingPage' : 'icon-document',
       'File' : 'icon-paperclip',
       'Discussion' : 'icon-discussion',
       'Assignment' : 'icon-assignment',
@@ -32,6 +33,7 @@ export default class c2m_ModuleView extends c2m_View {
     }
     const typeToItemClass = {
       'Page' : 'wiki_page',
+      'ExistingPage' : 'wiki_page',
       'File' : 'attachment',
       'Discussion' : 'discussion-topic',
       'Assignment' : 'assignment',

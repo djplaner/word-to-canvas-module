@@ -13,10 +13,10 @@ function canvas2Module(){
  window.addEventListener('load', function(){
         // getting very kludgy here, haven't got a good solution...yet #14
         // - module content is dynamically loaded, wait (dumbly) for it to finish
-        this.setTimeout(
-            () => {
+//        this.setTimeout(
+//            () => {
                 let controller = new c2m_Controller();
-            }, 2000);
+ //           }, 2000);
     });
 }
 
