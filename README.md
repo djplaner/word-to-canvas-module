@@ -29,8 +29,12 @@ To be done
 ## :warning: Known limitations
 
 1. Use specific Word styles for full benefit.
+
+   Each Canvas module item type is identified by a specific Word style (based on the _Heading 1_ style). The [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) has defined these styles: Canvas Assignment; Canvas Discussion; Canvas Quiz; Canvas File; Exiting Canvas Page; Canvas SubHeader, Canvas External Url.
+
 2. Doesn't work for new Quizzes[](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
-    Entirely because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+
+   Entirely because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
   
 
 ## Development
