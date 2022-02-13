@@ -16,8 +16,8 @@ Rough user interface supports:
     Recognising specific Word styles to be converted to HTML classess for creating Canvas items.
 4. HTML split and converted into collection of Javascript objects largely matching the Canvas API JSON
 5. Module being created and items being added
-  - Items supported include: creating new pages and sub-headers; and, add existing: assignments, files, discussions, and pages.
-  - TODO: external url, external tool, quiz
+  - Items supported include: creating new pages and sub-headers; and, add existing: assignments, files, discussions, (old) quizzes, and pages.
+  - TODO: external url, external tool
 
 To be done
 
@@ -25,6 +25,13 @@ To be done
 2. Need to do better searching of files - currently maybe stymied by pagination
 3. Tidy up the user interface.
 4. Better error checking
+
+## :warning: Known limitations
+
+1. Use specific Word styles for full benefit.
+2. Doesn't work for new Quizzes[](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+    Entirely because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+  
 
 ## Development
 
