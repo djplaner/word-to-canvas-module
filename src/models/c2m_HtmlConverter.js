@@ -164,7 +164,14 @@ export default class c2m_HtmlConverter {
 			let item = {};
 			item.title = h1.innerText;
 			item.type = this.getType(h1);
-			item.content = this.getContent(h1);
+			item.content = this.getContent(h1, item.type);
+            item.error = false;
+
+            // is text a valid URL by regex
+            if (item.type==="ExternalUrl" && ! item.content.match(/^(http|https):\/\/[^ "]+$/)) {
+                item.error=true;
+                item.errorString="Couldn't find a valid URL";
+            }
 			// TODO set type from the class of h1
 			this.items.push(item);
 		});
@@ -191,13 +198,27 @@ export default class c2m_HtmlConverter {
 	/**
 	 * Given a dom element, get all the content until the next h1
 	 * @param {dom eLement} h1 
+	 * @param {String} type - the type of Canvas item
 	 */
-	getContent(h1) {
+	getContent(h1, type) {
 		let content = this.nextUntil(h1, 'h1');
-		// convert content elements into html string
+
+        // for an externalUrl, we want the text and need to check
+        // that what is left is a URL
+		if ( type === "ExternalUrl") {
+            let text = "";
+            // loop thru each DomElement in content list and add innerText to text
+            content.forEach((element) => {
+                text += element.innerText;
+            });
+            return text;
+		}
+
+		// for other types convert content elements into html string
 		content = content.map(elem => elem.outerHTML);
 		// join content array strings into single string
 		content = content.join('');
+
 		return content;
 	}
 

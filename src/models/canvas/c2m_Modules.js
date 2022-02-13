@@ -123,6 +123,11 @@ export default class c2m_Modules {
             body.module_item['page_url'] = item.createdItem.url;
             body.module_item['type'] = 'Page';
         }
+
+        if (item.type === "ExternalUrl" ) {
+            // TODO need to do more to extract the URL here
+            body.module_item['external_url'] = item.content;
+        }
 //        console.log('creating module item');
 //        console.log(body);
 

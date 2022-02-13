@@ -16,8 +16,8 @@ Rough user interface supports:
     Recognising specific Word styles to be converted to HTML classess for creating Canvas items.
 4. HTML split and converted into collection of Javascript objects largely matching the Canvas API JSON
 5. Module being created and items being added
-  - Items supported include: creating new pages and sub-headers; and, add existing: assignments, files, discussions, (old) quizzes, and pages.
-  - TODO: external url, external tool
+  - Items supported include: creating new pages, sub-headers and external URLs; and, add existing: assignments, files, discussions, (old) quizzes, and pages.
+  - TODO: external tool
 
 To be done
 
