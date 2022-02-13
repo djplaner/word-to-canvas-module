@@ -98,6 +98,7 @@
 const HTML_CLASS_TO_ITEM_TYPE = {
 	'canvasFile' : 'File',
 	'canvasPage' : 'Page',
+	'existingCanvasPage': 'ExistingPage',
 	'canvasDiscussion' :'Discussion',
 	'canvasAssignment' : 'Assignment',
 	'canvasQuiz': 'Quiz',

@@ -444,6 +444,7 @@ class c2m_ModuleView extends c2m_View {
 		const items = this.model.items;
     const typeToIcon = {
       'Page' : 'icon-document',
+      'ExistingPage' : 'icon-document',
       'File' : 'icon-paperclip',
       'Discussion' : 'icon-discussion',
       'Assignment' : 'icon-assignment',
@@ -453,6 +454,7 @@ class c2m_ModuleView extends c2m_View {
     }
     const typeToItemClass = {
       'Page' : 'wiki_page',
+      'ExistingPage' : 'wiki_page',
       'File' : 'attachment',
       'Discussion' : 'discussion-topic',
       'Assignment' : 'assignment',
@@ -821,6 +823,13 @@ const COMPLETE_HTML = `
 <div class="c2m-loading"></div>
 </div>
 
+<div class="w2c-progress">
+<h4>Progress</h4>
+<ol id="w2c-progress-list">
+  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
+</ol>
+</div>
+
 <div class="c2m-received-results" style="display:none">
   <h4>Module created</h4>
   <div id="c2m_summary">
@@ -852,6 +861,14 @@ const COMPLETE_HTML = `
 	margin-top: 0.5em;
 }
 
+#w2c-progress-list {
+    font-size: small;
+}
+
+.w2c-progress-label {
+    font-size: small;
+}
+
 .c2m-loading {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */
@@ -875,86 +892,230 @@ const COMPLETE_HTML = `
 class c2m_CompletedView extends c2m_View {
 
 
-	constructor(model, controller) {
-		console.log("c2m_CompletedView constructor --------------");
-		super(model,controller);
-	}
+    constructor(model, controller) {
+        console.log("c2m_CompletedView constructor --------------");
+        super(model, controller);
+    }
 
-	/**
-	 * Start the call to create the module and set up the display
-	 * once created an event will cause "renderUpdate"
-	 */
-	render() {
-		console.log("4. Complete");
+    /**
+     * Start the call to create the module and set up the display
+     * once created an event will cause "renderUpdate"
+     */
+    render() {
+        console.log("4. Complete");
 
-		let c2mDiv = this.createEmptyDialogDiv();
+        let c2mDiv = this.createEmptyDialogDiv();
 
-		// register the event handlers for module creation
-		//c2mDiv.addEventListener('c2m_module_created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-error', this.renderCreationError.bind(this));
+        // register the event handlers for module creation
+        //c2mDiv.addEventListener('c2m_module_created', this.renderCreationResults.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-item-found-created', this.checkItemFoundCreated.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
+        c2mDiv.addEventListener('w2c-module-error', this.renderCreationError.bind(this));
+
+        // insert the new stage html
+        c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
+
+        // insert it before div.item-group-container
+        let itemGroupContainer = document.querySelector("div.item-group-container");
+        itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+        // add event handlers
+        let closeButton = document.getElementById("c2m-btn-close");
+        closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+
+        let startAgainButton = document.getElementById("c2m-btn-start-again");
+        startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
+
+        // for now just get a list of all messages, testing the event handling
+        // TODO update this to starting to create the module and its items
+        console.log("---- trying to create the module");
+        this.model.createModule();
+    }
+
+    /**
+     * Event handler for w2c-empty-module-created event.
+     * Indicates that an empty Canvas module has been created.
+     * - Update the w2c-progress-list and call this.model.findOrCreateItems
+     */
+    checkEmptyModuleCreated() {
+        // get and check the module name
+        let moduleName = this.model.canvasModules.createdModule.name;
+        let id = this.model.canvasModules.createdModule.id;
+
+        // TODO some sort of check that the module is actually created
+
+        console.log(`created new module ${moduleName} with id ${id}`);
+
+        this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
+
+        this.numFoundCreatedItems = 0;
+        this.model.findOrCreateModuleItems();
+    }
+
+    /**
+     * Event handler for w2c-item-found-created event.
+     * The event (e) detail property contains index for the item that was
+     * created
+     * return by the model
+     * @param {Event} e
+     */
+    checkItemFoundCreated(e) {
+        console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
+        console.log(e)
+
+        let index = e.detail.item;
+        // TODO what if index greater than # items
+        let item = this.model.canvasModules.items[index];
+        // TODO check the content of the item, esp. createdItem (the JSON)
+
+        // if item.createdItem has a property "error" then handle error
+        if (
+            Object.hasOwnProperty.call(item, 'createdItem') &&
+            Object.hasOwnProperty.call(item.createdItem, 'error')
+        ) {
+            const error = item.createdItem.error;
+
+            this.addProgressList(`
+                Error finding item "<em>${item.title}</em>": error - 
+                <span class="text-error">${error}</span>`
+            );
+            return;
+        }
+
+        this.numFoundCreatedItems++;
+
+        this.addProgressList(
+            `item "<em>${item.title}</em>" found or created
+              (created ${this.numFoundCreatedItems} out of 
+                ${this.model.canvasModules.items.length})`
+        );
+
+        // TODO check the JSON in item.createdItem
+
+        // increment the number of found/created items
+        // check if all items have been found/created
+        if (this.numFoundCreatedItems == this.model.canvasModules.items.length) {
+            this.addProgressList(`
+            <span class="text-success">
+              All ${this.numFoundCreatedItems} items found or created
+              (created ${this.numFoundCreatedItems} out of ${this.model.canvasModules.items.length})
+            </span>`
+            );
+            this.addProgressList('Starting to add items to the module');
+            // numAddedItems counts number already added and used to
+            // identify which item to add next
+            this.numAddedItems = 0;
+            //this.model.addItemsToModule();
+            this.model.addModuleItem(this.numAddedItems);
+        }
+    }
+
+    /**
+     * Called everytime an item successfully added to the current module.
+     * - check whether the addition worked (or not)
+     *   TODO need to handle this better
+     * - update the progress list
+     * - increment num added
+     * - if not all items added
+     *   - call addItemToModule
+     * @param {Event} e - the generated event, include detail object
+     * with properly item
+     * 
+     */
+
+    checkModuleItemAdded(e) {
+        console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
+        console.log(e)
+
+        let index = e.detail.item;
+        // TODO what if index greater than # items
+        let item = this.model.canvasModules.items[index];
+        this.numAddedItems++;
+
+        //        console.log(`created item ${item.createdItem}`);
+        this.addProgressList(
+            `item (${item.title}) added to module in position ${index} 
+            (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
+        );
+
+        // TODO check the JSON in item.createdItem
+        // this is where error checking should happen
+
+        // increment the number of found/created items
+        // check if all items have been found/created
+        if (this.numAddedItems != this.model.canvasModules.items.length) {
+            this.model.addModuleItem(this.numAddedItems);
+        } else {
+            this.addProgressList(`
+            <span class="text-success">
+              All ${this.numFoundCreatedItems} items added to the module
+              (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
+            </span>`
+            );
+            this.addProgressList(`<span class="text-success">Module created!</span>`);
+            this.renderCreationResults();
+        }
+    }
 
 
+    /**
+     * Update the ul#w2c-progress-list with a new message
+     * @param {String} message
+     */
+    addProgressList(message) {
+        let progressList = document.getElementById("w2c-progress-list");
+        // get number of items in progressList
+        let li = document.createElement("li");
+        li.innerHTML = `
+        <span class="w2c-progress-label text-info">${message}</span>
+        `;
+        // add li to progressList
+        progressList.appendChild(li);
+    }
 
-		// insert the new stage html
-		c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
+    /**
+     * Update the view based on the completed creation of the module
+     * Sparked by an event when the creation is complete
+     */
 
-		// insert it before div.item-group-container
-		let itemGroupContainer = document.querySelector("div.item-group-container");
-		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+    renderCreationResults() {
+        let receivedDiv = document.querySelector("div.c2m-received-results");
 
-		// add event handlers
-		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+        const result = this.model.canvasModules.createdModule;
 
-		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
+        let nameSpan = document.getElementById("c2m_module_name");
+        nameSpan.innerHTML = result.name;
+        let numItemsSpan = document.getElementById("c2m_module_num_items");
+        numItemsSpan.innerHTML = result.items_count;
 
-		// for now just get a list of all messages, testing the event handling
-		// TODO update this to starting to create the module and its items
-		console.log("---- trying to create the module");
-		this.model.createModule();
-	}
+        // hide div.c2m-waiting-results
+        let waitingDiv = document.querySelector("div.c2m-waiting-results");
+        waitingDiv.style.display = "none";
+        // show div.c2m-received-results
+        receivedDiv.style.display = "block";
+    }
 
-	/**
-	 * Update the view based on the completed creation of the module
-	 * Sparked by an event when the creation is complete
-	 */
+    renderCreationError() {
+        let receivedDiv = document.querySelector("div.c2m-error");
+        const error = this.model.canvasModules.createdModuleError;
 
-	renderCreationResults() {
-		let receivedDiv = document.querySelector("div.c2m-received-results");
-
-		const result = this.model.canvasModules.createdModule;
-
-		let nameSpan = document.getElementById("c2m_module_name");
-		nameSpan.innerHTML = result.name;
-		let numItemsSpan = document.getElementById("c2m_module_num_items");
-		numItemsSpan.innerHTML = result.items_count;
-
-		// hide div.c2m-waiting-results
-		let waitingDiv = document.querySelector("div.c2m-waiting-results");
-		waitingDiv.style.display = "none";
-		// show div.c2m-received-results
-		receivedDiv.style.display = "block";
-	}
-
-	renderCreationError() {
-		let receivedDiv = document.querySelector("div.c2m-error");
-		const error = this.model.canvasModules.createdModuleError;
-
-		// populate recievedDiv with error message
-		receivedDiv.innerHTML = `<h4>Error</h4>
+        // populate recievedDiv with error message
+        receivedDiv.innerHTML = `<h4>Error</h4>
 		 <p class="text-warning">${error}</p>`;
 
 
-		// hide div.c2m-waiting-results
-		let waitingDiv = document.querySelector("div.c2m-waiting-results");
-		waitingDiv.style.display = "none";
-		// show div.c2m-error
-		receivedDiv.style.display = "block";
+        // hide div.c2m-waiting-results
+        let waitingDiv = document.querySelector("div.c2m-waiting-results");
+        waitingDiv.style.display = "none";
+        // show div.c2m-error
+        receivedDiv.style.display = "block";
 
 
-	}
+    }
 
 }
 
@@ -968,6 +1129,7 @@ class c2m_CompletedView extends c2m_View {
 
 const DEFAULT_OPTIONS = {
 	styleMap: [
+		"p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
 		"p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
 		"p[style-name='Canvas Assignment'] => h1.canvasAssignment",
 		"p[style-name='Canvas Quiz'] => h1.canvasQuiz",
@@ -1096,6 +1258,7 @@ class c2m_WordConverter {
 		this.mammothResult = result;
 
 		// TODO do Content Interface translations here??
+        // TODO move this out an additional class
 		// find all span.embed in mammothResult and log innerhtml
         // parse the string 
         let parser = new DOMParser();
@@ -1290,6 +1453,7 @@ class c2m_WordConverter {
 const HTML_CLASS_TO_ITEM_TYPE = {
 	'canvasFile' : 'File',
 	'canvasPage' : 'Page',
+	'existingCanvasPage': 'ExistingPage',
 	'canvasDiscussion' :'Discussion',
 	'canvasAssignment' : 'Assignment',
 	'canvasQuiz': 'Quiz',
@@ -1461,200 +1625,309 @@ class c2m_HtmlConverter {
 
 
 class c2m_Modules {
-	constructor(courseId, token) {
-		this.courseId = courseId;
-		this.csrfToken = token;
+    constructor(courseId, token) {
+        this.courseId = courseId;
+        this.csrfToken = token;
 
-	}
+    }
 
-	/**
-	 * Canvas API to get info on all modules for the courseId
-	 * - async function to simplify handling the results???
-	 * @param {Boolean} items default true - include items for each module 
-	 */
-	async getAllModules(items = true) {
-		// handle the options
-		let itemsOption = "?include=items";
-		let pagesOption = "&per_page=100";
-		if (!items) {
-			itemsOption = "";
-			pagesOption = "?per_page=100";
-		}
+    /**
+     * Canvas API to get info on all modules for the courseId
+     * - async function to simplify handling the results???
+     * @param {Boolean} items default true - include items for each module 
+     */
+    async getAllModules(items = true) {
+        // handle the options
+        let itemsOption = "?include=items";
+        let pagesOption = "&per_page=100";
+        if (!items) {
+            itemsOption = "";
+            pagesOption = "?per_page=100";
+        }
 
-		let callUrl = `/api/v1/courses/${this.courseId}/modules${itemsOption}${pagesOption}`;
-
-
-		await fetch(callUrl, {
-			method: 'GET', credentials: 'include',
-			headers: {
-				"Accept": "application/json",
-				"X-CSRF-Token": this.csrfToken
-			}
-		})
-			.then(this.status)
-			.then((response) => {
-				return response.json();
-			})
-			.then((json) => {
-				this.allModules = json;
-				console.log(`c2m_Modules -> getAllModules: ${this.allModules}`);
-				console.log(json);
-			})
-			.catch((error => {
-				console.error(`c2m_Modules -> getAllModules error: ${error}`);
-			}));
-	}
-
-	/**
-	 * Use Canvas API create a new module with current name in 
-	 * first place ready to be populate with item
-	 * 
-	 */
-	async createModule(newModule) {
-
-		let callUrl = `/api/v1/courses/${this.courseId}/modules`;
-
-		// clear the error ready for any fresh error
-		this.createdModuleError = undefined;
-		this.createdModule = undefined;
-		this.createdModuleItems = [];
-
-		await fetch(callUrl, {
-			method: 'POST', credentials: 'include',
-			headers: {
-				"Content-Type": "application/json",
-				"Accept": "application/json",
-				"X-CSRF-Token": this.csrfToken
-			},
-			body: JSON.stringify({
-				"module": {
-					"name": newModule.name,
-					"position": 1
-				}
-			})
-		})
-			.then(this.status)
-			.then((response) => {
-				return response.json();
-			})
-			.then((json) => {
-				this.createdModule = json;
-				console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
-				console.log(json);
-			})
-	}
-
-	/**
-	 * Create the item for item object
-	 * - create/link to the existing element of that type
-	 * - create the item for the module 
-	 * @param {Object} item - object describing the item to create 
-	 */
-
-	async createModuleItem(moduleId, position, item) {
-		let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
-
-		// clear the error ready for any fresh error
-		// TODO how for this
-		//		this.createdModuleError = undefined;
-		//		this.createdModule = undefined;
-
-		let body = {
-			"module_item": {
-				"title": item.title,
-				"position": position,
-				"type": item.type, 
-			}
-		};
-
-		if (item.type==="Page") {
-			body.module_item['content_id'] = item.item.page_id
-		}
-		console.log('creating module item');
-		console.log(body);
-
-		await fetch(callUrl, {
-				method: 'POST', credentials: 'include',
-				headers: {
-					"Content-Type": "application/json",
-					"Accept": "application/json",
-					"X-CSRF-Token": this.csrfToken
-				},
-				body: JSON.stringify( body)
-			})
-				.then(this.status)
-				.then((response) => {
-					return response.json();
-				})
-				.then((json) => {
-					// push json onto this.createdItems array
-					this.createdModuleItems.push(json);
-					console.log(`c2m_Modules -> createItems: ${this.createdModuleItems}`);
-					console.log(json);
-				})
-
-		}
+        let callUrl = `/api/v1/courses/${this.courseId}/modules${itemsOption}${pagesOption}`;
 
 
-	/**
-	 * Create anew page using the title and the content of the item object
-	 * @param {Object} item basic information about page to create
-	 */
-	async createPage(item) {
-			let callUrl = `/api/v1/courses/${this.courseId}/pages`;
+        await fetch(callUrl, {
+            method: 'GET', credentials: 'include',
+            headers: {
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken
+            }
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                this.allModules = json;
+                console.log(`c2m_Modules -> getAllModules: ${this.allModules}`);
+                console.log(json);
+            })
+            .catch((error => {
+                console.error(`c2m_Modules -> getAllModules error: ${error}`);
+            }));
+    }
 
-			await fetch(callUrl, {
-				method: 'POST', credentials: 'include',
-				headers: {
-					"Content-Type": "application/json",
-					"Accept": "application/json",
-					"X-CSRF-Token": this.csrfToken
-				},
-				body: JSON.stringify({
-					"wiki_page": {
-						"title": item.title,
-						"body": item.content,
-						"editing_roles": "teachers"
-					}
-				})
-			})
-				.then(this.status)
-				.then((response) => {
-					return response.json();
-				})
-				.then((json) => {
-					// push json onto this.createdItems array
-					this.createdItem = json;
-					console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
-					console.log(json);
-				})
+    /**
+     * Use Canvas API create a new module with current name in 
+     * first place ready to be populate with item
+     * 
+     */
+    async createModule(newModule) {
 
-		}
+        let callUrl = `/api/v1/courses/${this.courseId}/modules`;
+
+        // clear the error ready for any fresh error
+        this.createdModuleError = undefined;
+        this.createdModule = undefined;
+        this.createdModuleItems = [];
+
+        await fetch(callUrl, {
+            method: 'POST', credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken
+            },
+            body: JSON.stringify({
+                "module": {
+                    "name": newModule.name,
+                    "position": 1
+                }
+            })
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                this.createdModule = json;
+                console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
+                console.log(json);
+                this.dispatchEvent( 'w2c-empty-module-created');
+            })
+    }
+
+    /**
+     * Add an existing item to the current createdModule
+     * @param {int} index - position in module
+     */
+
+    async addModuleItem(index) {
+        // TODO check index within items.length
+        let item = this.items[index];
+        let moduleId = this.createdModule.id;
+
+        let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
+
+        let body = {
+            "module_item": {
+                "title": item.title,
+                "position": index+1, // index+1 because position is 1-based, not 0
+                "type": item.type,
+            }
+        };
+
+        if ([ "File", "Discussion", "Assignment", "Quiz", "ExternalTool"].includes(item.type) ) {
+            body.module_item['content_id'] = item.createdItem.id;
+        }
+
+        if (item.type === "Page" || item.type==="ExistingPage") {
+//            body.module_item['content_id'] = item.createdItem.page_id;
+            body.module_item['page_url'] = item.createdItem.url;
+            body.module_item['type'] = 'Page';
+        }
+//        console.log('creating module item');
+//        console.log(body);
+
+        await fetch(callUrl, {
+            method: 'POST', credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken
+            },
+            body: JSON.stringify(body)
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                // update the createdItem property for the item 
+                // with the results of the JSON call
+                item['addedItem'] = json;
+
+                // if we have a SubHeader dispatch('w2c-item-found-created')
+//                if (item.type === "SubHeader") {
+//                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+ //               } else {
+                this.dispatchEvent( 'w2c-module-item-added',{'item':index});
+  //              }
+            })
+
+    }
 
 
-		/*
-		 * Function which returns a promise (and error if rejected) if response status is OK
-		 * @param {Object} response
-		 * @returns {Promise} either error or response
-		 */
-		status(response) {
-			if (response.status >= 200 && response.status < 300) {
-				return Promise.resolve(response)
-			} else {
-				console.log("---- STATUS bad response status");
-				console.log(response);
-				return Promise.reject(new Error(response.statusText))
-			}
-		}
-		/*
-		 * Function which returns json from response
-		 * @param {Object} response
-		 * @returns {string} json from response
-		 */
-		json(response) {
-			return response.json();
-		}
-	}
+    /**
+     * Create anew page using the title and the content of the item object
+     * @param {Number} index basic information about page to create
+     */
+    async createPage(index) {
+        let item = this.items[index];
+        let callUrl = `/api/v1/courses/${this.courseId}/pages`;
+
+        await fetch(callUrl, {
+            method: 'POST', credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken
+            },
+            body: JSON.stringify({
+                "wiki_page": {
+                    "title": item.title,
+                    "body": item.content,
+                    "editing_roles": "teachers"
+                }
+            })
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                // push json onto this.createdItems array
+                item.createdItem = json;
+                console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
+                console.log(json);
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+            })
+
+    }
+
+    /**
+     * Find an existing item based on the title/name of this.items[index]
+     * Support different types: Page, File, Discussion, ...(Quiz, Assignment)
+     * Set the createdItem to some sort of FAILURE if didn't find
+     * @param {Number} index basic information about page to create
+     */
+    async findItem(index) {
+        let item = this.items[index];
+        let type = item.type;
+
+        // depending on type, use a different URL
+        const TYPE_API_URL = {
+            "ExistingPage": `/api/v1/courses/${this.courseId}/pages?`,
+            "File": `/api/v1/courses/${this.courseId}/files?`,
+            "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`,
+            "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`
+        }
+        // do a List pages api call
+        // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
+        let callUrl = TYPE_API_URL[type] + new URLSearchParams({'search_term': item.title});
+
+        await fetch(callUrl, {
+            method: 'GET', credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken,
+            }
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                // JSON now contains list of Page objects
+                // need to search them for a match and return
+                // the matched Page object
+                this.findItemInList(json, index);
+                // do the same event, regardless, the content of item.createdItem
+                // will indicate failure or not
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+            })
+    }
+
+    /**
+     * Search through a list of File objects to find a File that matches
+     * (exactly) the title for the item at index
+     * If found, set the page object, otherwise not found error
+     * https://canvas.instructure.com/doc/api/plagiarism_detection_submissions.html#File
+     * @param {Array} list - json list of objects returned from Canvas API
+     * @param {Number} index - to item object we're looking for a match for
+     */
+
+    findItemInList(list, index) {
+        let item = this.items[index];
+        let type = item.type;
+
+        // loop through the discussions
+        for (let i = 0; i < list.length; i++) {
+            let element = list[i];
+            let elementName = '';
+            const itemName = item.title.trim();
+
+            // the name to match in the list element, depends on type
+            if ( type==="File") {
+                elementName = element.display_name.trim();
+            } else if ( type==="Assignment") {
+                elementName = element.name.trim();
+            } else {
+                elementName = element.title.trim();
+            }
+            // if itemName is substr of fileName
+            if ( elementName.includes(itemName)) {
+                item.createdItem = element;
+                return;
+            }
+        }
+        item.createdItem = {
+            "error": `file not found: ${item.title}`,
+            "index": index
+        }
+    }
+
+    /*
+     * Function which returns a promise (and error if rejected) if response status is OK
+     * @param {Object} response
+     * @returns {Promise} either error or response
+     */
+    status(response) {
+        if (response.status >= 200 && response.status < 300) {
+            return Promise.resolve(response)
+        } else {
+            console.log("---- STATUS bad response status");
+            console.log(response);
+            return Promise.reject(new Error(response.statusText))
+        }
+    }
+    /*
+     * Function which returns json from response
+     * @param {Object} response
+     * @returns {string} json from response
+     */
+    json(response) {
+        return response.json();
+    }
+
+    /**
+     * dispatch an event on the w2c_dialog box 
+     * @param {String} eventName 
+     * @param {Object} eventData 
+     */
+    dispatchEvent(eventName, eventData = {}) {
+        const event = new CustomEvent(eventName, {
+            detail: eventData
+        });
+        let c2m_dialog = document.querySelector('div.c2m_dialog');
+        if (c2m_dialog) {
+            c2m_dialog.dispatchEvent(event);
+        }
+    }
+}
 
 // src/models/c2m_Model.js
 /**
@@ -1679,173 +1952,218 @@ class c2m_Modules {
 
 
 class c2m_Model {
-	constructor(controller) {
+    constructor(controller) {
 
-		this.controller = controller;
-		// indicate which of the four stages we're up to
-		//		this.stage = c2m_initialise;
-		this.wordConverter = new c2m_WordConverter();
-		//		this.moduleCreator = new c2m_ModuleCreator();
-		this.canvasModules = new c2m_Modules(
-			this.controller.courseId, this.controller.csrfToken
-		);
+        this.controller = controller;
+        // indicate which of the four stages we're up to
+        //		this.stage = c2m_initialise;
+        this.wordConverter = new c2m_WordConverter();
+        //		this.moduleCreator = new c2m_ModuleCreator();
+        this.canvasModules = new c2m_Modules(
+            this.controller.courseId, this.controller.csrfToken
+        );
 
-	}
+    }
 
-	getCurrentModules() {
-		// TODO check for existence of canvasModules
-		this.canvasModules.getAllModules()
-			.then(() => {
-				console.log(`c2m_Model -> getAllModules: finished `);
-				console.log(this.canvasModules.allModules);
+    getCurrentModules() {
+        // pre-populate canvasModules with the items
+        // it will add the property createdItem to each item
+        this.canvasModules.getAllModules()
+            .then(() => {
+                console.log(`c2m_Model -> getAllModules: finished `);
+                console.log(this.canvasModules.allModules);
 
-			});
-		// TODO catch any errors???
-	}
+            });
+        // TODO catch any errors???
+    }
 
-	/**
-	 * Harness to create modules within context of this app
-	 * TODO after creating the module, should check to see if the
-	 * module response is okay and then generate the appropriate event
-	 * Not just automatically 
-	 */
-	createModule() {
-		this.canvasModules.createModule(this.htmlConverter)
-			.then(this.createModuleItems.bind(this));
-		/*				() => {
-						// if createdModules is defined generated created event
-						if (this.canvasModules.createdModule) {
-							const event = new Event('c2m-module-created');
-							let c2m_dialog = document.querySelector('div.c2m_dialog');
-							if (c2m_dialog) {
-								c2m_dialog.dispatchEvent(event);
-								console.log('c2m_Model -> createModule: event dispatched');
-							}
-						} else {
-							console.error(`c2m_Model -> createModule error: `);
-							const event = new Event('c2m-module-error');
-							let c2m_dialog = document.querySelector('div.c2m_dialog');
-							if (c2m_dialog) {
-								c2m_dialog.dispatchEvent(event);
-								console.log('c2m_Model -> createModule: ERROR event dispatched');
-							}
-						}
-					}); */
-	}
+    /**
+     * Generate API request to create new module based on module title
+     * in this.htmlConverter. When finished will generate a signal accepted
+     * by View that will call createModuleItems
+     */
+    createModule() {
+        // No need to do a check - previous step should take care of this
+        this.canvasModules.items = this.htmlConverter.items;
+        this.canvasModules.createModule(this.htmlConverter)
+            .then(
+                // this is done in modules, because that's where it 
+                // actually waits
+                //                this.dispatchEvent('w2c-empty-module-created')
+            )
+    }
 
-	/**
-	 * create each of the module items for the newly created
-	 *   this.canvasModules.createdModule
-	 * Loop thru each this.htmlConverter.items and create the item
-	 * and create the moduleItem
-	 */
-	createModuleItems() {
-		console.log('c2m_Model -> createModuleItems');
-		console.log('Shogin htmlConverter with item information')
-		console.log(this.htmlConverter);
+    /**
+     * create each of the module items for the newly created
+     *   this.canvasModules.createdModule
+     * Loop thru each this.htmlConverter.items and create the item
+     * and create the moduleItem
+     */
+    findOrCreateModuleItems() {
+        console.log('c2m_Model -> findOrCreateModuleItems');
+        //		console.log('Shogin htmlConverter with item information')
+        //		console.log(this.htmlConverter);
 
-		// loop thru array this.htmlConverter.items and
-		// call createModuleItem
-		let items = this.htmlConverter.items;
-		const moduleId = this.canvasModules.createdModule.id;
+        // loop thru array this.htmlConverter.items and
+        // call createModuleItem
+        let items = this.htmlConverter.items;
+        //		const moduleId = this.canvasModules.createdModule.id;
 
-		for (let i = 0; i < items.length; i++) {
-			// find the item we're trying to link to
-			items[i] = this.findOrCreateItem(items[i]);
-			// create the matching item
-			this.createModuleItem(moduleId, items[i], i);
-		}
+        for (let i = 0; i < items.length; i++) {
+            // find the item we're trying to link to
+            this.findOrCreateItem(i);
+        }
+        console.log("------------- END of create module items")
+    }
 
-		console.log("------------- END of create module items")
-		console.log(items)
-	}
+    /**
+     * Depending on item type and contents, either find the matching
+     * existing item or create a new item
+     * When item found/created 
+     * - update the local item data structure
+     * - generate signal indicating done 
+     * 
+     * Exactly what happens will be dependent upon type of item
+     * - Page - create a new page (always)
+     * - SubHead - nothing to do
+     * - External Url - nothing to create
+     * - File - need to find - can't create
+     * - Discussion - find or create
+     * - ExternalTool - ???
+     * - Quiz - find
+     * Default - if unable to find or create the necessary type
+     * then create a sub-head with an error message
+     * @param {Number} index - indicate into items list for the item being found/created
+     */
 
-	/**
-	 * Determine the type of item the is required and then either
-	 * search for the matching item or create it
-	 * Exactly what happens will be dependent upon type of item
-	 * - Page - create a new page (always)
-	 * - SubHead - nothing to do
-	 * - External Url - nothing to create
-	 * - File - need to find - can't create
-	 * - Discussion - find or create
-	 * - ExternalTool - ???
-	 * - Quiz - find
-	 * Default - if unable to find or create the necessary type
-	 * then create a sub-head with an error message
-	 * @param {Object} item - details of the module item to create
-	 * @return {Object} item modified to include details of created item 
-	 */
+    findOrCreateItem(index) {
+        let item = this.canvasModules.items[index];
+        // switch on item.type
+        console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCC");
+        console.log("findORCreateItem");
 
-	findOrCreateItem(item) {
-		// switch on item.type
-		console.log("CCCCCCCCCCCCCCCCCCCCCCCCCCCC");
-		console.log("findORCreateItem");
+        switch (item.type) {
+            case 'Page':
+                // TODO could do check of item to see if trying to find
+                // an existing page
+                // create a new page
+                this.canvasModules.createPage(index).then(() => {
+                });
+                break;
+            case 'ExistingPage':
+                this.canvasModules.findItem(index).then(() => {});
+                break;
+            case 'SubHeader':
+                // Don't need to find/create just generate event
+                this.dispatchEvent('w2c-item-found-created', { item: index });
+//                this.canvasModules.addModuleItem(index).then(() => {
+//                });
+                break;
+            case 'File':
+                this.canvasModules.findItem(index).then(() => {});
+                break;
+            case 'Discussion':
+                this.canvasModules.findItem(index).then(() => {});
+                break;
+            case 'Assignment':
+                this.canvasModules.findItem(index).then(() => {});
+                break;
+            default:
+                console.log(`Not yet creating items of type ${item.type}`);
+                break;
+        }
+    }
 
-		switch (item.type) {
-			case 'Page':
-				// create a new page
-				this.canvasModules.createPage(item).then(() => {
-					console.log('c2m_Model -> findOrCreateItem: page created');
-					item.item = this.canvasModules.createdItem;
-					console.log(item);
-				});
-				break;
-			default:
-				console.log(`Not yet creating items of type ${item.type}`);
-				break;
-		}
+    /**
+     * called once module has been created and all items found or created
+     * Will loop through all the items of the new module and generate
+     * API calls to add them in order to the module 
+     */
+    addItemsToModule() {
+        console.log('c2m_Model -> addItemsToModule');
 
-		return item;
-	}
+        // loop thru array this.htmlConverter.items and
+        // call createModuleItem
+        //		let items = this.htmlConverter.items;
+        //		const moduleId = this.canvasModules.createdModule.id;
 
-	/**
-	 * Create a specific module item
-	 * @param {Integer} moduleId id module to add item to
-	 * @param {Object} item detail about the item to add
-	 * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
-	 */
-	createModuleItem(moduleId, item, itemIndex) {
+        for (let i = 0; i < this.canvasModules.items.length; i++) {
+            // find the item we're trying to link to
 
-		console.log('Shogin createdModuleItem')
+            // don't need to add some items
+ //           const notToAdd = ['SubHeader'];
 
-		// may need to pass in item order
-		this.canvasModules.createModuleItem(moduleId, itemIndex + 1, item)
-			.then(() => {
-				console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
-				console.log(this.canvasModules.createdModuleItems);
-			});
+//            let item = this.canvasModules.items[i];
+            this.addModuleItem(i);
+        }
+    }
 
-	}
 
-	convertWordDoc(event) {
-		console.log('c2m_Model -> convertWordDoc')
+    /**
+     * Add an existing item to the current module
+     * @param {Integer} moduleId id module to add item to
+     * @param {Object} item detail about the item to add
+     * @param {Integer} itemIndex the 0-based index for the item array +1 for Canvas position 
+     */
+    addModuleItem(itemIndex) {
 
-		try {
-			this.wordConverter.handleFileSelect(event);
-		}
-		catch (e) {
-			console.error(`c2m_Model -> convertWordDoc error: ${e}`);
-		}
-	}
+        console.log('Shogin createdModuleItem')
 
-	/**
-	 * Convert Mammoth result HTML into a dummy Canvas module data 
-	 * structure to present to the user
-	 */
-	testHtmlToModule() {
-		// if there's no result in the mammoth object, error
-		if (
-			!Object.prototype.hasOwnProperty.call(this.wordConverter, 'mammothResult') ||
-			!Object.prototype.hasOwnProperty.call(this.wordConverter.mammothResult, 'value')) {
-			console.error('c2m_Model -> testHtmlToModule: no mammoth result');
-			return;
-		}
+        // may need to pass in item order
+        //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
+        this.canvasModules.addModuleItem(itemIndex)
+            .then(() => {
+                // TODO generate signal when item is added
+//                console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
+//                console.log(this.canvasModules.createdModuleItems);
+            });
 
-		this.htmlConverter = new c2m_HtmlConverter(this.wordConverter.mammothResult.value);
-		this.htmlConverter.dump();
+    }
 
-	}
+    convertWordDoc(event) {
+        console.log('c2m_Model -> convertWordDoc')
+
+        try {
+            this.wordConverter.handleFileSelect(event);
+        }
+        catch (e) {
+            console.error(`c2m_Model -> convertWordDoc error: ${e}`);
+        }
+    }
+
+    /**
+     * Convert Mammoth result HTML into a dummy Canvas module data 
+     * structure to present to the user
+     */
+    testHtmlToModule() {
+        // if there's no result in the mammoth object, error
+        if (
+            !Object.prototype.hasOwnProperty.call(this.wordConverter, 'mammothResult') ||
+            !Object.prototype.hasOwnProperty.call(this.wordConverter.mammothResult, 'value')) {
+            console.error('c2m_Model -> testHtmlToModule: no mammoth result');
+            return;
+        }
+
+        this.htmlConverter = new c2m_HtmlConverter(this.wordConverter.mammothResult.value);
+        this.htmlConverter.dump();
+
+    }
+
+    /**
+     * dispatch an event on the w2c_dialog box 
+     * @param {String} eventName 
+     * @param {Object} eventData 
+     */
+    dispatchEvent(eventName, eventData = {}) {
+        const event = new CustomEvent(eventName, {
+            detail: eventData
+        });
+        let c2m_dialog = document.querySelector('div.c2m_dialog');
+        if (c2m_dialog) {
+            c2m_dialog.dispatchEvent(event);
+        }
+    }
+
 }
 
 // src/c2m_controller.js
@@ -1988,10 +2306,10 @@ function canvas2Module(){
  window.addEventListener('load', function(){
         // getting very kludgy here, haven't got a good solution...yet #14
         // - module content is dynamically loaded, wait (dumbly) for it to finish
-        this.setTimeout(
-            () => {
+//        this.setTimeout(
+//            () => {
                 let controller = new c2m_Controller();
-            }, 2000);
+ //           }, 2000);
     });
 }
 

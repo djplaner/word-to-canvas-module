@@ -26,6 +26,13 @@ const COMPLETE_HTML = `
 <div class="c2m-loading"></div>
 </div>
 
+<div class="w2c-progress">
+<h4>Progress</h4>
+<ol id="w2c-progress-list">
+  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
+</ol>
+</div>
+
 <div class="c2m-received-results" style="display:none">
   <h4>Module created</h4>
   <div id="c2m_summary">
@@ -57,6 +64,14 @@ const COMPLETE_HTML = `
 	margin-top: 0.5em;
 }
 
+#w2c-progress-list {
+    font-size: small;
+}
+
+.w2c-progress-label {
+    font-size: small;
+}
+
 .c2m-loading {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */
@@ -80,85 +95,229 @@ const COMPLETE_HTML = `
 export default class c2m_CompletedView extends c2m_View {
 
 
-	constructor(model, controller) {
-		console.log("c2m_CompletedView constructor --------------");
-		super(model,controller);
-	}
+    constructor(model, controller) {
+        console.log("c2m_CompletedView constructor --------------");
+        super(model, controller);
+    }
 
-	/**
-	 * Start the call to create the module and set up the display
-	 * once created an event will cause "renderUpdate"
-	 */
-	render() {
-		console.log("4. Complete");
+    /**
+     * Start the call to create the module and set up the display
+     * once created an event will cause "renderUpdate"
+     */
+    render() {
+        console.log("4. Complete");
 
-		let c2mDiv = this.createEmptyDialogDiv();
+        let c2mDiv = this.createEmptyDialogDiv();
 
-		// register the event handlers for module creation
-		//c2mDiv.addEventListener('c2m_module_created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-created', this.renderCreationResults.bind(this));
-		c2mDiv.addEventListener('c2m-module-error', this.renderCreationError.bind(this));
+        // register the event handlers for module creation
+        //c2mDiv.addEventListener('c2m_module_created', this.renderCreationResults.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-item-found-created', this.checkItemFoundCreated.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
+        c2mDiv.addEventListener('w2c-module-error', this.renderCreationError.bind(this));
+
+        // insert the new stage html
+        c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
+
+        // insert it before div.item-group-container
+        let itemGroupContainer = document.querySelector("div.item-group-container");
+        itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+
+        // add event handlers
+        let closeButton = document.getElementById("c2m-btn-close");
+        closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+
+        let startAgainButton = document.getElementById("c2m-btn-start-again");
+        startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
+
+        // for now just get a list of all messages, testing the event handling
+        // TODO update this to starting to create the module and its items
+        console.log("---- trying to create the module");
+        this.model.createModule();
+    }
+
+    /**
+     * Event handler for w2c-empty-module-created event.
+     * Indicates that an empty Canvas module has been created.
+     * - Update the w2c-progress-list and call this.model.findOrCreateItems
+     */
+    checkEmptyModuleCreated() {
+        // get and check the module name
+        let moduleName = this.model.canvasModules.createdModule.name;
+        let id = this.model.canvasModules.createdModule.id;
+
+        // TODO some sort of check that the module is actually created
+
+        console.log(`created new module ${moduleName} with id ${id}`);
+
+        this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
+
+        this.numFoundCreatedItems = 0;
+        this.model.findOrCreateModuleItems();
+    }
+
+    /**
+     * Event handler for w2c-item-found-created event.
+     * The event (e) detail property contains index for the item that was
+     * created
+     * return by the model
+     * @param {Event} e
+     */
+    checkItemFoundCreated(e) {
+        console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
+        console.log(e)
+
+        let index = e.detail.item;
+        // TODO what if index greater than # items
+        let item = this.model.canvasModules.items[index];
+        // TODO check the content of the item, esp. createdItem (the JSON)
+
+        // if item.createdItem has a property "error" then handle error
+        if (
+            Object.hasOwnProperty.call(item, 'createdItem') &&
+            Object.hasOwnProperty.call(item.createdItem, 'error')
+        ) {
+            const error = item.createdItem.error;
+
+            this.addProgressList(`
+                Error finding item "<em>${item.title}</em>": error - 
+                <span class="text-error">${error}</span>`
+            );
+            return;
+        }
+
+        this.numFoundCreatedItems++;
+
+        this.addProgressList(
+            `item "<em>${item.title}</em>" found or created
+              (created ${this.numFoundCreatedItems} out of 
+                ${this.model.canvasModules.items.length})`
+        );
+
+        // TODO check the JSON in item.createdItem
+
+        // increment the number of found/created items
+        // check if all items have been found/created
+        if (this.numFoundCreatedItems == this.model.canvasModules.items.length) {
+            this.addProgressList(`
+            <span class="text-success">
+              All ${this.numFoundCreatedItems} items found or created
+              (created ${this.numFoundCreatedItems} out of ${this.model.canvasModules.items.length})
+            </span>`
+            );
+            this.addProgressList('Starting to add items to the module');
+            // numAddedItems counts number already added and used to
+            // identify which item to add next
+            this.numAddedItems = 0;
+            //this.model.addItemsToModule();
+            this.model.addModuleItem(this.numAddedItems);
+        }
+    }
+
+    /**
+     * Called everytime an item successfully added to the current module.
+     * - check whether the addition worked (or not)
+     *   TODO need to handle this better
+     * - update the progress list
+     * - increment num added
+     * - if not all items added
+     *   - call addItemToModule
+     * @param {Event} e - the generated event, include detail object
+     * with properly item
+     * 
+     */
+
+    checkModuleItemAdded(e) {
+        console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
+        console.log(e)
+
+        let index = e.detail.item;
+        // TODO what if index greater than # items
+        let item = this.model.canvasModules.items[index];
+        this.numAddedItems++;
+
+        //        console.log(`created item ${item.createdItem}`);
+        this.addProgressList(
+            `item (${item.title}) added to module in position ${index} 
+            (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
+        );
+
+        // TODO check the JSON in item.createdItem
+        // this is where error checking should happen
+
+        // increment the number of found/created items
+        // check if all items have been found/created
+        if (this.numAddedItems != this.model.canvasModules.items.length) {
+            this.model.addModuleItem(this.numAddedItems);
+        } else {
+            this.addProgressList(`
+            <span class="text-success">
+              All ${this.numFoundCreatedItems} items added to the module
+              (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
+            </span>`
+            );
+            this.addProgressList(`<span class="text-success">Module created!</span>`);
+            this.renderCreationResults();
+        }
+    }
 
 
+    /**
+     * Update the ul#w2c-progress-list with a new message
+     * @param {String} message
+     */
+    addProgressList(message) {
+        let progressList = document.getElementById("w2c-progress-list");
+        // get number of items in progressList
+        let li = document.createElement("li");
+        li.innerHTML = `
+        <span class="w2c-progress-label text-info">${message}</span>
+        `;
+        // add li to progressList
+        progressList.appendChild(li);
+    }
 
-		// insert the new stage html
-		c2mDiv.insertAdjacentHTML('afterbegin', COMPLETE_HTML);
+    /**
+     * Update the view based on the completed creation of the module
+     * Sparked by an event when the creation is complete
+     */
 
-		// insert it before div.item-group-container
-		let itemGroupContainer = document.querySelector("div.item-group-container");
-		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
+    renderCreationResults() {
+        let receivedDiv = document.querySelector("div.c2m-received-results");
 
-		// add event handlers
-		let closeButton = document.getElementById("c2m-btn-close");
-		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+        const result = this.model.canvasModules.createdModule;
 
-		let startAgainButton = document.getElementById("c2m-btn-start-again");
-		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
+        let nameSpan = document.getElementById("c2m_module_name");
+        nameSpan.innerHTML = result.name;
+        let numItemsSpan = document.getElementById("c2m_module_num_items");
+        numItemsSpan.innerHTML = result.items_count;
 
-		// for now just get a list of all messages, testing the event handling
-		// TODO update this to starting to create the module and its items
-		console.log("---- trying to create the module");
-		this.model.createModule();
-	}
+        // hide div.c2m-waiting-results
+        let waitingDiv = document.querySelector("div.c2m-waiting-results");
+        waitingDiv.style.display = "none";
+        // show div.c2m-received-results
+        receivedDiv.style.display = "block";
+    }
 
-	/**
-	 * Update the view based on the completed creation of the module
-	 * Sparked by an event when the creation is complete
-	 */
+    renderCreationError() {
+        let receivedDiv = document.querySelector("div.c2m-error");
+        const error = this.model.canvasModules.createdModuleError;
 
-	renderCreationResults() {
-		let receivedDiv = document.querySelector("div.c2m-received-results");
-
-		const result = this.model.canvasModules.createdModule;
-
-		let nameSpan = document.getElementById("c2m_module_name");
-		nameSpan.innerHTML = result.name;
-		let numItemsSpan = document.getElementById("c2m_module_num_items");
-		numItemsSpan.innerHTML = result.items_count;
-
-		// hide div.c2m-waiting-results
-		let waitingDiv = document.querySelector("div.c2m-waiting-results");
-		waitingDiv.style.display = "none";
-		// show div.c2m-received-results
-		receivedDiv.style.display = "block";
-	}
-
-	renderCreationError() {
-		let receivedDiv = document.querySelector("div.c2m-error");
-		const error = this.model.canvasModules.createdModuleError;
-
-		// populate recievedDiv with error message
-		receivedDiv.innerHTML = `<h4>Error</h4>
+        // populate recievedDiv with error message
+        receivedDiv.innerHTML = `<h4>Error</h4>
 		 <p class="text-warning">${error}</p>`;
 
 
-		// hide div.c2m-waiting-results
-		let waitingDiv = document.querySelector("div.c2m-waiting-results");
-		waitingDiv.style.display = "none";
-		// show div.c2m-error
-		receivedDiv.style.display = "block";
+        // hide div.c2m-waiting-results
+        let waitingDiv = document.querySelector("div.c2m-waiting-results");
+        waitingDiv.style.display = "none";
+        // show div.c2m-error
+        receivedDiv.style.display = "block";
 
 
-	}
+    }
 
 }
