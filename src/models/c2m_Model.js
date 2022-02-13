@@ -133,6 +133,9 @@ export default class c2m_Model {
             case 'Discussion':
                 this.canvasModules.findItem(index).then(() => {});
                 break;
+            case 'Assignment':
+                this.canvasModules.findItem(index).then(() => {});
+                break;
             default:
                 console.log(`Not yet creating items of type ${item.type}`);
                 break;

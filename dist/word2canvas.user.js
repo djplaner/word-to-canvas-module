@@ -1821,7 +1821,8 @@ class c2m_Modules {
         const TYPE_API_URL = {
             "ExistingPage": `/api/v1/courses/${this.courseId}/pages?`,
             "File": `/api/v1/courses/${this.courseId}/files?`,
-            "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`
+            "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`,
+            "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`
         }
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
@@ -1872,6 +1873,8 @@ class c2m_Modules {
             // the name to match in the list element, depends on type
             if ( type==="File") {
                 elementName = element.display_name.trim();
+            } else if ( type==="Assignment") {
+                elementName = element.name.trim();
             } else {
                 elementName = element.title.trim();
             }
@@ -2060,6 +2063,9 @@ class c2m_Model {
                 this.canvasModules.findItem(index).then(() => {});
                 break;
             case 'Discussion':
+                this.canvasModules.findItem(index).then(() => {});
+                break;
+            case 'Assignment':
                 this.canvasModules.findItem(index).then(() => {});
                 break;
             default:
