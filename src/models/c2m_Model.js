@@ -143,6 +143,10 @@ export default class c2m_Model {
                 // ?? don't need to create anything, can just add it below?
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
                 break;
+            case 'ExternalTool':
+                // ?? don't need to create anything, can just add it below?
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+                break;
             default:
                 console.log(`Not yet creating items of type ${item.type}`);
                 break;

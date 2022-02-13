@@ -103,7 +103,8 @@ const HTML_CLASS_TO_ITEM_TYPE = {
 	'canvasAssignment' : 'Assignment',
 	'canvasQuiz': 'Quiz',
 	'canvasSubHeader' : 'SubHeader',
-	'canvasExternalUrl': 'ExternalUrl'
+	'canvasExternalUrl': 'ExternalUrl',
+    'canvasExternalTool': 'ExternalTool'
 };
 
 export default class c2m_HtmlConverter {
@@ -168,9 +169,11 @@ export default class c2m_HtmlConverter {
             item.error = false;
 
             // is text a valid URL by regex
-            if (item.type==="ExternalUrl" && ! item.content.match(/^(http|https):\/\/[^ "]+$/)) {
-                item.error=true;
-                item.errorString="Couldn't find a valid URL";
+            if (item.type==="ExternalUrl" || item.type==="ExternalTool" ) {
+                if ( ! item.content.match(/^(http|https):\/\/[^ "]+$/)) { 
+                    item.error=true; 
+                    item.errorString="Couldn't find a valid URL";
+                }
             }
 			// TODO set type from the class of h1
 			this.items.push(item);
@@ -203,9 +206,9 @@ export default class c2m_HtmlConverter {
 	getContent(h1, type) {
 		let content = this.nextUntil(h1, 'h1');
 
-        // for an externalUrl, we want the text and need to check
+        // for an externalUrl and tool, we want the text and need to check
         // that what is left is a URL
-		if ( type === "ExternalUrl") {
+		if ( ["ExternalUrl","ExternalTool"].includes(type) ) {
             let text = "";
             // loop thru each DomElement in content list and add innerText to text
             content.forEach((element) => {

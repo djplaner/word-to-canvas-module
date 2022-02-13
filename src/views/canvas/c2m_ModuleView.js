@@ -29,6 +29,7 @@ export default class c2m_ModuleView extends c2m_View {
       'Assignment' : 'icon-assignment',
       'Quiz': 'icon-quiz',    // TODO not sure we can add these
       'ExternalUrl': 'icon-link',
+      'ExternalTool': 'icon-link',
       'SubHeader': 'icon-subheader'
     }
     const typeToItemClass = {

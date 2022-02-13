@@ -450,6 +450,7 @@ class c2m_ModuleView extends c2m_View {
       'Assignment' : 'icon-assignment',
       'Quiz': 'icon-quiz',    // TODO not sure we can add these
       'ExternalUrl': 'icon-link',
+      'ExternalTool': 'icon-link',
       'SubHeader': 'icon-subheader'
     }
     const typeToItemClass = {
@@ -1136,6 +1137,7 @@ const DEFAULT_OPTIONS = {
 		"p[style-name='Canvas File'] => h1.canvasFile",
 		"p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
 		"p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
+		"p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
 
 		"p[style-name='Section Title'] => h1:fresh",
 		"p[style-name='Quote'] => blockquote:fresh",
@@ -1458,7 +1460,8 @@ const HTML_CLASS_TO_ITEM_TYPE = {
 	'canvasAssignment' : 'Assignment',
 	'canvasQuiz': 'Quiz',
 	'canvasSubHeader' : 'SubHeader',
-	'canvasExternalUrl': 'ExternalUrl'
+	'canvasExternalUrl': 'ExternalUrl',
+    'canvasExternalTool': 'ExternalTool'
 };
 
 class c2m_HtmlConverter {
@@ -1523,9 +1526,11 @@ class c2m_HtmlConverter {
             item.error = false;
 
             // is text a valid URL by regex
-            if (item.type==="ExternalUrl" && item.content.match(/^(http|https):\/\/[^ "]+$/)) {
-                item.error=true;
-                item.errorString="Couldn't find a valid URL";
+            if (item.type==="ExternalUrl" || item.type==="ExternalTool" ) {
+                if ( ! item.content.match(/^(http|https):\/\/[^ "]+$/)) { 
+                    item.error=true; 
+                    item.errorString="Couldn't find a valid URL";
+                }
             }
 			// TODO set type from the class of h1
 			this.items.push(item);
@@ -1558,9 +1563,9 @@ class c2m_HtmlConverter {
 	getContent(h1, type) {
 		let content = this.nextUntil(h1, 'h1');
 
-        // for an externalUrl, we want the text and need to check
+        // for an externalUrl and tool, we want the text and need to check
         // that what is left is a URL
-		if ( type === "ExternalUrl") {
+		if ( ["ExternalUrl","ExternalTool"].includes(type) ) {
             let text = "";
             // loop thru each DomElement in content list and add innerText to text
             content.forEach((element) => {
@@ -1750,7 +1755,7 @@ class c2m_Modules {
             }
         };
 
-        if ([ "File", "Discussion", "Assignment", "Quiz", "ExternalTool"].includes(item.type) ) {
+        if ([ "File", "Discussion", "Assignment", "Quiz"].includes(item.type) ) {
             body.module_item['content_id'] = item.createdItem.id;
         }
 
@@ -1760,7 +1765,7 @@ class c2m_Modules {
             body.module_item['type'] = 'Page';
         }
 
-        if (item.type === "ExternalUrl" ) {
+        if (["ExternalUrl","ExternalTool"].includes(item.type)) {
             // TODO need to do more to extract the URL here
             body.module_item['external_url'] = item.content;
         }
@@ -2099,6 +2104,10 @@ class c2m_Model {
                 this.canvasModules.findItem(index).then(() => {});
                 break;
             case 'ExternalUrl':
+                // ?? don't need to create anything, can just add it below?
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+                break;
+            case 'ExternalTool':
                 // ?? don't need to create anything, can just add it below?
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
                 break;

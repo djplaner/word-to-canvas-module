@@ -114,7 +114,7 @@ export default class c2m_Modules {
             }
         };
 
-        if ([ "File", "Discussion", "Assignment", "Quiz", "ExternalTool"].includes(item.type) ) {
+        if ([ "File", "Discussion", "Assignment", "Quiz"].includes(item.type) ) {
             body.module_item['content_id'] = item.createdItem.id;
         }
 
@@ -124,7 +124,7 @@ export default class c2m_Modules {
             body.module_item['type'] = 'Page';
         }
 
-        if (item.type === "ExternalUrl" ) {
+        if (["ExternalUrl","ExternalTool"].includes(item.type)) {
             // TODO need to do more to extract the URL here
             body.module_item['external_url'] = item.content;
         }

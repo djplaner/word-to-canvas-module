@@ -16,8 +16,7 @@ Rough user interface supports:
     Recognising specific Word styles to be converted to HTML classess for creating Canvas items.
 4. HTML split and converted into collection of Javascript objects largely matching the Canvas API JSON
 5. Module being created and items being added
-  - Items supported include: creating new pages, sub-headers and external URLs; and, add existing: assignments, files, discussions, (old) quizzes, and pages.
-  - TODO: external tool
+  - Items supported include: creating new pages, sub-headers and external URLs; and, add existing: assignments, files, discussions, (old) quizzes, external tool, and pages.
 
 To be done
 
@@ -28,7 +27,7 @@ To be done
 
 ## :warning: Known limitations
 
-1. Use specific Word styles for full benefit.
+1. Use specific Word styles for full functionality.
 
    Each Canvas module item type is identified by a specific Word style (based on the _Heading 1_ style). The [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) has defined these styles: Canvas Assignment; Canvas Discussion; Canvas Quiz; Canvas File; Exiting Canvas Page; Canvas SubHeader, Canvas External Url.
 
