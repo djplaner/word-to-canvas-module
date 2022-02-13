@@ -9,42 +9,50 @@ import { c2m_View } from './c2m_View.js';
 
 
 const COMPLETE_HTML = `
-<div class="border border-trbl pad-box">
-<h3>Create new module from Word document</h3>
 
-<p color="secondary">Step 4 of 4: Complete</p>
+<div class="item-group-container" id="w2c-container">
+  <div class="item-group-condensed context_module">
 
-<div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success">Confirm</button>
-  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
-  <button id="c2m-btn-close" class="btn-primary">Close</button>
+    <div class="ig-header header">
+       <span class="name">.docx 2 + Canvas Module</span>
+       <div class="ig-header-admin">
+         <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
+       </div>
+    </div> <!-- end ig-header -->
+
+    <div class="content border border-trbl">
+
+<div class="w2c-nav">
+  <ul>
+    <li class="w2c-nav"><a href="#">1. Choose .docx</a></li>
+	<li class="w2c-nav"><a href="#">2. Check HTML</a> </li>
+	<li class="w2c-nav"><a href="#">3. Check Module</a> </li>
+	<li class="w2c-nav w2c-active"><a href="#">4. Complete?</a></li>
+  </ul>
 </div>
 
 
-<div class="c2m-waiting-results">
-<p><em>Waiting for creation of new module "<span id="c2m-module-name"></span>"</em></p>
-<div class="c2m-loading"></div>
+<div class="w2c-content pad-box-mini">
+
+<div id="w2c-choice">
+  <button id="w2c-btn-start-again" class="btn">
+    <i class="icon-arrow-left"></i>
+    Choose another .docx
+  </button>
 </div>
 
-<div class="w2c-progress">
-<h4>Progress</h4>
-<ol id="w2c-progress-list">
-  <li> <span class="w2c-progress-label">Module creationg started</span> </li>
-</ol>
-</div>
-
-<div class="c2m-received-results" style="display:none">
-  <h4>Module created</h4>
-  <div id="c2m_summary">
-  <p>The module "<span id="c2m_module_name"></span>" was created with 
-  <span id="c2m_module_num_items"></span> items.</p>
-  <p>Close this dialog to view the module and <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-move-or-reorder-a-module/ta-p/1150">
+<div class="w2c-recieved-results" style="display:none">
+  <h4 class="text-success">Module created</h4>
+  <div id="w2c-summary">
+  <p>The module "<span id="w2c_module_name"></span>" was created with 
+  <span id="w2c_module_num_items"></span> items.</p>
+  <p>Close this dialog to view the module and then choose to <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-move-or-reorder-a-module/ta-p/1150">
   move it</a> to its proper place.</p>
   </div>
 </div>
 
 
-<div class="c2m-error" style="display:none">
+<div class="w2c-error" style="display:none">
   <h4>Problem with creating the module</h4>
   <p>Unable to create the new Module. Erorr message:
   <blockquote><span class="text-error" id="c2m_error_message"></span></blockquote>
@@ -56,11 +64,85 @@ const COMPLETE_HTML = `
   <em>offer some sage advice</em>
   </p>
 </div>
+
+
+<div class="w2c-waiting-results">
+<p><em>Waiting for creation of new module "<span id="w2c-module-name"></span>"</em></p>
+<div class="w2c-loading"></div>
 </div>
+
+<div class="w2c-progress">
+<h4>Progress</h4>
+<ol id="w2c-progress-list">
+  <li> <span class="w2c-progress-label">Module creation started</span> </li>
+</ol>
+</div>
+
+
+
+    </div> <!-- end content -->
+
+  </div> <!-- end item-group-condensed -->
+</div> <!-- end of w2c-container -->
 
 <style>
 
-.c2m-received-results .c2m-error {
+
+.w2c-content {
+    clear:both;
+}
+
+.w2c-nav { 
+    font-size: small;
+}
+
+.w2c-nav ul  {
+	list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden ;
+    background-color: #eee; 
+    width:100%;
+}
+
+li.w2c-active {
+    background-color: #aaa;
+    font-weight: bold;
+}
+
+li.w2c-close {
+    float: right !important;
+    border-right: none !important;
+}
+
+.w2c-nav ul li {
+    float:left;
+    border-right: 1px solid #000;
+}
+
+li.w2c-active a {
+    color: black !important;
+}
+
+li.w2c-nav a {
+    display: block;
+    padding: 0.5em;
+    text-align: center;
+    text-decoration: none;
+    color: #ccc; 
+}
+
+.w2c-nav li a:hover {
+    background-color: #111;
+}
+
+.w2c-nav li:nth-child(4) {
+    border-right: none;
+}
+
+
+
+.w2c-recieved-results .w2c-error {
 	margin-top: 0.5em;
 }
 
@@ -72,7 +154,7 @@ const COMPLETE_HTML = `
     font-size: small;
 }
 
-.c2m-loading {
+.w2c-loading {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */
   border-radius: 50%;
@@ -110,7 +192,7 @@ export default class c2m_CompletedView extends c2m_View {
         let c2mDiv = this.createEmptyDialogDiv();
 
         // register the event handlers for module creation
-        //c2mDiv.addEventListener('c2m_module_created', this.renderCreationResults.bind(this));
+        //c2mDiv.addEventListener('w2c_module_created', this.renderCreationResults.bind(this));
         c2mDiv.addEventListener(
             'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
         c2mDiv.addEventListener(
@@ -127,10 +209,10 @@ export default class c2m_CompletedView extends c2m_View {
         itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
 
         // add event handlers
-        let closeButton = document.getElementById("c2m-btn-close");
+        let closeButton = document.getElementById("w2c-btn-close");
         closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
 
-        let startAgainButton = document.getElementById("c2m-btn-start-again");
+        let startAgainButton = document.getElementById("w2c-btn-start-again");
         startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
         // for now just get a list of all messages, testing the event handling
@@ -286,24 +368,25 @@ export default class c2m_CompletedView extends c2m_View {
      */
 
     renderCreationResults() {
-        let receivedDiv = document.querySelector("div.c2m-received-results");
+        let receivedDiv = document.querySelector("div.w2c-recieved-results");
 
         const result = this.model.canvasModules.createdModule;
 
-        let nameSpan = document.getElementById("c2m_module_name");
+        let nameSpan = document.getElementById("w2c_module_name");
         nameSpan.innerHTML = result.name;
-        let numItemsSpan = document.getElementById("c2m_module_num_items");
-        numItemsSpan.innerHTML = result.items_count;
+        let numItemsSpan = document.getElementById("w2c_module_num_items");
+        //numItemsSpan.innerHTML = result.items_count;
+        numItemsSpan.innerHTML = this.model.canvasModules.items.length;
 
-        // hide div.c2m-waiting-results
-        let waitingDiv = document.querySelector("div.c2m-waiting-results");
+        // hide div.w2c-waiting-results
+        let waitingDiv = document.querySelector("div.w2c-waiting-results");
         waitingDiv.style.display = "none";
-        // show div.c2m-received-results
+        // show div.w2c-recieved-results
         receivedDiv.style.display = "block";
     }
 
     renderCreationError() {
-        let receivedDiv = document.querySelector("div.c2m-error");
+        let receivedDiv = document.querySelector("div.w2c-error");
         const error = this.model.canvasModules.createdModuleError;
 
         // populate recievedDiv with error message
@@ -311,10 +394,10 @@ export default class c2m_CompletedView extends c2m_View {
 		 <p class="text-warning">${error}</p>`;
 
 
-        // hide div.c2m-waiting-results
-        let waitingDiv = document.querySelector("div.c2m-waiting-results");
+        // hide div.w2c-waiting-results
+        let waitingDiv = document.querySelector("div.w2c-waiting-results");
         waitingDiv.style.display = "none";
-        // show div.c2m-error
+        // show div.w2c-error
         receivedDiv.style.display = "block";
 
 

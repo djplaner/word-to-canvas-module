@@ -2,43 +2,67 @@
 import { c2m_View } from './c2m_View.js';
 
 const CHECK_HTML_HTML = `
-<div class="border border-trbl pad-box">
-<h3>Create new module from Word document</h3>
+<div class="item-group-container" id="w2c-container">
+  <div class="item-group-condensed context_module">
 
-<p color="secondary">Step 2 of 4: Check HTML conversion</p>
+    <div class="ig-header header">
+       <span class="name">.docx 2 + Canvas Module</span>
+       <div class="ig-header-admin">
+         <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
+       </div>
+    </div> <!-- end ig-header -->
 
+    <div class="content border border-trbl">
 
-<div id="c2m_choice">
-  <button id="c2m-btn-confirm" class="btn-success" style="display:none">Confirm</button>
-  <button id="c2m-btn-start-again" class="btn-danger">Start again</button>
-  <button id="c2m-btn-close" class="btn-primary">Close</button>
+<div class="w2c-nav">
+  <ul>
+    <li class="w2c-nav"><a href="#">1. Choose .docx</a></li>
+	<li class="w2c-nav w2c-active"><a href="#">2. Check HTML</a> </li>
+	<li class="w2c-nav"><a href="#">3. Check Module</a> </li>
+	<li class="w2c-nav"><a href="#">4. Complete?</a></li>
+  </ul>
 </div>
 
-<div class="c2m-waiting-results">
+
+<div class="w2c-content pad-box-mini">
+
+<div id="w2c-choice">
+  <button id="w2c-btn-start-again" class="btn">
+    <i class="icon-arrow-left"></i>
+    Choose another .docx
+  </button>
+  <button id="w2c-btn-confirm" class="btn" style="display:none">
+    Check module structure
+    <i class="icon-arrow-right"></i>
+  </button>
+</div>
+
+<div class="w2c-waiting-results">
 <p><em>Waiting for conversion...</em></p>
-<div class="c2m-loading"></div>
+<div class="w2c-loading"></div>
 </div>
 
-<div class="c2m-received-results" style="display:none">
-  <h4>Conversion completed</h4>
+<div class="w2c-received-results" style="display:none">
+  <h4>.docx to HTML conversion completed</h4>
   <div id="c2m_summary">
-  <p>Use the following to check conversion. If
-  ok, click <em>Confirm</em> to see the Canvas Module this HTML would become.</p>
+  <p>Use the following to check the conversion.</p>
+  <p>If any issues, modify the Word doc and "chose another .docx". If ok, check the 
+  module structure. </p>
   <p>Open <em>Messages</em> accordion to show conversion messages</p>
   <p>Open <em>HTML</em> to the HTML conversion of the Word document content.</p>
   </div>
 
 
-<button class="c2m_accordion" id="c2m_result">Messages</button>
-<div class="c2m_panel">
+<button class="w2c-accordion" id="c2m_result">Messages</button>
+<div class="w2c_panel">
   <div id="c2m_messages"></div>
 </div>
 
-<button class="c2m_accordion">HTML</button>
-<div class="c2m_panel" id="c2m_html"></div>
+<button class="w2c-accordion">HTML</button>
+<div class="w2c_panel" id="c2m_html"></div>
 </div>
 
-<div class="c2m-error" style="display:none">
+<div class="w2c-error" style="display:none">
   <h4>Problem with conversion</h4>
   <p>Unable to convert the Word document. Erorr message:
   <blockquote><span class="text-error" id="c2m_error_message"></span></blockquote>
@@ -51,15 +75,75 @@ const CHECK_HTML_HTML = `
   for some has been to save the document again using the Word app (i.e. not in the browser)
   ensuring it's saved as a Word 2007-365 .docx file.</p>
 </div>
-</div>
+
+    </div> <!-- end content -->
+
+  </div> <!-- end item-group-condensed -->
+</div> <!-- end of w2c-container -->
+
 
 <style>
 
-.c2m-received-results .c2m-error {
+
+.w2c-content {
+	clear:both;
+    }
+    
+    .w2c-nav { 
+	font-size: small;
+    }
+    
+    .w2c-nav ul  {
+	    list-style-type: none;
+	margin: 0;
+	padding: 0;
+	overflow: hidden ;
+	background-color: #eee; 
+	width:100%;
+    }
+    
+    li.w2c-active {
+	background-color: #aaa;
+	font-weight: bold;
+    }
+    
+    li.w2c-close {
+	float: right !important;
+	border-right: none !important;
+    }
+    
+    .w2c-nav ul li {
+	float:left;
+	border-right: 1px solid #000;
+    }
+    
+    li.w2c-active a {
+	color: black !important;
+    }
+    
+    li.w2c-nav a {
+	display: block;
+	padding: 0.5em;
+	text-align: center;
+	text-decoration: none;
+	color: #ccc; 
+    }
+    
+    .w2c-nav li a:hover {
+	background-color: #111;
+    }
+    
+    .w2c-nav li:nth-child(4) {
+	border-right: none;
+    }
+
+
+
+.w2c-received-results .c2m-error {
 	margin-top: 0.5em;
 }
 
-.c2m-loading {
+.w2c-loading {
   border: 16px solid #f3f3f3; /* Light grey */
   border-top: 16px solid #3498db; /* Blue */
   border-radius: 50%;
@@ -75,7 +159,7 @@ const CHECK_HTML_HTML = `
 }
 
 /* Style the buttons that are used to open and close the accordion panel */
-.c2m_accordion {
+.w2c-accordion {
   background-color: #eee;
   color: #444;
   cursor: pointer;
@@ -89,19 +173,19 @@ const CHECK_HTML_HTML = `
 }
 
 /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-.c2m_active, .c2m_accordion:hover {
+.w2c-active-accordion, .w2c-accordion:hover {
   background-color: #ccc;
 }
 
 /* Style the accordion panel. Note: hidden by default */
-.c2m_panel {
+.w2c_panel {
   padding: 0 18px;
   background-color: #eeeeee;
   display: none;
   overflow: hidden;
 }
 
-.c2m_accordion:after {
+.w2c-accordion:after {
   content: '+'; /* Unicode character for "plus" sign (+) */
   font-size: 13px;
   color: #777;
@@ -109,7 +193,7 @@ const CHECK_HTML_HTML = `
   margin-left: 5px;
 }
 
-.c2m_active:after {
+.w2c-active-accordion:after {
   content: "-"; /* Unicode character for "minus" sign (-) */
 }
 </style>
@@ -136,7 +220,7 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		c2mDiv.insertAdjacentHTML('afterbegin', CHECK_HTML_HTML);
 
 		// insert it before div.item-group-container
-		let itemGroupContainer = document.querySelector("div.item-group-container");
+		let itemGroupContainer = document.querySelector("div#context_modules_sortable_container");
 		itemGroupContainer.parentNode.insertBefore(c2mDiv, itemGroupContainer);
 
 		// TODO check the model's mammoth member to access the html and
@@ -146,13 +230,13 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		this.configureAccordions();
 
 		// add onClick event handlers TODO fix these
-		let closeButton = document.getElementById("c2m-btn-close");
+		let closeButton = document.getElementById("w2c-btn-close");
 		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
 
-		let confirmButton = document.getElementById("c2m-btn-confirm");
+		let confirmButton = document.getElementById("w2c-btn-confirm");
 		confirmButton.onclick = () => this.controller.handleClick(c2m_CheckModule);
 
-		let startAgainButton = document.getElementById("c2m-btn-start-again");
+		let startAgainButton = document.getElementById("w2c-btn-start-again");
 		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
 
 	}
@@ -177,11 +261,11 @@ export default class c2m_CheckHtmlView extends c2m_View {
 			c2m_messages.innerHTML = messageHtml;
 		}
 
-		// hide div.c2m-waiting-results
-		document.querySelector("div.c2m-waiting-results").style.display = "none";
-		// display div.c2m-received-results
-		document.querySelector("div.c2m-received-results").style.display = "block";
-		document.querySelector("button#c2m-btn-confirm").style.display = "inline";
+		// hide div.w2c-waiting-results
+		document.querySelector("div.w2c-waiting-results").style.display = "none";
+		// display div.w2c-received-results
+		document.querySelector("div.w2c-received-results").style.display = "block";
+		document.querySelector("button#w2c-btn-confirm").style.display = "inline";
 	}
 
 	/**
@@ -196,9 +280,9 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		messages.forEach(function (message) {
 			console.log(message);
 			messageHtml += `
-			<div class="c2m-message">
-			  <span class="c2m-message-type">${message.type}</span>
-			  <span class="c2m-message-message">${message.message}</span>
+			<div class="w2c-message">
+			  <span class="w2c-message-type">${message.type}</span>
+			  <span class="w2c-message-message">${message.message}</span>
 			</div>`;
 		});
 		return messageHtml;
@@ -223,10 +307,10 @@ export default class c2m_CheckHtmlView extends c2m_View {
 			c2m_messages.innerHTML = this.model.wordConverter.mammothError;
 		}
 
-		// hide div.c2m-waiting-results
-		document.querySelector("div.c2m-waiting-results").style.display = "none";
-		// display div.c2m-received-results
-		document.querySelector("div.c2m-error").style.display = "block";
+		// hide div.w2c-waiting-results
+		document.querySelector("div.w2c-waiting-results").style.display = "none";
+		// display div.w2c-received-results
+		document.querySelector("div.w2c-error").style.display = "block";
 	}
 
 

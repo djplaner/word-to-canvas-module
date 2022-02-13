@@ -6,9 +6,7 @@ Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) t
 
 ## Current Status
 
-> **Note:** :warning: This project is in the early stages of :construction: development.
-
-Rough user interface supports:
+> **Note:** :warning: This project is just about ready for use.
 
 1. Addition of _.docx 2 + Module_ button on Canvas modules pages
 2. Clicking it to choose and upload a Word document to the browser 
@@ -20,10 +18,7 @@ Rough user interface supports:
 
 To be done
 
-1. Complete ability to add all items to module
-2. Need to do better searching of files - currently maybe stymied by pagination
-3. Tidy up the user interface.
-4. Better error checking
+1. Better error checking
 
 ## :warning: Known limitations
 
