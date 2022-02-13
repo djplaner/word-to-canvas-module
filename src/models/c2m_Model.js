@@ -119,7 +119,7 @@ export default class c2m_Model {
                 });
                 break;
             case 'ExistingPage':
-                this.canvasModules.findPage(index).then(() => {});
+                this.canvasModules.findItem(index).then(() => {});
                 break;
             case 'SubHeader':
                 // Don't need to find/create just generate event
@@ -128,7 +128,10 @@ export default class c2m_Model {
 //                });
                 break;
             case 'File':
-                this.canvasModules.findFile(index).then(() => {});
+                this.canvasModules.findItem(index).then(() => {});
+                break;
+            case 'Discussion':
+                this.canvasModules.findItem(index).then(() => {});
                 break;
             default:
                 console.log(`Not yet creating items of type ${item.type}`);

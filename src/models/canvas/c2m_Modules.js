@@ -114,7 +114,7 @@ export default class c2m_Modules {
             }
         };
 
-        if (item.type==="File" ) {
+        if ([ "File", "Discussion", "Assignment", "Quiz", "ExternalTool"].includes(item.type) ) {
             body.module_item['content_id'] = item.createdItem.id;
         }
 
@@ -193,17 +193,24 @@ export default class c2m_Modules {
     }
 
     /**
-     * Find a page matching the title/name of this.items[index]
+     * Find an existing item based on the title/name of this.items[index]
+     * Support different types: Page, File, Discussion, ...(Quiz, Assignment)
      * Set the createdItem to some sort of FAILURE if didn't find
      * @param {Number} index basic information about page to create
      */
-    async findPage(index) {
+    async findItem(index) {
         let item = this.items[index];
+        let type = item.type;
 
+        // depending on type, use a different URL
+        const TYPE_API_URL = {
+            "ExistingPage": `/api/v1/courses/${this.courseId}/pages?`,
+            "File": `/api/v1/courses/${this.courseId}/files?`,
+            "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`
+        }
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = `/api/v1/courses/${this.courseId}/pages?` +
-                    new URLSearchParams({'search_term': item.title});
+        let callUrl = TYPE_API_URL[type] + new URLSearchParams({'search_term': item.title});
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -221,43 +228,7 @@ export default class c2m_Modules {
                 // JSON now contains list of Page objects
                 // need to search them for a match and return
                 // the matched Page object
-                this.findPageInPageList(json, index);
-                // do the same event, regardless, the content of item.createdItem
-                // will indicate failure or not
-                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            })
-    }
-
-    /**
-     * Find a file matching the title/name of this.items[index]
-     * Set the createdItem to some sort of FAILURE if didn't find
-     * @param {Number} index basic information about page to create
-     */
-    async findFile(index) {
-        let item = this.items[index];
-
-        // do a List pages api call
-        // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = `/api/v1/courses/${this.courseId}/files?` +
-                    new URLSearchParams({'search_term': item.title});
-
-        await fetch(callUrl, {
-            method: 'GET', credentials: 'include',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-CSRF-Token": this.csrfToken,
-            }
-        })
-            .then(this.status)
-            .then((response) => {
-                return response.json();
-            })
-            .then((json) => {
-                // JSON now contains list of Page objects
-                // need to search them for a match and return
-                // the matched Page object
-                this.findFileInFileList(json, index);
+                this.findItemInList(json, index);
                 // do the same event, regardless, the content of item.createdItem
                 // will indicate failure or not
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
@@ -269,56 +240,37 @@ export default class c2m_Modules {
      * (exactly) the title for the item at index
      * If found, set the page object, otherwise not found error
      * https://canvas.instructure.com/doc/api/plagiarism_detection_submissions.html#File
-     * @param {Array} files - list of File objects
-     * @param {Number} index - to item object
+     * @param {Array} list - json list of objects returned from Canvas API
+     * @param {Number} index - to item object we're looking for a match for
      */
 
-    findFileInFileList(files, index) {
+    findItemInList(list, index) {
         let item = this.items[index];
+        let type = item.type;
 
-        // loop through the pages
-        for (let i = 0; i < files.length; i++) {
-            let file = files[i];
-            const fileName = file.display_name.trim();
+        // loop through the discussions
+        for (let i = 0; i < list.length; i++) {
+            let element = list[i];
+            let elementName = '';
             const itemName = item.title.trim();
+
+            // the name to match in the list element, depends on type
+            if ( type==="File") {
+                elementName = element.display_name.trim();
+            } else {
+                elementName = element.title.trim();
+            }
             // if itemName is substr of fileName
-            if ( fileName.includes(itemName)) {
-                item.createdItem = file;
+            if ( elementName.includes(itemName)) {
+                item.createdItem = element;
                 return;
             }
         }
         item.createdItem = {
-            "error": `file not found: ${item.title}`    
+            "error": `file not found: ${item.title}`,
+            "index": index
         }
     }
-
-
-    /**
-     * Search through a list of Page objects to find a page that matches
-     * (exactly) the title for the item at index
-     * If found, set the page object, otherwise not found error
-     * @param {Array} pages - list of Page objects
-     * @param {Number} index - to item object
-     */
-
-    findPageInPageList(pages, index) {
-        let item = this.items[index];
-
-        // loop through the pages
-        for (let i = 0; i < pages.length; i++) {
-            let page = pages[i];
-            // trim both titles and if the page title matches, 
-            // set the createdItem to the page object
-            if (page.title.trim() === item.title.trim()) {
-                item.createdItem = page;
-                return;
-            }
-        }
-        item.createdItem = {
-            "error": `Page not found: ${item.title}`    
-        }
-    }
-
 
     /*
      * Function which returns a promise (and error if rejected) if response status is OK

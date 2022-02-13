@@ -272,7 +272,6 @@ export default class c2m_CompletedView extends c2m_View {
     addProgressList(message) {
         let progressList = document.getElementById("w2c-progress-list");
         // get number of items in progressList
-        let numItems = progressList.children.length;
         let li = document.createElement("li");
         li.innerHTML = `
         <span class="w2c-progress-label text-info">${message}</span>
