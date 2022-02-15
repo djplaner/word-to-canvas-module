@@ -2274,7 +2274,7 @@ class c2m_Modules {
         for (let i = 0; i < list.length; i++) {
             let element = list[i];
             let elementName = '';
-            const itemName = item.title.trim();
+            let itemName = item.title.trim();
 
             // the name to match in the list element, depends on type
             if ( type==="File") {
