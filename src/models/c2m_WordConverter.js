@@ -15,6 +15,7 @@ const DEFAULT_OPTIONS = {
 		"p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
 		"p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
 		"p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
+		"r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
 
 		"p[style-name='Section Title'] => h1:fresh",
 		"p[style-name='Quote'] => blockquote:fresh",
@@ -136,20 +137,12 @@ export default class c2m_WordConverter {
 
 		this.mammothResult = result;
 
+	// CONTEXTUAL CHANGES
 		// TODO do Content Interface translations here??
         // TODO move this out an additional class
 		// find all span.embed in mammothResult and log innerhtml
         // parse the string 
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(this.mammothResult.value, "text/html");
-		let embeds = doc.querySelectorAll('span.embed');
-        // iterate over the embeds and use this.decodeEntities to decode the innerHTML
-        for (let i = 0; i < embeds.length; i++) {
-            let embed = embeds[i];
-            embed.innerHTML = this.decodeEntities(embed.innerHTML);
-        }
-        // convert the doc back to a string
-        this.mammothResult.value = doc.documentElement.outerHTML;
+	    this.postConvert()
 
 		// generate mammoth-results event
 		const event = new Event('mammoth-results');
@@ -157,6 +150,42 @@ export default class c2m_WordConverter {
 		if (c2m_dialog) {
 			c2m_dialog.dispatchEvent(event);
 		}
+	}
+
+    /**
+     * Do all post mammoth conversions
+     * - span.embed decoded HTML
+     * - span.talisCanvasLink to a link
+     */
+	postConvert() { 
+        let parser = new DOMParser();
+
+        let doc = parser.parseFromString(this.mammothResult.value, "text/html");
+
+        // span.embed
+		let embeds = doc.querySelectorAll('span.embed');
+        // iterate over the embeds and use this.decodeEntities to decode the innerHTML
+        for (let i = 0; i < embeds.length; i++) {
+            let embed = embeds[i];
+            embed.innerHTML = this.decodeEntities(embed.innerHTML);
+        }
+
+        // convert span.talisCanvasLink innerHTML to a link
+        let links = doc.querySelectorAll('span.talisCanvasLink');
+        for (let i = 0; i < links.length; i++) {
+            let link = links[i];
+            // create new anchor element
+            let anchor = document.createElement('a');
+            anchor.href = 'https://lms.griffith.edu.au/courses/252/external_tools/111';
+            anchor.innerHTML = link.innerHTML;
+            // replace link.innerHTML with anchor
+            link.innerHTML = '';
+            link.appendChild(anchor);
+        }
+
+        // convert the doc back to a string
+        this.mammothResult.value = doc.documentElement.outerHTML;
+
 	}
 
 	/**
