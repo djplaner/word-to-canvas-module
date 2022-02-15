@@ -215,9 +215,17 @@ export default class c2m_Modules {
             "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`,
             "Quiz" : `/api/v1/courses/${this.courseId}/quizzes?`
         }
+
+        let searchTerm = item.title;
+
+        // if looking for a File item, we need to search for the filename
+        if (type==="File") {
+            searchTerm = item.content.fileName;
+        } 
+
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = TYPE_API_URL[type] + new URLSearchParams({'search_term': item.title});
+        let callUrl = TYPE_API_URL[type] + new URLSearchParams({'search_term': searchTerm});
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -264,6 +272,7 @@ export default class c2m_Modules {
             // the name to match in the list element, depends on type
             if ( type==="File") {
                 elementName = element.display_name.trim();
+                itemName = item.content.fileName.trim();
             } else if ( type==="Assignment") {
                 elementName = element.name.trim();
             } else {
