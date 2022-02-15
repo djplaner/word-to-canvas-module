@@ -4,7 +4,7 @@
  *   a module like structure
  * Uses exceprts from the Canvas API as structure
  * https://canvas.instructure.com/doc/api/modules.html
- */ 
+ */
 
 
 /** ModuleObject 
@@ -96,15 +96,15 @@
  * Define the translation between a html class for h1 and Canvas item type
  */
 const HTML_CLASS_TO_ITEM_TYPE = {
-	'canvasFile' : 'File',
-	'canvasPage' : 'Page',
+	'canvasFile': 'File',
+	'canvasPage': 'Page',
 	'existingCanvasPage': 'ExistingPage',
-	'canvasDiscussion' :'Discussion',
-	'canvasAssignment' : 'Assignment',
+	'canvasDiscussion': 'Discussion',
+	'canvasAssignment': 'Assignment',
 	'canvasQuiz': 'Quiz',
-	'canvasSubHeader' : 'SubHeader',
+	'canvasSubHeader': 'SubHeader',
 	'canvasExternalUrl': 'ExternalUrl',
-    'canvasExternalTool': 'ExternalTool'
+	'canvasExternalTool': 'ExternalTool'
 };
 
 export default class c2m_HtmlConverter {
@@ -166,15 +166,32 @@ export default class c2m_HtmlConverter {
 			item.title = h1.innerText;
 			item.type = this.getType(h1);
 			item.content = this.getContent(h1, item.type);
-            item.error = false;
+			item.error = false;
 
-            // is text a valid URL by regex
-            if (item.type==="ExternalUrl" || item.type==="ExternalTool" ) {
-                if ( ! item.content.match(/^(http|https):\/\/[^ "]+$/)) { 
-                    item.error=true; 
-                    item.errorString="Couldn't find a valid URL";
-                }
-            }
+			// is text a valid URL by regex
+			if (item.type === "ExternalUrl" || item.type === "ExternalTool") {
+				if (!item.content.match(/^(http|https):\/\/[^ "]+$/)) {
+					item.error = true;
+					item.errorString = "Couldn't find a valid URL";
+				}
+			}
+
+			// A File should generate two specific bits of content
+			// - displayName - the name of the item to be added to the module
+			// - fileName - the name of the file to be searched
+			// - fileUrl - optional URL for the file, if already provided???? TODO
+			if (item.type === "File") {
+				let contentObj = {
+					displayName: item.title,
+					fileName: item.title
+				}
+				// if item.content is not empty, then it must be the filename
+				if ( item.content.trim()!=='' ) {
+					contentObj.fileName = item.content;
+				}
+				item.content = contentObj;
+			}
+
 			// TODO set type from the class of h1
 			this.items.push(item);
 		});
@@ -206,15 +223,15 @@ export default class c2m_HtmlConverter {
 	getContent(h1, type) {
 		let content = this.nextUntil(h1, 'h1');
 
-        // for an externalUrl and tool, we want the text and need to check
-        // that what is left is a URL
-		if ( ["ExternalUrl","ExternalTool"].includes(type) ) {
-            let text = "";
-            // loop thru each DomElement in content list and add innerText to text
-            content.forEach((element) => {
-                text += element.innerText;
-            });
-            return text;
+		// for an externalUrl, tool and file, we want the text and need to check
+		// that what is left is a URL (or similar)
+		if (["ExternalUrl", "ExternalTool", "File"].includes(type)) {
+			let text = "";
+			// loop thru each DomElement in content list and add innerText to text
+			content.forEach((element) => {
+				text += element.innerText;
+			});
+			return text;
 		}
 
 		// for other types convert content elements into html string
