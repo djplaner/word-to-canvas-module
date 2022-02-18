@@ -183,6 +183,8 @@ export default class c2m_WordConverter {
             link.appendChild(anchor);
         }
 
+        //
+
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
 
