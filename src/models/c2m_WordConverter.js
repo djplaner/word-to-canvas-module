@@ -17,6 +17,8 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
 
+        "p[style-name='Hide'] => div.Hide > p:fresh",
+
         "p[style-name='Section Title'] => h1:fresh",
         "p[style-name='Quote'] => blockquote:fresh",
         "p[style-name='Quotations'] => blockquote:fresh",
@@ -183,7 +185,12 @@ export default class c2m_WordConverter {
             link.appendChild(anchor);
         }
 
-        //
+        // remove the div.Hide
+        let hiddenElems = doc.querySelectorAll('div.Hide');
+        for (let i = 0; i < hiddenElems.length; i++) {
+            let hiddenElem = hiddenElems[i];
+            hiddenElem.parentNode.removeChild(hiddenElem);
+        }
 
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
