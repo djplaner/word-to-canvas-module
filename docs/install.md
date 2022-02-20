@@ -31,7 +31,7 @@ Each web browser’s browser extension installation process will be a little dif
 
 ## 2. Install the word-2-canvas userscript
 
-With TamperMonkey installed you can now install [the word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.live.user.js). Just click on that link.
+With TamperMonkey installed you can now install [the word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/dist/word2canvas.live.user.js). Just click on that link.
 
 If all is working you should something like the following image. An image showing TamperMonkey providing you with details of the userscript and asking if you wish to install it.
 
