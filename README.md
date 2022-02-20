@@ -7,7 +7,7 @@ Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) t
 ## How to use
 
 1. [Install the userscript](./docs/install.md)
-   Install a userscript manager (e.g. [TamperMonkey](https://www.tampermonkey.net/)) on your browser of choice and then install the [word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.user.js).
+   Install a userscript manager (e.g. [TamperMonkey](https://www.tampermonkey.net/)) on your browser of choice and then install the [word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.live.user.js).
 2. [Create a Word document](./docs/create.md) containing content for your new Canvas module.
    Use the [sample w2.docx](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) Word document as a template and example.
 3. Visit the modules page of a Canvas course and [use word-2-canvas](./docs/use.md) to create a new module.
