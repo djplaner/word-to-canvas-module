@@ -1,8 +1,8 @@
 # Word to Canvas Module
 
-Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) to create a new [Canvas LMS](https://canvas.instructure.com/) module from a Word document (using some specific Word styles) - see [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) for an annotated example.
+A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new [Canvas LMS](https://canvas.instructure.com/) module from a Word document (using some specific Word styles) - see [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) for an annotated example.
 
-> :secret: The contents of the Word document always remain on your computer, your web browser, or eventually as a Module in the Canvas instance you are working with.
+> :exclamation: The contents of your Word documents always remain on your computer, your web browser, and eventually as a Module in the Canvas instance you are working with.
 
 ## How to use
 
@@ -11,25 +11,30 @@ Exploration to write a [userscript](https://en.wikipedia.org/wiki/User_script) t
 2. [Create a Word document](./docs/create.md) containing content for your new Canvas module.
    Use the [sample w2.docx](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) Word document as a template and example.
 3. Visit the modules page of a Canvas course and [use word-2-canvas](./docs/use.md) to create a new module.
-   If all is working, use the ```.docx 2 + Module``` button that appears to create a new module from the Word document.
+   If all is working, use the ```.docx 2 + Module``` button that appears to create a new module from the Word document (see following image).
+
+> :grey_question: Feel free to use this [repo's Issues](https://github.com/djplaner/word-to-canvas-module/issues) to ask questions. Especially in these early development stages.
 
 ![Canvas modules page with the word-2-canvas button added](docs/images/w2c-btn-modules-page.png)
 
 ## Current Status
 
-> **Note:** :warning: This project is just about ready for use.
+> **Note:** :warning: word-2-canvas appears to be working and is being used. But there remain rough edges and missing features.
 
-1. Addition of _.docx 2 + Module_ button on Canvas modules pages
-2. Clicking it to choose and upload a Word document to the browser 
-3. Converting that Word document to HTML and visualising the conversion
-    Recognising specific Word styles to be converted to HTML classess for creating Canvas items.
-4. HTML split and converted into collection of Javascript objects largely matching the Canvas API JSON
-5. Module being created and items being added
-  - Items supported include: creating new pages, sub-headers and external URLs; and, add existing: assignments, files, discussions, (old) quizzes, external tool, and pages.
+Currently creates Canvas modules including
+- Creating new: pages, sub-headers, and external urls.
+- Links to existing: pages, assignments, files, discussions, quizzes (only old quizzes), and external tools.
 
-To be done
+## To be done
 
-1. Better error checking
+1. Better error checking and messaging
+2. Support for a _Canvas File Link_ style
+3. Figure out a better, more consistent way to handle images
+
+## :warning: Known issues
+
+1. The word-2-canvas button may not always appear on the Modules page.
+   **Solution:** Reload the modules page. **Apparent cause:** Navigation between pages in a Canvas course doesn't always invoke word2Canvas to check if it's on the module page. A reload of the modules page forces the issue
 
 ## :warning: Known limitations
 
