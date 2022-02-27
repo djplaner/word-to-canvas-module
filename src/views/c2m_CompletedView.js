@@ -196,6 +196,8 @@ export default class c2m_CompletedView extends c2m_View {
         c2mDiv.addEventListener(
             'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
         c2mDiv.addEventListener(
+            'w2c-file-found', this.checkFileLinksFound.bind(this));
+        c2mDiv.addEventListener(
             'w2c-item-found-created', this.checkItemFoundCreated.bind(this));
         c2mDiv.addEventListener(
             'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
@@ -258,9 +260,34 @@ export default class c2m_CompletedView extends c2m_View {
 
     checkFileLinksFound(e) {
         console.log("---------------------- checkFileLinksFound");
+        console.log(e);
+        let index = e.detail.file;
+        let file = this.model.canvasModules.fileLinks[index];
 
+        console.log(`found file ${file.name} with id ${index}`);
+        console.log(file);
 
+        // check that the file has been found correctly
+        if ( file.status==="found") {
+            // add to the progress display
+            this.addProgressList(` File "<em>${file.name}</em>": found` );
+        } else {
+            // failed to find it
+            this.addProgressList(
+                `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
+            )
+        }
 
+        // increment the number of files we've heard about
+        this.model.numFoundFileLinks+=1;
+
+        // if we've heard from all 
+        if ( this.model.numFoundFileLinks===this.model.canvasModules.fileLinks.length) {
+            // then we've found all the files
+            // so now we can find or create the items
+            // TODO but not yet
+    //        this.model.findOrCreateModuleItems();
+        }
     }
 
     /**

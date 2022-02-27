@@ -83,8 +83,8 @@ export default class c2m_Model {
         //   - response from find API call
         // - this.numFoundFileLinks - count of the number file links found
 
-        this.fileLinks = [];
-        this.numFoundFileLinks = 0;
+        this.canvasModules.fileLinks = [];
+        this.canvasModules.numFoundFileLinks = 0;
 
         let parser = new DOMParser();
 
@@ -110,16 +110,21 @@ export default class c2m_Model {
                     itemIndex: i,
                     name: name,
                     descriptor: descriptor,
-                    status: undefined,
+                    status: "initialised",
                     response: undefined
                 };
                 // append newFileLink to fileLinks
-                this.fileLinks.push(newFileLink);
+                this.canvasModules.fileLinks.push(newFileLink);
             }
         }
 
         console.log("Found the following links")
-        console.log(this.fileLinks);
+        console.log(this.canvasModules.fileLinks);
+
+        // loop through each fileLinks and call find API
+        for (let i = 0; i < this.canvasModules.fileLinks.length; i++) {
+            this.canvasModules.findFile(i).then(() => {});
+        }
     }
 
     /**
@@ -142,10 +147,10 @@ export default class c2m_Model {
             if (children.length === 1) {
                 // if there is only one child, it's the fileLink
                 // so change the name and descriptor
-                name = parent.href;
+                name = decodeURI(parent.href);
                 // get just the text after the last /
                 name = name.substring(name.lastIndexOf('/') + 1);
-                descriptor = parent.innerText;
+                descriptor = decodeURI(parent.innerText);
             } 
         }
 

@@ -1257,6 +1257,8 @@ class c2m_CompletedView extends c2m_View {
         c2mDiv.addEventListener(
             'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
         c2mDiv.addEventListener(
+            'w2c-file-found', this.checkFileLinksFound.bind(this));
+        c2mDiv.addEventListener(
             'w2c-item-found-created', this.checkItemFoundCreated.bind(this));
         c2mDiv.addEventListener(
             'w2c-module-item-added', this.checkModuleItemAdded.bind(this));
@@ -1319,9 +1321,34 @@ class c2m_CompletedView extends c2m_View {
 
     checkFileLinksFound(e) {
         console.log("---------------------- checkFileLinksFound");
+        console.log(e);
+        let index = e.detail.file;
+        let file = this.model.canvasModules.fileLinks[index];
 
+        console.log(`found file ${file.name} with id ${index}`);
+        console.log(file);
 
+        // check that the file has been found correctly
+        if ( file.status==="found") {
+            // add to the progress display
+            this.addProgressList(` File "<em>${file.name}</em>": found` );
+        } else {
+            // failed to find it
+            this.addProgressList(
+                `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
+            )
+        }
 
+        // increment the number of files we've heard about
+        this.model.numFoundFileLinks+=1;
+
+        // if we've heard from all 
+        if ( this.model.numFoundFileLinks===this.model.canvasModules.fileLinks.length) {
+            // then we've found all the files
+            // so now we can find or create the items
+            // TODO but not yet
+    //        this.model.findOrCreateModuleItems();
+        }
     }
 
     /**
@@ -2267,6 +2294,51 @@ class c2m_Modules {
     }
 
     /**
+     * Call find file API using this.fileLinks array 
+     * {
+     *   itemIndex: index of this.items i.e. the module item this link belongs to
+     *   name:  name of the file
+     *   descriptor:  descriptor for link
+     *   status:
+     *   response:
+     * }
+     * @param {*} index 
+     */
+
+    async findFile(index) {
+        let file = this.fileLinks[index];
+
+        let searchTerm = file.name;
+
+        let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
+            {'search_term': searchTerm});
+
+        // indicate that we're about to start searching
+        file.status = 'searching';
+
+        await fetch(callUrl, {
+            method: 'GET', credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-CSRF-Token": this.csrfToken,
+            }
+        }) 
+        .then(this.status) 
+        .then((response) => { 
+            return response.json(); 
+        }) 
+        .then((json) => {
+            // json - list of files from Canvas API matching request
+            // see if we can find our file (fileLinks[index]) in the list
+            this.findFileInList(json, index);
+            // do the same event, regardless, the item will be set to indicate
+            // success or failure
+            this.dispatchEvent( 'w2c-file-found',{'file':index});
+        })
+    }
+
+    /**
      * Find an existing item based on the title/name of this.items[index]
      * Support different types: Page, File, Discussion, ...(Quiz, Assignment)
      * Set the createdItem to some sort of FAILURE if didn't find
@@ -2357,6 +2429,31 @@ class c2m_Modules {
             "error": `file not found: ${item.title}`,
             "index": index
         }
+    }
+
+    /**
+     * Look for the file we're after this.fileLinks[index] in the list
+     * of JSON 
+     * Set the item.status and item.response respectively
+     * @param {Array} list - JSON list of Files returned by Canvas API 
+     * @param {Integer} index - index info this.fileLinks list of required files
+     */
+
+    findFileInList( list, index ) {
+        let file = this.fileLinks[index];
+
+        for (let i = 0; i < list.length; i++) {
+            let element = list[i];
+            let elementName = element.display_name.trim();
+            let fileName = file.name.trim();
+
+            if ( elementName.includes(fileName)) {
+                file.response = element;
+                file.status = 'found';
+                return;
+            }
+        }
+        file.status = 'not found';
     }
 
     /*
@@ -2484,8 +2581,8 @@ class c2m_Model {
         //   - response from find API call
         // - this.numFoundFileLinks - count of the number file links found
 
-        this.fileLinks = [];
-        this.numFoundFileLinks = 0;
+        this.canvasModules.fileLinks = [];
+        this.canvasModules.numFoundFileLinks = 0;
 
         let parser = new DOMParser();
 
@@ -2511,16 +2608,21 @@ class c2m_Model {
                     itemIndex: i,
                     name: name,
                     descriptor: descriptor,
-                    status: undefined,
+                    status: "initialised",
                     response: undefined
                 };
                 // append newFileLink to fileLinks
-                this.fileLinks.push(newFileLink);
+                this.canvasModules.fileLinks.push(newFileLink);
             }
         }
 
         console.log("Found the following links")
-        console.log(this.fileLinks);
+        console.log(this.canvasModules.fileLinks);
+
+        // loop through each fileLinks and call find API
+        for (let i = 0; i < this.canvasModules.fileLinks.length; i++) {
+            this.canvasModules.findFile(i).then(() => {});
+        }
     }
 
     /**
@@ -2543,10 +2645,10 @@ class c2m_Model {
             if (children.length === 1) {
                 // if there is only one child, it's the fileLink
                 // so change the name and descriptor
-                name = parent.href;
+                name = decodeURI(parent.href);
                 // get just the text after the last /
                 name = name.substring(name.lastIndexOf('/') + 1);
-                descriptor = parent.innerText;
+                descriptor = decodeURI(parent.innerText);
             } 
         }
 
