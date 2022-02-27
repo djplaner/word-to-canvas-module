@@ -1279,7 +1279,10 @@ class c2m_CompletedView extends c2m_View {
         // for now just get a list of all messages, testing the event handling
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
-        this.model.createModule();
+
+        this.model.findFileLinks();
+        // TODO return this
+        //this.model.createModule();
     }
 
     /**
@@ -1299,7 +1302,26 @@ class c2m_CompletedView extends c2m_View {
         this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
 
         this.numFoundCreatedItems = 0;
-        this.model.findOrCreateModuleItems();
+        this.model.findFileLinks();
+//        this.model.findOrCreateModuleItems();
+    }
+
+    /**
+     * Event handler for the w2c-file-found event 
+     * - check if the correct number of files have been created
+     * - if not, do nothing but update the display status
+     * - is all created, then call findOrCreateModuleItems
+     * 
+     * May also need to update the model structure with details of each fileLink
+     * that needs to be found with the results of the event
+     * @param {Event} e
+     */
+
+    checkFileLinksFound(e) {
+        console.log("---------------------- checkFileLinksFound");
+
+
+
     }
 
     /**
@@ -2438,6 +2460,97 @@ class c2m_Model {
                 // actually waits
                 //                this.dispatchEvent('w2c-empty-module-created')
             )
+    }
+
+    /**
+     * Generate events and appropriate infrastrcutre to find all the 
+     * necessary canvasFileLink spans
+     */
+
+    findFileLinks() {
+        console.log("-----------------------------");
+        console.log("-----------------------------");
+        console.log("FIND FILE LINKS");
+        console.log("-----------------------------");
+
+        let items = this.htmlConverter.items;
+        console.log(items);
+
+        // set up infrastructure
+        // - this.fileLinks array of objects for required fileLinks
+        //   - name of file link
+        //   - index of the item for which it's required
+        //   - status of find API call
+        //   - response from find API call
+        // - this.numFoundFileLinks - count of the number file links found
+
+        this.fileLinks = [];
+        this.numFoundFileLinks = 0;
+
+        let parser = new DOMParser();
+
+        // loop thru this.htmlConverter.items
+        for (let i = 0; i<items.length; i++ ) {
+            // extract all span.canvasFileLink from the body of the item
+            let body = items[i].content;
+            console.log('item ${i} content');
+            console.log(body);
+            let bodyDoc = parser.parseFromString(body, "text/html");
+            // find all the canvasFileLinks
+            let fileLinks = bodyDoc.querySelectorAll('span.canvasFileLink');
+
+            console.log(`found ${fileLinks.length} file links in item ${i}`);
+
+            // loop thru the fileLinks
+            for (let j = 0; j < fileLinks.length; j++) {
+                console.log(fileLinks[j]);
+
+                let {name, descriptor} = this.setNameDescriptor( fileLinks[j]);
+
+                let newFileLink = {
+                    itemIndex: i,
+                    name: name,
+                    descriptor: descriptor,
+                    status: undefined,
+                    response: undefined
+                };
+                // append newFileLink to fileLinks
+                this.fileLinks.push(newFileLink);
+            }
+        }
+
+        console.log("Found the following links")
+        console.log(this.fileLinks);
+    }
+
+    /**
+     * Check if the fileLink element has a parent that is a link
+     * and which only contains fileLink -- indicating a need to change
+     * name (filename) to the value in the link href and descriptor as
+     * the body of the span (fileLink)
+     * @param {DOMElement} fileLink - element containins <span class="canvasFileLink">
+     * @returns {Object} - {name, descriptor}
+     */
+    setNameDescriptor(fileLink) {
+        let parent = fileLink.parentElement;
+        // set default values (if there's no link wrapper)
+        let name = fileLink.innerText;
+        let descriptor = fileLink.innerText;
+
+        if (parent.tagName === 'A') {
+            // how many children of parent?
+            let children = parent.children;
+            if (children.length === 1) {
+                // if there is only one child, it's the fileLink
+                // so change the name and descriptor
+                name = parent.href;
+                // get just the text after the last /
+                name = name.substring(name.lastIndexOf('/') + 1);
+                descriptor = parent.innerText;
+            } 
+        }
+
+        return { name, descriptor };
     }
 
     /**

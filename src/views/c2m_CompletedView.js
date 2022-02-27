@@ -219,8 +219,9 @@ export default class c2m_CompletedView extends c2m_View {
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
 
+        this.model.findFileLinks();
         // TODO return this
-        this.model.createModule();
+        //this.model.createModule();
     }
 
     /**
@@ -240,8 +241,8 @@ export default class c2m_CompletedView extends c2m_View {
         this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
 
         this.numFoundCreatedItems = 0;
-        //this.model.findFileLinks();
-        this.model.findOrCreateModuleItems();
+        this.model.findFileLinks();
+//        this.model.findOrCreateModuleItems();
     }
 
     /**
