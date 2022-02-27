@@ -37,6 +37,7 @@ const CHECK_HTML_HTML = `
   </button>
 </div>
 
+
 <div class="w2c-waiting-results">
 <p><em>Waiting for conversion...</em></p>
 <div class="w2c-loading"></div>
@@ -44,6 +45,14 @@ const CHECK_HTML_HTML = `
 
 <div class="w2c-received-results" style="display:none">
   <h4>.docx to HTML conversion completed</h4>
+<div class="pad-box-micro border border-trbl muted">
+    <i class="icon-info"></i> 
+    <small>
+      Checking and fixing 
+	  <a target="_blank" href="https://github.com/djplaner/word-to-canvas-module/blob/main/docs/word2html-messages.md#word-2-html-messages">
+	  HTML conversion outcomes</a>
+    </small>
+</div>
   <div id="c2m_summary">
   <p>Use the following to check the conversion.</p>
   <p>If any issues, modify the Word doc and "chose another .docx". If ok, check the 
