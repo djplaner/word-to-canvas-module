@@ -16,8 +16,13 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
         "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
+        "r[style-name='Canvas File Link'] => span.canvasFileLink",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
+
+        // kludges to tidy up common messy word cruft
+        "p[style-name='List Bullet'] => ul > li:fresh",
+        "p[style-name='heading 6'] => h6:fresh",
 
         "p[style-name='Section Title'] => h1:fresh",
         "p[style-name='Quote'] => blockquote:fresh",

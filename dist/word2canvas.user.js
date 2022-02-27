@@ -156,10 +156,18 @@ const CHOOSE_WORD_HTML = `
 
 
 <div class="w2c-content pad-box-mini">
-
 <div class="w2c-upload">
   <p>Select the Word document to create a Canvas module</p>
     <input id="w2c-docx" type="file" accept=".docx" />
+
+  <p>&nbsp;</p>
+
+  <div class="pad-box-micro border border-trbl muted">
+    <i class="icon-info"></i> 
+    <small>
+      More on <a target="_blank" href="https://github.com/djplaner/word-to-canvas-module/blob/main/docs/create.md#create-a-word-2-canvas-word-document">word-2-canvas Word styles</a>
+    </small>
+  </div>
 </div>
 
 </div>
@@ -431,7 +439,9 @@ const CHECK_HTML_HTML = `
   transition: 0.4s;
 }
 
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+/* Add a background color to the button if it is clicked on 
+   (add the .active class with JS), and when you move the mouse over it (hover) 
+ */
 .w2c-active-accordion, .w2c-accordion:hover {
   background-color: #ccc;
 }
@@ -516,6 +526,13 @@ class c2m_CheckHtmlView extends c2m_View {
 		// Show the messages from mammoth
 		let c2m_messages = document.getElementById("c2m_messages");
 		if (c2m_messages) {
+			const numMessages = this.model.wordConverter.mammothResult.messages.length;
+			// update the title of the c2m_result div
+			let c2m_result = document.getElementById("c2m_result");
+			// add num messages to c2m_result text
+			c2m_result.innerHTML += `: ${numMessages} messages from conversion`;
+
+			// add html of messages to the div
 			let messageHtml = this.generateMessageHtml(this.model.wordConverter.mammothResult.messages);
 			c2m_messages.innerHTML = messageHtml;
 		}
@@ -1459,8 +1476,13 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
         "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
+        "r[style-name='Canvas File Link'] => span.canvasFileLink",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
+
+        // kludges to tidy up common messy word cruft
+        "p[style-name='List Bullet'] => ul > li:fresh",
+        "p[style-name='heading 6'] => h6:fresh",
 
         "p[style-name='Section Title'] => h1:fresh",
         "p[style-name='Quote'] => blockquote:fresh",

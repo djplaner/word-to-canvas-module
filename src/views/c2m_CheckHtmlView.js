@@ -172,7 +172,9 @@ const CHECK_HTML_HTML = `
   transition: 0.4s;
 }
 
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+/* Add a background color to the button if it is clicked on 
+   (add the .active class with JS), and when you move the mouse over it (hover) 
+ */
 .w2c-active-accordion, .w2c-accordion:hover {
   background-color: #ccc;
 }
@@ -257,6 +259,13 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		// Show the messages from mammoth
 		let c2m_messages = document.getElementById("c2m_messages");
 		if (c2m_messages) {
+			const numMessages = this.model.wordConverter.mammothResult.messages.length;
+			// update the title of the c2m_result div
+			let c2m_result = document.getElementById("c2m_result");
+			// add num messages to c2m_result text
+			c2m_result.innerHTML += `: ${numMessages} messages from conversion`;
+
+			// add html of messages to the div
 			let messageHtml = this.generateMessageHtml(this.model.wordConverter.mammothResult.messages);
 			c2m_messages.innerHTML = messageHtml;
 		}

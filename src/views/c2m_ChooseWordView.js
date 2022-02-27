@@ -27,10 +27,18 @@ const CHOOSE_WORD_HTML = `
 
 
 <div class="w2c-content pad-box-mini">
-
 <div class="w2c-upload">
   <p>Select the Word document to create a Canvas module</p>
     <input id="w2c-docx" type="file" accept=".docx" />
+
+  <p>&nbsp;</p>
+
+  <div class="pad-box-micro border border-trbl muted">
+    <i class="icon-info"></i> 
+    <small>
+      More on <a target="_blank" href="https://github.com/djplaner/word-to-canvas-module/blob/main/docs/create.md#create-a-word-2-canvas-word-document">word-2-canvas Word styles</a>
+    </small>
+  </div>
 </div>
 
 </div>
