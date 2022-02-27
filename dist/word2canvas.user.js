@@ -1282,9 +1282,7 @@ class c2m_CompletedView extends c2m_View {
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
 
-        this.model.findFileLinks();
-        // TODO return this
-        //this.model.createModule();
+        this.model.createModule();
     }
 
     /**
@@ -1340,14 +1338,14 @@ class c2m_CompletedView extends c2m_View {
         }
 
         // increment the number of files we've heard about
-        this.model.numFoundFileLinks+=1;
+        this.model.canvasModules.numFoundFileLinks+=1;
 
         // if we've heard from all 
-        if ( this.model.numFoundFileLinks===this.model.canvasModules.fileLinks.length) {
+        if ( this.model.canvasModules.numFoundFileLinks===this.model.canvasModules.fileLinks.length) {
             // then we've found all the files
             // so now we can find or create the items
             // TODO but not yet
-    //        this.model.findOrCreateModuleItems();
+            this.model.findOrCreateModuleItems();
         }
     }
 
@@ -2678,6 +2676,69 @@ class c2m_Model {
         console.log("------------- END of create module items")
     }
 
+
+    /**
+     * For a given this.htmlConverter.items[index] replace any
+     *   <span class="canvasFileLink"> as appropriate
+     * Two cases
+     * - just a span with a filename
+     * - span wrapped with a link
+     * 
+     * Only called when creating a new page
+     * 
+     * @param {*} index 
+     */
+
+    replaceCanvasFileLinks( index ){
+        // are there any this.canvasModules.fileLinks with itemIndex = index?
+        let fileLinks = this.canvasModules.fileLinks.filter(
+            fileLink => fileLink.itemIndex === index
+        );
+        // if there are no fileLinks, then there's nothing to do
+        if (fileLinks.length === 0) {
+            return;
+        }
+
+        // Parse the item content for span.fileLinks and replace
+        let item = this.htmlConverter.items[index];
+        let parser = new DOMParser();
+        let itemDoc = parser.parseFromString(item.content, "text/html");
+
+        // find and replace all the span.canvasFileLink
+        // the number fileLinks found should match the number of links we find
+        // below
+        let htmlFileLinks = itemDoc.querySelectorAll('span.canvasFileLink');
+        for (let i = 0; i < htmlFileLinks.length; i++) {
+            if ( fileLinks[i].status === "found" ) {
+                let response = fileLinks[i].response; 
+                let fileUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}`;
+                // remove "/download?download_frd=1" from the end of the url
+                //let template = `<span class="instructure_file_holder link_holder instructure_file_link_holder"> <a id="${fileLinks[i].id}" class="inline_disabled preview_in_overlay" href="${fileUrl}?wrap=1" target="_blank" data-canvas-previewable="true" data-api-endpoint="${fileUrl}" data-api-returntype="File"> </span> `; 
+                let template = `
+                <a id="${response.id}" class="instructure_file_link instructure_scribd_file inline_disabled" 
+                   href="${fileUrl}?wrap=1" target="_blank" rel="noopener" 
+                   data-canvas-previewable="true" 
+                   data-api-endpoint="${fileUrl}" data-api-returntype="File">
+                   ${fileLinks[i].descriptor}
+                </a>`;
+
+                let originalLink = htmlFileLinks[i].outerHTML;
+
+                // replace originalLink with template in item.content
+                item.content = item.content.replace(originalLink, template);
+//                let newLink = parser.parseFromString(template, "text/html");
+                // TODO if fileLinks name and descriptor don't match, then we have
+                // a htmlFileLinks with a anchor wrapper, replace the parent
+ //               htmlFileLinks[i].parentNode.replaceChild(newLink.body.firstElementChild, htmlFileLinks[i]);
+//                console.log(htmlFileLinks[i]);
+                console.log(item.content);
+                //
+            } else {
+                // replace the span.canvasFileLink with an error
+            }
+        }
+    }
+
     /**
      * Depending on item type and contents, either find the matching
      * existing item or create a new item
@@ -2706,6 +2767,7 @@ class c2m_Model {
 
         switch (item.type) {
             case 'Page':
+                this.replaceCanvasFileLinks(index);
                 // TODO could do check of item to see if trying to find
                 // an existing page
                 // create a new page

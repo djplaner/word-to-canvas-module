@@ -221,9 +221,7 @@ export default class c2m_CompletedView extends c2m_View {
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
 
-        this.model.findFileLinks();
-        // TODO return this
-        //this.model.createModule();
+        this.model.createModule();
     }
 
     /**
@@ -279,14 +277,14 @@ export default class c2m_CompletedView extends c2m_View {
         }
 
         // increment the number of files we've heard about
-        this.model.numFoundFileLinks+=1;
+        this.model.canvasModules.numFoundFileLinks+=1;
 
         // if we've heard from all 
-        if ( this.model.numFoundFileLinks===this.model.canvasModules.fileLinks.length) {
+        if ( this.model.canvasModules.numFoundFileLinks===this.model.canvasModules.fileLinks.length) {
             // then we've found all the files
             // so now we can find or create the items
             // TODO but not yet
-    //        this.model.findOrCreateModuleItems();
+            this.model.findOrCreateModuleItems();
         }
     }
 
