@@ -62,6 +62,37 @@ export default class c2m_Model {
     }
 
     /**
+     * Generate events and appropriate infrastrcutre to find all the 
+     * necessary canvasFileLink spans
+     */
+
+    findFileLinks() {
+        let items = this.htmlConverter.items;
+
+        // set up infrastructure
+        // - this.fileLinks array of objects for required fileLinks
+        //   - name of file link
+        //   - index of the item for which it's required
+        //   - status of find API call
+        //   - response from find API call
+        // - this.numFoundFileLinks - count of the number file links found
+
+        this.fileLinks = [];
+        this.numFoundFileLinks = 0;
+
+        // loop thru this.htmlConverter.items
+        for (let i = 0; i<items.length; i++ ) {
+            // extract all span.canvasFileLink from the body of the item
+            let body = items[i].body;
+            // find all the canvasFileLinks
+            let fileLinks = body.querySelectorAll('span.canvasFileLink');
+
+        }
+
+
+    }
+
+    /**
      * create each of the module items for the newly created
      *   this.canvasModules.createdModule
      * Loop thru each this.htmlConverter.items and create the item

@@ -218,6 +218,8 @@ export default class c2m_CompletedView extends c2m_View {
         // for now just get a list of all messages, testing the event handling
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
+
+        // TODO return this
         this.model.createModule();
     }
 
@@ -238,7 +240,26 @@ export default class c2m_CompletedView extends c2m_View {
         this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
 
         this.numFoundCreatedItems = 0;
+        //this.model.findFileLinks();
         this.model.findOrCreateModuleItems();
+    }
+
+    /**
+     * Event handler for the w2c-file-found event 
+     * - check if the correct number of files have been created
+     * - if not, do nothing but update the display status
+     * - is all created, then call findOrCreateModuleItems
+     * 
+     * May also need to update the model structure with details of each fileLink
+     * that needs to be found with the results of the event
+     * @param {Event} e
+     */
+
+    checkFileLinksFound(e) {
+        console.log("---------------------- checkFileLinksFound");
+
+
+
     }
 
     /**
