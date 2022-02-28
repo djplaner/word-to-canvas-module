@@ -2358,6 +2358,32 @@ class c2m_Modules {
         }
     }
 
+    /**
+     * Look for the file we're after this.fileLinks[index] in the list
+     * of JSON 
+     * Set the item.status and item.response respectively
+     * @param {Array} list - JSON list of Files returned by Canvas API 
+     * @param {Integer} index - index info this.fileLinks list of required files
+     */
+
+    findFileInList( list, index ) {
+        let file = this.fileLinks[index];
+
+        for (let i = 0; i < list.length; i++) {
+            let element = list[i];
+            let elementName = element.display_name.trim();
+            let fileName = file.name.trim();
+
+            if ( elementName.includes(fileName)) {
+                file.response = element;
+                file.status = 'found';
+                return;
+            }
+        }
+        file.status = 'not found';
+    }
+
+
     /*
      * Function which returns a promise (and error if rejected) if response status is OK
      * @param {Object} response
