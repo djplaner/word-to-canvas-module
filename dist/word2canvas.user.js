@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.1.0
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*/modules*
@@ -1279,6 +1279,8 @@ class c2m_CompletedView extends c2m_View {
         // for now just get a list of all messages, testing the event handling
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
+
+        // TODO return this
         this.model.createModule();
     }
 
@@ -1299,7 +1301,26 @@ class c2m_CompletedView extends c2m_View {
         this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
 
         this.numFoundCreatedItems = 0;
+        //this.model.findFileLinks();
         this.model.findOrCreateModuleItems();
+    }
+
+    /**
+     * Event handler for the w2c-file-found event 
+     * - check if the correct number of files have been created
+     * - if not, do nothing but update the display status
+     * - is all created, then call findOrCreateModuleItems
+     * 
+     * May also need to update the model structure with details of each fileLink
+     * that needs to be found with the results of the event
+     * @param {Event} e
+     */
+
+    checkFileLinksFound(e) {
+        console.log("---------------------- checkFileLinksFound");
+
+
+
     }
 
     /**
@@ -2438,6 +2459,37 @@ class c2m_Model {
                 // actually waits
                 //                this.dispatchEvent('w2c-empty-module-created')
             )
+    }
+
+    /**
+     * Generate events and appropriate infrastrcutre to find all the 
+     * necessary canvasFileLink spans
+     */
+
+    findFileLinks() {
+        let items = this.htmlConverter.items;
+
+        // set up infrastructure
+        // - this.fileLinks array of objects for required fileLinks
+        //   - name of file link
+        //   - index of the item for which it's required
+        //   - status of find API call
+        //   - response from find API call
+        // - this.numFoundFileLinks - count of the number file links found
+
+        this.fileLinks = [];
+        this.numFoundFileLinks = 0;
+
+        // loop thru this.htmlConverter.items
+        for (let i = 0; i<items.length; i++ ) {
+            // extract all span.canvasFileLink from the body of the item
+            let body = items[i].body;
+            // find all the canvasFileLinks
+            let fileLinks = body.querySelectorAll('span.canvasFileLink');
+
+        }
+
+
     }
 
     /**
