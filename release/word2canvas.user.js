@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.1.0
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*/modules*
@@ -153,10 +153,18 @@ const CHOOSE_WORD_HTML = `
 
 
 <div class="w2c-content pad-box-mini">
-
 <div class="w2c-upload">
+  <h4>Choose a .docx file</h4>
+  <div class="pad-box-micro border border-trbl muted">
+    <i class="icon-info"></i> 
+    <small>
+      More on <a target="_blank" href="https://github.com/djplaner/word-to-canvas-module/blob/main/docs/create.md#create-a-word-2-canvas-word-document">word-2-canvas Word styles</a>
+    </small>
+  </div>
   <p>Select the Word document to create a Canvas module</p>
     <input id="w2c-docx" type="file" accept=".docx" />
+
+
 </div>
 
 </div>
@@ -292,6 +300,7 @@ const CHECK_HTML_HTML = `
   </button>
 </div>
 
+
 <div class="w2c-waiting-results">
 <p><em>Waiting for conversion...</em></p>
 <div class="w2c-loading"></div>
@@ -299,6 +308,14 @@ const CHECK_HTML_HTML = `
 
 <div class="w2c-received-results" style="display:none">
   <h4>.docx to HTML conversion completed</h4>
+<div class="pad-box-micro border border-trbl muted">
+    <i class="icon-info"></i> 
+    <small>
+      Checking and fixing 
+	  <a target="_blank" href="https://github.com/djplaner/word-to-canvas-module/blob/main/docs/word2html-messages.md#word-2-html-messages">
+	  HTML conversion outcomes</a>
+    </small>
+</div>
   <div id="c2m_summary">
   <p>Use the following to check the conversion.</p>
   <p>If any issues, modify the Word doc and "chose another .docx". If ok, check the 
@@ -427,7 +444,9 @@ const CHECK_HTML_HTML = `
   transition: 0.4s;
 }
 
-/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+/* Add a background color to the button if it is clicked on 
+   (add the .active class with JS), and when you move the mouse over it (hover) 
+ */
 .w2c-active-accordion, .w2c-accordion:hover {
   background-color: #ccc;
 }
@@ -512,6 +531,13 @@ class c2m_CheckHtmlView extends c2m_View {
 		// Show the messages from mammoth
 		let c2m_messages = document.getElementById("c2m_messages");
 		if (c2m_messages) {
+			const numMessages = this.model.wordConverter.mammothResult.messages.length;
+			// update the title of the c2m_result div
+			let c2m_result = document.getElementById("c2m_result");
+			// add num messages to c2m_result text
+			c2m_result.innerHTML += `: ${numMessages} messages from conversion`;
+
+			// add html of messages to the div
 			let messageHtml = this.generateMessageHtml(this.model.wordConverter.mammothResult.messages);
 			c2m_messages.innerHTML = messageHtml;
 		}
@@ -1246,6 +1272,8 @@ class c2m_CompletedView extends c2m_View {
         // for now just get a list of all messages, testing the event handling
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
+
+        // TODO return this
         this.model.createModule();
     }
 
@@ -1266,7 +1294,26 @@ class c2m_CompletedView extends c2m_View {
         this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
 
         this.numFoundCreatedItems = 0;
+        //this.model.findFileLinks();
         this.model.findOrCreateModuleItems();
+    }
+
+    /**
+     * Event handler for the w2c-file-found event 
+     * - check if the correct number of files have been created
+     * - if not, do nothing but update the display status
+     * - is all created, then call findOrCreateModuleItems
+     * 
+     * May also need to update the model structure with details of each fileLink
+     * that needs to be found with the results of the event
+     * @param {Event} e
+     */
+
+    checkFileLinksFound(e) {
+        console.log("---------------------- checkFileLinksFound");
+
+
+
     }
 
     /**
@@ -1441,118 +1488,126 @@ class c2m_CompletedView extends c2m_View {
 
 
 const DEFAULT_OPTIONS = {
-	styleMap: [
-		"p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
-		"p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
-		"p[style-name='Canvas Assignment'] => h1.canvasAssignment",
-		"p[style-name='Canvas Quiz'] => h1.canvasQuiz",
-		"p[style-name='Canvas File'] => h1.canvasFile",
-		"p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
-		"p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
-		"p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
+    styleMap: [
+        "p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
+        "p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
+        "p[style-name='Canvas Assignment'] => h1.canvasAssignment",
+        "p[style-name='Canvas Quiz'] => h1.canvasQuiz",
+        "p[style-name='Canvas File'] => h1.canvasFile",
+        "p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
+        "p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
+        "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
+        "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
+        "r[style-name='Canvas File Link'] => span.canvasFileLink",
 
-		"p[style-name='Section Title'] => h1:fresh",
-		"p[style-name='Quote'] => blockquote:fresh",
-		"p[style-name='Quotations'] => blockquote:fresh",
-		"p[style-name='Quotation'] => blockquote:fresh",
-		"p[style-name='Body Text'] => p:fresh",
-		"p[style-name='Text'] => p:fresh",
-		"p[style-name='Default'] => p:fresh",
-		"p[style-name='Normal (Web)'] => p:fresh",
-		"p[style-name='Normal'] => p:fresh",
-		"p[style-name='Text body'] => p:fresh",
-		"p[style-name='Textbody1'] => p:fresh",
-		"p[style-name='Picture'] => div.ci_container > div.picture",
-		"p[style-name='Picture Right'] => div.pictureRight",
-		"p[style-name='PictureRight'] => div.pictureRight",
-		"r[style-name='University Date'] => span.universityDate",
-		"p[style-name='Video'] => div.video",
-		"p[style-name='Aside'] => aside",
-		"p[style-name='Film Watching Options'] => film-watch-options",
-		"r[style-name='Checkbox Char'] => span.checkbox",
-		"p[style-name='Checkbox'] => span.checkbox",
-		"r[style-name='Blue'] => span.blue",
-		"r[style-name='Red'] => span.red",
-		"p[style-name='Example'] => div.example > p:fresh",
-		"p[style-name='Example Centered'] => div.exampleCentered > p:fresh",
-		"p[style-name='Flashback']:ordered-list(1) => div.flashback > ol > li:fresh",
-		"p[style-name='Flashback']:unordered-list(1) => div.flashback > ul > li:fresh",
-		"p[style-name='Flashback'] => div.flashback > p:fresh",
+        "p[style-name='Hide'] => div.Hide > p:fresh",
 
-		"p[style-name='Weekly Workout']:ordered-list(1) => div.weeklyWorkout > ol > li:fresh",
-		"p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
-		"p[style-name='Weekly Workout'] => div.weeklyWorkout > p:fresh",
+        // kludges to tidy up common messy word cruft
+        "p[style-name='List Bullet'] => ul > li:fresh",
+        "p[style-name='heading 6'] => h6:fresh",
 
-		"p[style-name='Poem'] => div.poem > p:fresh",
-		"r[style-name='Poem Right'] => div.poemRight > p:fresh",
+        "p[style-name='Section Title'] => h1:fresh",
+        "p[style-name='Quote'] => blockquote:fresh",
+        "p[style-name='Quotations'] => blockquote:fresh",
+        "p[style-name='Quotation'] => blockquote:fresh",
+        "p[style-name='Body Text'] => p:fresh",
+        "p[style-name='Text'] => p:fresh",
+        "p[style-name='Default'] => p:fresh",
+        "p[style-name='Normal (Web)'] => p:fresh",
+        "p[style-name='Normal'] => p:fresh",
+        "p[style-name='Text body'] => p:fresh",
+        "p[style-name='Textbody1'] => p:fresh",
+        "p[style-name='Picture'] => div.ci_container > div.picture",
+        "p[style-name='Picture Right'] => div.pictureRight",
+        "p[style-name='PictureRight'] => div.pictureRight",
+        "r[style-name='University Date'] => span.universityDate",
+        "p[style-name='Video'] => div.video",
+        "p[style-name='Aside'] => aside",
+        "p[style-name='Film Watching Options'] => film-watch-options",
+        "r[style-name='Checkbox Char'] => span.checkbox",
+        "p[style-name='Checkbox'] => span.checkbox",
+        "r[style-name='Blue'] => span.blue",
+        "r[style-name='Red'] => span.red",
+        "p[style-name='Example'] => div.example > p:fresh",
+        "p[style-name='Example Centered'] => div.exampleCentered > p:fresh",
+        "p[style-name='Flashback']:ordered-list(1) => div.flashback > ol > li:fresh",
+        "p[style-name='Flashback']:unordered-list(1) => div.flashback > ul > li:fresh",
+        "p[style-name='Flashback'] => div.flashback > p:fresh",
 
-		"p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
-		"p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
-		"p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh",
-		"p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
-		"p[style-name='ActivityTitle'] => div.activity > h2:fresh",
-		"p[style-name='Activity Title'] => div.activity > h2:fresh",
-		"p[style-name='ActivityText'] => div.activity > div.instructions > p:fresh",
-		"p[style-name='Activity Text'] => div.activity > div.instructions > p:fresh",
-		//"r[style-name='Activity'] => div.activity > div.instructions > p:fresh",
-		"p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
-		"p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
-		"p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
-		/*"p[style-name='Activity'] => span.activity",*/
-		"p[style-name='Bibliography'] => div.apa > p:fresh",
-		"p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
-		"p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
-		"p[style-name='Reading'] => div.reading > div.instructions > p:fresh",
-		"p[style-name='Title'] => div.moduleTitle",
-		"p[style-name='Card'] => div.gu_card",
-		"r[style-name='Emphasis'] => em:fresh",
-		"p[style-name='Timeout'] => span.timeout",
-		"p[style-name='Embed'] => span.embed",
-		"p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
-		"p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
-		"p[style-name='Note'] => div.ael-note > div.instructions > p:fresh",
-		/* Adding cards */
-		"p[style-name='Blackboard Card'] => div.bbCard:fresh",
-		/* Blackboard item conversion */
-		"p[style-name='Blackboard Item Heading'] => h1.blackboard",
-		"p[style-name='Blackboard Item Heading 2'] => h2.blackboard",
-		"r[style-name='Blackboard Item Link'] => span.blackboardLink",
-		"p[style-name='Blackboard Item Link'] => span.blackboardlink",
-		"r[style-name='Blackboard Item Link Char'] => span.blackboardLink",
-		"r[style-name='Blackboard Content Link'] => span.blackboardContentLink",
-		"r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink",
-		/* tables?? */
-		"r[style-name='small'] => span.smallText",
-		"r[style-name='StrongCentered'] => span.strongCentered",
-		"r[style-name='Centered'] => span.centered",
-		// Underline
+        "p[style-name='Weekly Workout']:ordered-list(1) => div.weeklyWorkout > ol > li:fresh",
+        "p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
+        "p[style-name='Weekly Workout'] => div.weeklyWorkout > p:fresh",
 
-		// GO style
-		"p[style-name='GO Start Here'] => div.goStartHere",
-		"p[style-name='GO Reflect'] => div.goReflect",
-		"p[style-name='GO Watch'] => div.goWatch",
-		"p[style-name='GO Download'] => div.goDownload",
-		// TODO numbered list, need to detect the original image or order???
-		"p[style-name='GO Numbered List'] => div.goNumberedList",
-		"p[style-name='GO Activity'] => div.goActivity",
-		"p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh",
-	],
+        "p[style-name='Poem'] => div.poem > p:fresh",
+        "r[style-name='Poem Right'] => div.poemRight > p:fresh",
+
+        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
+        "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
+        "p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh",
+        "p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
+        "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
+        "p[style-name='Activity Title'] => div.activity > h2:fresh",
+        "p[style-name='ActivityText'] => div.activity > div.instructions > p:fresh",
+        "p[style-name='Activity Text'] => div.activity > div.instructions > p:fresh",
+        //"r[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+        "p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
+        "p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
+        "p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+        /*"p[style-name='Activity'] => span.activity",*/
+        "p[style-name='Bibliography'] => div.apa > p:fresh",
+        "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
+        "p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
+        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh",
+        "p[style-name='Title'] => div.moduleTitle",
+        "p[style-name='Card'] => div.gu_card",
+        "r[style-name='Emphasis'] => em:fresh",
+        "p[style-name='Timeout'] => span.timeout",
+        "p[style-name='Embed'] => span.embed",
+        "p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
+        "p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
+        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh",
+        /* Adding cards */
+        "p[style-name='Blackboard Card'] => div.bbCard:fresh",
+        /* Blackboard item conversion */
+        "p[style-name='Blackboard Item Heading'] => h1.blackboard",
+        "p[style-name='Blackboard Item Heading 2'] => h2.blackboard",
+        "r[style-name='Blackboard Item Link'] => span.blackboardLink",
+        "p[style-name='Blackboard Item Link'] => span.blackboardlink",
+        "r[style-name='Blackboard Item Link Char'] => span.blackboardLink",
+        "r[style-name='Blackboard Content Link'] => span.blackboardContentLink",
+        "r[style-name='Blackboard Menu Link'] => span.blackboardMenuLink",
+        /* tables?? */
+        "r[style-name='small'] => span.smallText",
+        "r[style-name='StrongCentered'] => span.strongCentered",
+        "r[style-name='Centered'] => span.centered",
+        // Underline
+
+        // GO style
+        "p[style-name='GO Start Here'] => div.goStartHere",
+        "p[style-name='GO Reflect'] => div.goReflect",
+        "p[style-name='GO Watch'] => div.goWatch",
+        "p[style-name='GO Download'] => div.goDownload",
+        // TODO numbered list, need to detect the original image or order???
+        "p[style-name='GO Numbered List'] => div.goNumberedList",
+        "p[style-name='GO Activity'] => div.goActivity",
+        "p[style-name='GO Reading'] => div.goReading > div.instructions > p:fresh",
+    ],
 
 };
 
 class c2m_WordConverter {
 
-	/**
-	 * construct the object
-	 * - if event is defined then we're converting from .docx to html
-	 * - if no event initialise
-	 */
-	constructor() {
+    /**
+     * construct the object
+     * - if event is defined then we're converting from .docx to html
+     * - if no event initialise
+     */
+    constructor() {
 
-		//		this.mammothConvert();
+        //		this.mammothConvert();
 
-		//		this.handleFileSelect(event);
-	}
+        //		this.handleFileSelect(event);
+    }
 
 
     decodeEntities(encodedString) {
@@ -1561,105 +1616,140 @@ class c2m_WordConverter {
         return textArea.value;
     }
 
-	/**
-	 * Called when mammoth is complete.  Will set the mammoth response
-	 * as a data member and then dispatch an event on div.c2m_dialog 
-	 * to spark the view into displaying the results 
-	 * @param {Object} result Mammoth result response
-	 */
-	displayResult(result) {
+    /**
+     * Called when mammoth is complete.  Will set the mammoth response
+     * as a data member and then dispatch an event on div.c2m_dialog 
+     * to spark the view into displaying the results 
+     * @param {Object} result Mammoth result response
+     */
+    displayResult(result) {
 
-		this.mammothResult = result;
+        this.mammothResult = result;
 
-		// TODO do Content Interface translations here??
+        // CONTEXTUAL CHANGES
+        // TODO do Content Interface translations here??
         // TODO move this out an additional class
-		// find all span.embed in mammothResult and log innerhtml
+        // find all span.embed in mammothResult and log innerhtml
         // parse the string 
+        this.postConvert()
+
+        // generate mammoth-results event
+        const event = new Event('mammoth-results');
+        let c2m_dialog = document.querySelector('div.c2m_dialog');
+        if (c2m_dialog) {
+            c2m_dialog.dispatchEvent(event);
+        }
+    }
+
+    /**
+     * Do all post mammoth conversions
+     * - span.embed decoded HTML
+     * - span.talisCanvasLink to a link
+     */
+    postConvert() {
         let parser = new DOMParser();
+
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
-		let embeds = doc.querySelectorAll('span.embed');
+
+        // span.embed
+        let embeds = doc.querySelectorAll('span.embed');
         // iterate over the embeds and use this.decodeEntities to decode the innerHTML
         for (let i = 0; i < embeds.length; i++) {
             let embed = embeds[i];
             embed.innerHTML = this.decodeEntities(embed.innerHTML);
         }
+
+        // convert span.talisCanvasLink innerHTML to a link
+        let links = doc.querySelectorAll('span.talisCanvasLink');
+        for (let i = 0; i < links.length; i++) {
+            let link = links[i];
+            // create new anchor element
+            let anchor = document.createElement('a');
+            anchor.href = 'https://lms.griffith.edu.au/courses/252/external_tools/111';
+            anchor.innerHTML = link.innerHTML;
+            // replace link.innerHTML with anchor
+            link.innerHTML = '';
+            link.appendChild(anchor);
+        }
+
+        // remove the div.Hide
+        let hiddenElems = doc.querySelectorAll('div.Hide');
+        for (let i = 0; i < hiddenElems.length; i++) {
+            let hiddenElem = hiddenElems[i];
+            hiddenElem.parentNode.removeChild(hiddenElem);
+        }
+
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
 
-		// generate mammoth-results event
-		const event = new Event('mammoth-results');
-		let c2m_dialog = document.querySelector('div.c2m_dialog');
-		if (c2m_dialog) {
-			c2m_dialog.dispatchEvent(event);
-		}
-	}
+    }
 
-	/**
-	 * There was an error converting the file, generate event
-	 * indicating error
-	 * @param {Object} result Mammoth result response
-	 */
+    /**
+     * There was an error converting the file, generate event
+     * indicating error
+     * @param {Object} result Mammoth result response
+     */
 
-	displayError(error) {
-		this.mammothError = error;
-		this.mammothResult = undefined;
+    displayError(error) {
+        this.mammothError = error;
+        this.mammothResult = undefined;
 
-		// generate mammoth-results event
-		const event = new Event('mammoth-error');
-		let c2m_dialog = document.querySelector('div.c2m_dialog');
-		if (c2m_dialog) {
-			c2m_dialog.dispatchEvent(event);
-		}
-	}
+        // generate mammoth-results event
+        const event = new Event('mammoth-error');
+        let c2m_dialog = document.querySelector('div.c2m_dialog');
+        if (c2m_dialog) {
+            c2m_dialog.dispatchEvent(event);
+        }
+    }
 
 
-	/**
-	 * Grab the content of a file selector and run it thru Mammoth
-	 * - adapted from Mammoth.js demo
-	 * https://github.com/mwilliamson/mammoth.js/blob/master/browser-demo/demo.js
-	 */
+    /**
+     * Grab the content of a file selector and run it thru Mammoth
+     * - adapted from Mammoth.js demo
+     * https://github.com/mwilliamson/mammoth.js/blob/master/browser-demo/demo.js
+     */
 
-	handleFileSelect(event) {
-		let file = event.target.files[0];
+    handleFileSelect(event) {
+        let file = event.target.files[0];
 
-		let reader = new FileReader();
+        let reader = new FileReader();
 
-		// where is loadEvent coming from
-		reader.onload = (loadEvent) => this.callBack(loadEvent);
+        // where is loadEvent coming from
+        reader.onload = (loadEvent) => this.callBack(loadEvent);
 
-		reader.readAsArrayBuffer(file);
-	}
+        reader.readAsArrayBuffer(file);
+    }
 
-	callBack(loadEvent) {
-		let arrayBuffer = loadEvent.target.result;
+    callBack(loadEvent) {
+        let arrayBuffer = loadEvent.target.result;
 
-		console.log('-------------- doing the call back');
+        console.log('-------------- doing the call back');
 
-		// TODO: more flexibility with choosing options
-		// Call mammoth, if successful display result
-		// but fail otherise
-		mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
-			.then((result) => this.displayResult(result))
-			.catch((error) => this.displayError(error))
-			.done();
-		console.log('-------------- done the call back');
-	}
+        // TODO: more flexibility with choosing options
+        // Call mammoth, if successful display result
+        // but fail otherise
+        mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, DEFAULT_OPTIONS)
+            .then((result) => this.displayResult(result))
+            .catch((error) => this.displayError(error))
+            .done();
+        console.log('-------------- done the call back');
+    }
 
-	/**
-	 * Read a file from the event
-	 * - adapted from Mammoth.js demo
-	 * https://github.com/mwilliamson/mammoth.js/blob/master/browser-demo/demo.js
-	 */
-	readFileInputEventAsArrayBuffer(event) {
-		let file = event.target.files[0];
+    /**
+     * Read a file from the event
+     * - adapted from Mammoth.js demo
+     * https://github.com/mwilliamson/mammoth.js/blob/master/browser-demo/demo.js
+     */
+    readFileInputEventAsArrayBuffer(event) {
+        let file = event.target.files[0];
 
-		let reader = new FileReader();
+        let reader = new FileReader();
 
-		// where is loadEvent coming from
-		reader.onload = (loadEvent) => this.callBack(loadEvent);
+        // where is loadEvent coming from
+        reader.onload = (loadEvent) => this.callBack(loadEvent);
 
-		reader.readAsArrayBuffer(file);
-	}
+        reader.readAsArrayBuffer(file);
+    }
 
 
 
@@ -1672,7 +1762,7 @@ class c2m_WordConverter {
  *   a module like structure
  * Uses exceprts from the Canvas API as structure
  * https://canvas.instructure.com/doc/api/modules.html
- */ 
+ */
 
 
 /** ModuleObject 
@@ -1764,15 +1854,15 @@ class c2m_WordConverter {
  * Define the translation between a html class for h1 and Canvas item type
  */
 const HTML_CLASS_TO_ITEM_TYPE = {
-	'canvasFile' : 'File',
-	'canvasPage' : 'Page',
+	'canvasFile': 'File',
+	'canvasPage': 'Page',
 	'existingCanvasPage': 'ExistingPage',
-	'canvasDiscussion' :'Discussion',
-	'canvasAssignment' : 'Assignment',
+	'canvasDiscussion': 'Discussion',
+	'canvasAssignment': 'Assignment',
 	'canvasQuiz': 'Quiz',
-	'canvasSubHeader' : 'SubHeader',
+	'canvasSubHeader': 'SubHeader',
 	'canvasExternalUrl': 'ExternalUrl',
-    'canvasExternalTool': 'ExternalTool'
+	'canvasExternalTool': 'ExternalTool'
 };
 
 class c2m_HtmlConverter {
@@ -1834,15 +1924,32 @@ class c2m_HtmlConverter {
 			item.title = h1.innerText;
 			item.type = this.getType(h1);
 			item.content = this.getContent(h1, item.type);
-            item.error = false;
+			item.error = false;
 
-            // is text a valid URL by regex
-            if (item.type==="ExternalUrl" || item.type==="ExternalTool" ) {
-                if ( ! item.content.match(/^(http|https):\/\/[^ "]+$/)) { 
-                    item.error=true; 
-                    item.errorString="Couldn't find a valid URL";
-                }
-            }
+			// is text a valid URL by regex
+			if (item.type === "ExternalUrl" || item.type === "ExternalTool") {
+				if (!item.content.match(/^(http|https):\/\/[^ "]+$/)) {
+					item.error = true;
+					item.errorString = "Couldn't find a valid URL";
+				}
+			}
+
+			// A File should generate two specific bits of content
+			// - displayName - the name of the item to be added to the module
+			// - fileName - the name of the file to be searched
+			// - fileUrl - optional URL for the file, if already provided???? TODO
+			if (item.type === "File") {
+				let contentObj = {
+					displayName: item.title,
+					fileName: item.title
+				}
+				// if item.content is not empty, then it must be the filename
+				if ( item.content.trim()!=='' ) {
+					contentObj.fileName = item.content;
+				}
+				item.content = contentObj;
+			}
+
 			// TODO set type from the class of h1
 			this.items.push(item);
 		});
@@ -1874,15 +1981,15 @@ class c2m_HtmlConverter {
 	getContent(h1, type) {
 		let content = this.nextUntil(h1, 'h1');
 
-        // for an externalUrl and tool, we want the text and need to check
-        // that what is left is a URL
-		if ( ["ExternalUrl","ExternalTool"].includes(type) ) {
-            let text = "";
-            // loop thru each DomElement in content list and add innerText to text
-            content.forEach((element) => {
-                text += element.innerText;
-            });
-            return text;
+		// for an externalUrl, tool and file, we want the text and need to check
+		// that what is left is a URL (or similar)
+		if (["ExternalUrl", "ExternalTool", "File"].includes(type)) {
+			let text = "";
+			// loop thru each DomElement in content list and add innerText to text
+			content.forEach((element) => {
+				text += element.innerText;
+			});
+			return text;
 		}
 
 		// for other types convert content elements into html string
@@ -2166,9 +2273,17 @@ class c2m_Modules {
             "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`,
             "Quiz" : `/api/v1/courses/${this.courseId}/quizzes?`
         }
+
+        let searchTerm = item.title;
+
+        // if looking for a File item, we need to search for the filename
+        if (type==="File") {
+            searchTerm = item.content.fileName;
+        } 
+
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = TYPE_API_URL[type] + new URLSearchParams({'search_term': item.title});
+        let callUrl = TYPE_API_URL[type] + new URLSearchParams({'search_term': searchTerm});
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -2210,11 +2325,12 @@ class c2m_Modules {
         for (let i = 0; i < list.length; i++) {
             let element = list[i];
             let elementName = '';
-            const itemName = item.title.trim();
+            let itemName = item.title.trim();
 
             // the name to match in the list element, depends on type
             if ( type==="File") {
                 elementName = element.display_name.trim();
+                itemName = item.content.fileName.trim();
             } else if ( type==="Assignment") {
                 elementName = element.name.trim();
             } else {
@@ -2332,6 +2448,37 @@ class c2m_Model {
                 // actually waits
                 //                this.dispatchEvent('w2c-empty-module-created')
             )
+    }
+
+    /**
+     * Generate events and appropriate infrastrcutre to find all the 
+     * necessary canvasFileLink spans
+     */
+
+    findFileLinks() {
+        let items = this.htmlConverter.items;
+
+        // set up infrastructure
+        // - this.fileLinks array of objects for required fileLinks
+        //   - name of file link
+        //   - index of the item for which it's required
+        //   - status of find API call
+        //   - response from find API call
+        // - this.numFoundFileLinks - count of the number file links found
+
+        this.fileLinks = [];
+        this.numFoundFileLinks = 0;
+
+        // loop thru this.htmlConverter.items
+        for (let i = 0; i<items.length; i++ ) {
+            // extract all span.canvasFileLink from the body of the item
+            let body = items[i].body;
+            // find all the canvasFileLinks
+            let fileLinks = body.querySelectorAll('span.canvasFileLink');
+
+        }
+
+
     }
 
     /**
