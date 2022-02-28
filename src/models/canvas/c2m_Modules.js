@@ -198,51 +198,6 @@ export default class c2m_Modules {
     }
 
     /**
-     * Call find file API using this.fileLinks array 
-     * {
-     *   itemIndex: index of this.items i.e. the module item this link belongs to
-     *   name:  name of the file
-     *   descriptor:  descriptor for link
-     *   status:
-     *   response:
-     * }
-     * @param {*} index 
-     */
-
-    async findFile(index) {
-        let file = this.fileLinks[index];
-
-        let searchTerm = file.name;
-
-        let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
-            {'search_term': searchTerm});
-
-        // indicate that we're about to start searching
-        file.status = 'searching';
-
-        await fetch(callUrl, {
-            method: 'GET', credentials: 'include',
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-CSRF-Token": this.csrfToken,
-            }
-        }) 
-        .then(this.status) 
-        .then((response) => { 
-            return response.json(); 
-        }) 
-        .then((json) => {
-            // json - list of files from Canvas API matching request
-            // see if we can find our file (fileLinks[index]) in the list
-            this.findFileInList(json, index);
-            // do the same event, regardless, the item will be set to indicate
-            // success or failure
-            this.dispatchEvent( 'w2c-file-found',{'file':index});
-        })
-    }
-
-    /**
      * Find an existing item based on the title/name of this.items[index]
      * Support different types: Page, File, Discussion, ...(Quiz, Assignment)
      * Set the createdItem to some sort of FAILURE if didn't find
@@ -333,31 +288,6 @@ export default class c2m_Modules {
             "error": `file not found: ${item.title}`,
             "index": index
         }
-    }
-
-    /**
-     * Look for the file we're after this.fileLinks[index] in the list
-     * of JSON 
-     * Set the item.status and item.response respectively
-     * @param {Array} list - JSON list of Files returned by Canvas API 
-     * @param {Integer} index - index info this.fileLinks list of required files
-     */
-
-    findFileInList( list, index ) {
-        let file = this.fileLinks[index];
-
-        for (let i = 0; i < list.length; i++) {
-            let element = list[i];
-            let elementName = element.display_name.trim();
-            let fileName = file.name.trim();
-
-            if ( elementName.includes(fileName)) {
-                file.response = element;
-                file.status = 'found';
-                return;
-            }
-        }
-        file.status = 'not found';
     }
 
     /*

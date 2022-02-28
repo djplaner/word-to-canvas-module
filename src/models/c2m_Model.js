@@ -67,13 +67,7 @@ export default class c2m_Model {
      */
 
     findFileLinks() {
-        console.log("-----------------------------");
-        console.log("-----------------------------");
-        console.log("FIND FILE LINKS");
-        console.log("-----------------------------");
-
         let items = this.htmlConverter.items;
-        console.log(items);
 
         // set up infrastructure
         // - this.fileLinks array of objects for required fileLinks
@@ -83,78 +77,19 @@ export default class c2m_Model {
         //   - response from find API call
         // - this.numFoundFileLinks - count of the number file links found
 
-        this.canvasModules.fileLinks = [];
-        this.canvasModules.numFoundFileLinks = 0;
-
-        let parser = new DOMParser();
+        this.fileLinks = [];
+        this.numFoundFileLinks = 0;
 
         // loop thru this.htmlConverter.items
         for (let i = 0; i<items.length; i++ ) {
             // extract all span.canvasFileLink from the body of the item
-            let body = items[i].content;
-            console.log('item ${i} content');
-            console.log(body);
-            let bodyDoc = parser.parseFromString(body, "text/html");
+            let body = items[i].body;
             // find all the canvasFileLinks
-            let fileLinks = bodyDoc.querySelectorAll('span.canvasFileLink');
+            let fileLinks = body.querySelectorAll('span.canvasFileLink');
 
-            console.log(`found ${fileLinks.length} file links in item ${i}`);
-
-            // loop thru the fileLinks
-            for (let j = 0; j < fileLinks.length; j++) {
-                console.log(fileLinks[j]);
-
-                let {name, descriptor} = this.setNameDescriptor( fileLinks[j]);
-
-                let newFileLink = {
-                    itemIndex: i,
-                    name: name,
-                    descriptor: descriptor,
-                    status: "initialised",
-                    response: undefined
-                };
-                // append newFileLink to fileLinks
-                this.canvasModules.fileLinks.push(newFileLink);
-            }
         }
 
-        console.log("Found the following links")
-        console.log(this.canvasModules.fileLinks);
 
-        // loop through each fileLinks and call find API
-        for (let i = 0; i < this.canvasModules.fileLinks.length; i++) {
-            this.canvasModules.findFile(i).then(() => {});
-        }
-    }
-
-    /**
-     * Check if the fileLink element has a parent that is a link
-     * and which only contains fileLink -- indicating a need to change
-     * name (filename) to the value in the link href and descriptor as
-     * the body of the span (fileLink)
-     * @param {DOMElement} fileLink - element containins <span class="canvasFileLink">
-     * @returns {Object} - {name, descriptor}
-     */
-    setNameDescriptor(fileLink) {
-        let parent = fileLink.parentElement;
-        // set default values (if there's no link wrapper)
-        let name = fileLink.innerText;
-        let descriptor = fileLink.innerText;
-
-        if (parent.tagName === 'A') {
-            // how many children of parent?
-            let children = parent.children;
-            if (children.length === 1) {
-                // if there is only one child, it's the fileLink
-                // so change the name and descriptor
-                name = decodeURI(parent.href);
-                // get just the text after the last /
-                name = name.substring(name.lastIndexOf('/') + 1);
-                descriptor = decodeURI(parent.innerText);
-            } 
-        }
-
-        return { name, descriptor };
     }
 
     /**
@@ -178,69 +113,6 @@ export default class c2m_Model {
             this.findOrCreateItem(i);
         }
         console.log("------------- END of create module items")
-    }
-
-
-    /**
-     * For a given this.htmlConverter.items[index] replace any
-     *   <span class="canvasFileLink"> as appropriate
-     * Two cases
-     * - just a span with a filename
-     * - span wrapped with a link
-     * 
-     * Only called when creating a new page
-     * 
-     * @param {*} index 
-     */
-
-    replaceCanvasFileLinks( index ){
-        // are there any this.canvasModules.fileLinks with itemIndex = index?
-        let fileLinks = this.canvasModules.fileLinks.filter(
-            fileLink => fileLink.itemIndex === index
-        );
-        // if there are no fileLinks, then there's nothing to do
-        if (fileLinks.length === 0) {
-            return;
-        }
-
-        // Parse the item content for span.fileLinks and replace
-        let item = this.htmlConverter.items[index];
-        let parser = new DOMParser();
-        let itemDoc = parser.parseFromString(item.content, "text/html");
-
-        // find and replace all the span.canvasFileLink
-        // the number fileLinks found should match the number of links we find
-        // below
-        let htmlFileLinks = itemDoc.querySelectorAll('span.canvasFileLink');
-        for (let i = 0; i < htmlFileLinks.length; i++) {
-            if ( fileLinks[i].status === "found" ) {
-                let response = fileLinks[i].response; 
-                let fileUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}`;
-                // remove "/download?download_frd=1" from the end of the url
-                //let template = `<span class="instructure_file_holder link_holder instructure_file_link_holder"> <a id="${fileLinks[i].id}" class="inline_disabled preview_in_overlay" href="${fileUrl}?wrap=1" target="_blank" data-canvas-previewable="true" data-api-endpoint="${fileUrl}" data-api-returntype="File"> </span> `; 
-                let template = `
-                <a id="${response.id}" class="instructure_file_link instructure_scribd_file inline_disabled" 
-                   href="${fileUrl}?wrap=1" target="_blank" rel="noopener" 
-                   data-canvas-previewable="true" 
-                   data-api-endpoint="${fileUrl}" data-api-returntype="File">
-                   ${fileLinks[i].descriptor}
-                </a>`;
-
-                let originalLink = htmlFileLinks[i].outerHTML;
-
-                // replace originalLink with template in item.content
-                item.content = item.content.replace(originalLink, template);
-//                let newLink = parser.parseFromString(template, "text/html");
-                // TODO if fileLinks name and descriptor don't match, then we have
-                // a htmlFileLinks with a anchor wrapper, replace the parent
- //               htmlFileLinks[i].parentNode.replaceChild(newLink.body.firstElementChild, htmlFileLinks[i]);
-//                console.log(htmlFileLinks[i]);
-                console.log(item.content);
-                //
-            } else {
-                // replace the span.canvasFileLink with an error
-            }
-        }
     }
 
     /**
@@ -271,7 +143,6 @@ export default class c2m_Model {
 
         switch (item.type) {
             case 'Page':
-                this.replaceCanvasFileLinks(index);
                 // TODO could do check of item to see if trying to find
                 // an existing page
                 // create a new page
