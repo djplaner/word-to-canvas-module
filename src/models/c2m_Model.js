@@ -67,13 +67,13 @@ export default class c2m_Model {
      */
 
     findFileLinks() {
-        console.log("-----------------------------");
+/*        console.log("-----------------------------");
         console.log("-----------------------------");
         console.log("FIND FILE LINKS");
         console.log("-----------------------------");
-
+*/
         let items = this.htmlConverter.items;
-        console.log(items);
+//        console.log(items);
 
         // set up infrastructure
         // - this.fileLinks array of objects for required fileLinks
@@ -102,7 +102,7 @@ export default class c2m_Model {
 
             // loop thru the fileLinks
             for (let j = 0; j < fileLinks.length; j++) {
-                console.log(fileLinks[j]);
+//                console.log(fileLinks[j]);
 
                 let {name, descriptor} = this.setNameDescriptor( fileLinks[j]);
 
@@ -118,8 +118,14 @@ export default class c2m_Model {
             }
         }
 
-        console.log("Found the following links")
-        console.log(this.canvasModules.fileLinks);
+//        console.log("Found the following links")
+//       console.log(this.canvasModules.fileLinks);
+
+        // if there are no fileLinks
+        if (this.canvasModules.fileLinks.length === 0) {
+            // ignore this step and start finding/creating other items
+            this.model.findOrCreateModuleItems();
+        }
 
         // loop through each fileLinks and call find API
         for (let i = 0; i < this.canvasModules.fileLinks.length; i++) {
@@ -202,22 +208,31 @@ export default class c2m_Model {
         if (fileLinks.length === 0) {
             return;
         }
+        console.log("------------- replaceCanvasFileLinks");
 
         // Parse the item content for span.fileLinks and replace
         let item = this.htmlConverter.items[index];
         let parser = new DOMParser();
         let itemDoc = parser.parseFromString(item.content, "text/html");
 
-        // find and replace all the span.canvasFileLink
         // the number fileLinks found should match the number of links we find
         // below
         let htmlFileLinks = itemDoc.querySelectorAll('span.canvasFileLink');
+        // check length of htmlFileLinks and fileLinks
+        if (htmlFileLinks.length !== fileLinks.length) {
+            console.log(
+                `replaceCanvasFileLinks: number of fileLinks ${fileLinks.length} \
+                does not match number of htmlFileLinks ${htmlFileLinks.length}`);
+        }
+
+        // find and replace all the span.canvasFileLink
         for (let i = 0; i < htmlFileLinks.length; i++) {
             if ( fileLinks[i].status === "found" ) {
                 let response = fileLinks[i].response; 
                 let fileUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}`;
                 // remove "/download?download_frd=1" from the end of the url
-                //let template = `<span class="instructure_file_holder link_holder instructure_file_link_holder"> <a id="${fileLinks[i].id}" class="inline_disabled preview_in_overlay" href="${fileUrl}?wrap=1" target="_blank" data-canvas-previewable="true" data-api-endpoint="${fileUrl}" data-api-returntype="File"> </span> `; 
+
+                // What we're going to replace <span class="canvasFileLink"> with
                 let template = `
                 <a id="${response.id}" class="instructure_file_link instructure_scribd_file inline_disabled" 
                    href="${fileUrl}?wrap=1" target="_blank" rel="noopener" 
@@ -226,9 +241,11 @@ export default class c2m_Model {
                    ${fileLinks[i].descriptor}
                 </a>`;
 
+                // find the link
                 let originalLink = htmlFileLinks[i].outerHTML;
 
                 // replace originalLink with template in item.content
+                console.log(`replaceCanvasFileLinks: replacing **${originalLink}** with **${template}**`);
                 item.content = item.content.replace(originalLink, template);
 //                let newLink = parser.parseFromString(template, "text/html");
                 // TODO if fileLinks name and descriptor don't match, then we have

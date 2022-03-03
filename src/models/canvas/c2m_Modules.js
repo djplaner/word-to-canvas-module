@@ -352,6 +352,8 @@ export default class c2m_Modules {
             let fileName = file.name.trim();
 
             if ( elementName.includes(fileName)) {
+//                console.log(
+//                    `findFileInList: elementName ${elementName} includes ${fileName}`);
                 file.response = element;
                 file.status = 'found';
                 return;

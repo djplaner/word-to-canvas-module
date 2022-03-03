@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.1.0
+// @version      1.3.0
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*/modules*
@@ -12,7 +12,6 @@
 // @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/0.3.10/mammoth.browser.min.js
 // ==/UserScript==
 
-// src/views/c2m_View.js
 /**
  * c2m_View.js
  * Parent view class, define
@@ -79,7 +78,6 @@ class c2m_View {
 	}
 }
 
-// src/views/c2m_InitialisedView.js
 class c2m_InitialisedView extends c2m_View {
 
 
@@ -130,7 +128,6 @@ class c2m_InitialisedView extends c2m_View {
 
 }
 
-// src/views/c2m_ChooseWordView.js
 const CHOOSE_WORD_HTML = `
 
 <div class="item-group-container" id="w2c-container">
@@ -267,7 +264,6 @@ class c2m_ChooseWordView extends c2m_View {
 
 }
 
-// src/views/c2m_CheckHtmlView.js
 const CHECK_HTML_HTML = `
 <div class="item-group-container" id="w2c-container">
   <div class="item-group-condensed context_module">
@@ -601,7 +597,6 @@ class c2m_CheckHtmlView extends c2m_View {
 
 }
 
-// src/views/canvas/c2m_ModuleView.js
 /**
  * c2m_ModuleView.js
  * Convert an internal "Canvas modules" data structure into an approximation
@@ -825,7 +820,6 @@ class c2m_ModuleView extends c2m_View {
 	}
 }
 
-// src/views/c2m_CheckModuleView.js
 const CHECK_MODULE_HTML = `
 <div class="item-group-container" id="w2c-container">
   <div class="item-group-condensed context_module">
@@ -1058,7 +1052,6 @@ class c2m_CheckModuleView extends c2m_View {
 
 }
 
-// src/views/c2m_CompletedView.js
 /**
  * c2m_CompletedView.js
  * Handles the completed view state. i.e. user has clicked to create a new module
@@ -1513,7 +1506,6 @@ class c2m_CompletedView extends c2m_View {
 
 }
 
-// src/models/c2m_WordConverter.js
 /**
  * WordConverter.js
  * Define c2m_Converter class which is responsible for converting a Word doc 2 html
@@ -1533,6 +1525,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
+        "p[style-name='Canvas File Link'] => span.canvasFileLink",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
@@ -1790,7 +1783,6 @@ class c2m_WordConverter {
 
 }
 
-// src/models/c2m_HtmlConverter.js
 /**
  * HtmlConverter.js
  * - convert a section of HTML in a defined format and convert it into
@@ -2091,7 +2083,6 @@ class c2m_HtmlConverter {
 	}
 }
 
-// src/models/canvas/c2m_Modules.js
 /**
  * Model object for dealing with Canvas modules via the 
  * Canvas API
@@ -2446,6 +2437,8 @@ class c2m_Modules {
             let fileName = file.name.trim();
 
             if ( elementName.includes(fileName)) {
+//                console.log(
+//                    `findFileInList: elementName ${elementName} includes ${fileName}`);
                 file.response = element;
                 file.status = 'found';
                 return;
@@ -2493,7 +2486,6 @@ class c2m_Modules {
     }
 }
 
-// src/models/c2m_Model.js
 /**
  * Model used to 
  * - track which stage of the conversion process is current
@@ -2563,13 +2555,13 @@ class c2m_Model {
      */
 
     findFileLinks() {
-        console.log("-----------------------------");
+/*        console.log("-----------------------------");
         console.log("-----------------------------");
         console.log("FIND FILE LINKS");
         console.log("-----------------------------");
-
+*/
         let items = this.htmlConverter.items;
-        console.log(items);
+//        console.log(items);
 
         // set up infrastructure
         // - this.fileLinks array of objects for required fileLinks
@@ -2598,7 +2590,7 @@ class c2m_Model {
 
             // loop thru the fileLinks
             for (let j = 0; j < fileLinks.length; j++) {
-                console.log(fileLinks[j]);
+//                console.log(fileLinks[j]);
 
                 let {name, descriptor} = this.setNameDescriptor( fileLinks[j]);
 
@@ -2614,8 +2606,14 @@ class c2m_Model {
             }
         }
 
-        console.log("Found the following links")
-        console.log(this.canvasModules.fileLinks);
+//        console.log("Found the following links")
+//       console.log(this.canvasModules.fileLinks);
+
+        // if there are no fileLinks
+        if (this.canvasModules.fileLinks.length === 0) {
+            // ignore this step and start finding/creating other items
+            this.model.findOrCreateModuleItems();
+        }
 
         // loop through each fileLinks and call find API
         for (let i = 0; i < this.canvasModules.fileLinks.length; i++) {
@@ -2698,22 +2696,31 @@ class c2m_Model {
         if (fileLinks.length === 0) {
             return;
         }
+        console.log("------------- replaceCanvasFileLinks");
 
         // Parse the item content for span.fileLinks and replace
         let item = this.htmlConverter.items[index];
         let parser = new DOMParser();
         let itemDoc = parser.parseFromString(item.content, "text/html");
 
-        // find and replace all the span.canvasFileLink
         // the number fileLinks found should match the number of links we find
         // below
         let htmlFileLinks = itemDoc.querySelectorAll('span.canvasFileLink');
+        // check length of htmlFileLinks and fileLinks
+        if (htmlFileLinks.length !== fileLinks.length) {
+            console.log(
+                `replaceCanvasFileLinks: number of fileLinks ${fileLinks.length} \
+                does not match number of htmlFileLinks ${htmlFileLinks.length}`);
+        }
+
+        // find and replace all the span.canvasFileLink
         for (let i = 0; i < htmlFileLinks.length; i++) {
             if ( fileLinks[i].status === "found" ) {
                 let response = fileLinks[i].response; 
                 let fileUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}`;
                 // remove "/download?download_frd=1" from the end of the url
-                //let template = `<span class="instructure_file_holder link_holder instructure_file_link_holder"> <a id="${fileLinks[i].id}" class="inline_disabled preview_in_overlay" href="${fileUrl}?wrap=1" target="_blank" data-canvas-previewable="true" data-api-endpoint="${fileUrl}" data-api-returntype="File"> </span> `; 
+
+                // What we're going to replace <span class="canvasFileLink"> with
                 let template = `
                 <a id="${response.id}" class="instructure_file_link instructure_scribd_file inline_disabled" 
                    href="${fileUrl}?wrap=1" target="_blank" rel="noopener" 
@@ -2722,9 +2729,11 @@ class c2m_Model {
                    ${fileLinks[i].descriptor}
                 </a>`;
 
+                // find the link
                 let originalLink = htmlFileLinks[i].outerHTML;
 
                 // replace originalLink with template in item.content
+                console.log(`replaceCanvasFileLinks: replacing **${originalLink}** with **${template}**`);
                 item.content = item.content.replace(originalLink, template);
 //                let newLink = parser.parseFromString(template, "text/html");
                 // TODO if fileLinks name and descriptor don't match, then we have
@@ -2901,7 +2910,6 @@ class c2m_Model {
 
 }
 
-// src/c2m_controller.js
 /* eslint-disable no-unused-vars */
 /**
  * c2m_controller.js
@@ -3029,7 +3037,6 @@ class c2m_Controller {
 
 }
 
-// src/index.js
 /**
  * Launch the c2m controller and do any additional pre-setup
  * Main task is to wait for the entire Canvas page to load

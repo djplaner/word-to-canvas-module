@@ -17,6 +17,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
+        "p[style-name='Canvas File Link'] => span.canvasFileLink",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
