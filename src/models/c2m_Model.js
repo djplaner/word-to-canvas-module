@@ -124,7 +124,7 @@ export default class c2m_Model {
         // if there are no fileLinks
         if (this.canvasModules.fileLinks.length === 0) {
             // ignore this step and start finding/creating other items
-            this.model.findOrCreateModuleItems();
+            this.findOrCreateModuleItems();
         }
 
         // loop through each fileLinks and call find API
