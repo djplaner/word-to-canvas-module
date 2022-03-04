@@ -1,6 +1,6 @@
 {
   "name": "word-to-canvas-module",
-  "version": "1.3.0",
+  "version": "1.4.2",
   "description": "Userscript to create a new Canvas LMS Module from a Word document",
   "main": "./src/index.js",
   "userscript": {
@@ -23,7 +23,8 @@
     "build": "userscript-builder --mode dev",
     "release:bugfix": "userscript-builder --mode bugfix",
     "release:minor": "userscript-builder --mode minor",
-    "release:major": "userscript-builder --mode major"
+    "release:major": "userscript-builder --mode major",
+    "kludge": "sh ./kludge/build.sh"
   },
   "repository": {
     "type": "git",

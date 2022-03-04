@@ -1,16 +1,3 @@
-// ==UserScript==
-// @name         Word 2 Canvas Module
-// @namespace    http://tampermonkey.net/
-// @version      1.4.2
-// @description  Userscript to create a new Canvas LMS Module from a Word document
-// @author       David Jones
-// @match        https://*/courses/*/modules*
-// @grant        none
-// @source       https://github.com/djplaner/word-to-canvas-module.git
-// @license      MIT
-// @homepage     https://github.com/djplaner/word-to-canvas-module
-// @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/0.3.10/mammoth.browser.min.js
-// ==/UserScript==
 
 /**
  * c2m_View.js
@@ -1296,7 +1283,6 @@ class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.model.findFileLinks();
-//        this.model.findOrCreateModuleItems();
     }
 
     /**
@@ -2204,7 +2190,6 @@ class c2m_Modules {
         }
 
         if (item.type === "Page" || item.type==="ExistingPage") {
-//            body.module_item['content_id'] = item.createdItem.page_id;
             body.module_item['page_url'] = item.createdItem.url;
             body.module_item['type'] = 'Page';
         }
@@ -2213,8 +2198,6 @@ class c2m_Modules {
             // TODO need to do more to extract the URL here
             body.module_item['external_url'] = item.content;
         }
-//        console.log('creating module item');
-//        console.log(body);
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',
@@ -2235,8 +2218,6 @@ class c2m_Modules {
                 item['addedItem'] = json;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
-//                if (item.type === "SubHeader") {
-//                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
  //               } else {
                 this.dispatchEvent( 'w2c-module-item-added',{'item':index});
   //              }
@@ -2437,8 +2418,6 @@ class c2m_Modules {
             let fileName = file.name.trim();
 
             if ( elementName.includes(fileName)) {
-//                console.log(
-//                    `findFileInList: elementName ${elementName} includes ${fileName}`);
                 file.response = element;
                 file.status = 'found';
                 return;
@@ -2498,13 +2477,11 @@ class c2m_Modules {
  * 
  */
 
-// Import the c2m_Converter class
 
 
 
 
 
-// Define enum for stage
 
 
 class c2m_Model {
@@ -2561,7 +2538,6 @@ class c2m_Model {
         console.log("-----------------------------");
 */
         let items = this.htmlConverter.items;
-//        console.log(items);
 
         // set up infrastructure
         // - this.fileLinks array of objects for required fileLinks
@@ -2590,7 +2566,6 @@ class c2m_Model {
 
             // loop thru the fileLinks
             for (let j = 0; j < fileLinks.length; j++) {
-//                console.log(fileLinks[j]);
 
                 let {name, descriptor} = this.setNameDescriptor( fileLinks[j]);
 
@@ -2606,8 +2581,6 @@ class c2m_Model {
             }
         }
 
-//        console.log("Found the following links")
-//       console.log(this.canvasModules.fileLinks);
 
         // if there are no fileLinks
         if (this.canvasModules.fileLinks.length === 0) {
@@ -2735,11 +2708,9 @@ class c2m_Model {
                 // replace originalLink with template in item.content
                 console.log(`replaceCanvasFileLinks: replacing **${originalLink}** with **${template}**`);
                 item.content = item.content.replace(originalLink, template);
-//                let newLink = parser.parseFromString(template, "text/html");
                 // TODO if fileLinks name and descriptor don't match, then we have
                 // a htmlFileLinks with a anchor wrapper, replace the parent
  //               htmlFileLinks[i].parentNode.replaceChild(newLink.body.firstElementChild, htmlFileLinks[i]);
-//                console.log(htmlFileLinks[i]);
                 console.log(item.content);
                 //
             } else {
@@ -2789,8 +2760,6 @@ class c2m_Model {
             case 'SubHeader':
                 // Don't need to find/create just generate event
                 this.dispatchEvent('w2c-item-found-created', { item: index });
-//                this.canvasModules.addModuleItem(index).then(() => {
-//                });
                 break;
             case 'File':
                 this.canvasModules.findItem(index).then(() => {});
@@ -2837,7 +2806,6 @@ class c2m_Model {
             // don't need to add some items
  //           const notToAdd = ['SubHeader'];
 
-//            let item = this.canvasModules.items[i];
             this.addModuleItem(i);
         }
     }
@@ -2858,8 +2826,6 @@ class c2m_Model {
         this.canvasModules.addModuleItem(itemIndex)
             .then(() => {
                 // TODO generate signal when item is added
-//                console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
-//                console.log(this.canvasModules.createdModuleItems);
             });
 
     }
@@ -2927,7 +2893,6 @@ class c2m_Model {
 
 
 
-// Define the states
 
 const c2m_Initialised = "c2m_Initialised";
 const c2m_ChooseWord = "c2m_ChooseWord";
@@ -3048,8 +3013,6 @@ function canvas2Module(){
  window.addEventListener('load', function(){
         // getting very kludgy here, haven't got a good solution...yet #14
         // - module content is dynamically loaded, wait (dumbly) for it to finish
-//        this.setTimeout(
-//            () => {
                 let controller = new c2m_Controller();
  //           }, 2000);
     });
