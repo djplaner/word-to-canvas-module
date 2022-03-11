@@ -67,7 +67,7 @@ export default class c2m_Controller {
 	*/
 
 	getCourseId() {
-		var courseId = ENV.COURSE_ID || ENV.course_id;
+		let courseId = ENV.COURSE_ID || ENV.course_id;
 		if (!courseId) {
 			var urlPartIncludingCourseId = window.location.href.split("courses/")[1];
 			if (urlPartIncludingCourseId) {

@@ -1,6 +1,10 @@
 # Install word-2-canvas
 
-```word-2-canvas``` is written as a [userscript](https://en.wikipedia.org/wiki/Userscript). A small program that is installed on your web browser and only run when you view specific web pages.  ```word-2-canvas``` is designed to run whenever you view [the Modules page](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-use-the-Modules-Index-Page/ta-p/926) of the Canvas LMS. Userscripts customise web pages to better suit your purposes. e.g. to help you create a Canvas module from a Word document.
+```word-2-canvas``` is written as a [userscript](https://en.wikipedia.org/wiki/Userscript). A small program that is installed on your web browser and only run when you view specific web pages.  
+
+> :exclamation: Userscripts are installed in the browser you are using. If you move to another computer or use a different browser, the userscript will not work on that different browser. You need to install the userscript (and the userscript manager) on each browser you use.
+
+```word-2-canvas``` is designed to run whenever you view [the Modules page](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-use-the-Modules-Index-Page/ta-p/926) of the Canvas LMS. Userscripts customise web pages to better suit your purposes. e.g. to help you create a Canvas module from a Word document.
 
 There are two steps to installing ```word-2-canvas``` explained here:
 1. Install a userscript manager (if you haven't already).
@@ -46,3 +50,7 @@ There are two ways to prevent word-2-canvas from modifying your view of Canvas m
 ![Accessing the TamperMonkey Dashboard](images/tampemonkey-dashboard.png)
 
 ![View the TamperMonkey dashboard](images/dashboard.png)
+
+## 4. Testing word2canvas
+
+The next step is to [test ```word2canvas```](./test.md) with Canvas.
