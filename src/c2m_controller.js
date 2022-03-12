@@ -82,9 +82,26 @@ export default class c2m_Controller {
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
 
+		// inject on module as well
+		this.injectCss();
+		// but if only on a pages page, finish up
+		let currentPageUrl = window.location.href;
+		if (currentPageUrl.match(/courses\/[0-9]*\/pages/)) {
+			return;
+		}
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
+	}
+
+	/**
+	 * Inject the CI CSS into a Canvas page 
+	 */
+	injectCss() {
+		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
+
+		// inject css string element at end of head
+		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css);
 	}
 
 	/**

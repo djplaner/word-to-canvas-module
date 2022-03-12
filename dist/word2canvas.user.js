@@ -1631,6 +1631,38 @@ const DEFAULT_OPTIONS = {
 
 };
 
+// Wrap arounds for various types of activity always required because
+// Mammoth isn't able (as I've configured it) to do it all
+// - key indicates <div style to be preprended
+// - value is what will be prepended
+const CI_STYLE_PREPEND = {
+  reading: `<div class="readingImage">
+    <img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-reading-48.png" alt="Reading icon" />
+  </div>`,
+  activity: `<div class="activityImage">
+    <img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-dancing-48.png" alt="Activity icon" />
+  </div>`,
+  flashback: `<div class="flashbackImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png" alt="Flashback logo" /></div>`,
+  //"canaryExercise" : `<div class="canaryImage"></div>`,
+  // COM14
+  canaryExercise: `<div class="canaryImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/Tweety.svg.png"  alt="Tweety bird"  /></div>`,
+  //ael-note : `<div class="icon"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png"></div>`,
+  "ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png"></div>`,
+  weeklyWorkout: `<div class="weeklyWorkoutImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/weeklyWorkout.png" alt="Female weight lifter" /></div>`,
+  comingSoon: `<div class="comingSoonImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg"></div>`,
+  filmWatchingOptions: `<div class="filmWatchingOptionsImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-movie-beginning-64.png" alt="Film Watching icon"> </div>`,
+  goReading: `<div class="goReadingImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reading.svg" /> </div>`,
+};
+
+const CI_EMPTY_STYLE_PREPEND = {
+  goStartHere: `<div class="goStartHereImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/start-here.svg" /> </div>`,
+  goActivity: `<div class="goActivityImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/activity.svg" /> </div>`,
+  goReflect: `<div class="goReflectImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reflection.svg" /> </div>`,
+  goWatch: `<div class="goWatchImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/video.svg" /> </div>`,
+  goDownload: `<div class="goDownloadImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/download.svg" /> </div>`,
+  goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
+};
+
 class c2m_WordConverter {
 
     /**
@@ -1715,9 +1747,35 @@ class c2m_WordConverter {
             hiddenElem.parentNode.removeChild(hiddenElem);
         }
 
+        // Content Interface pre-pends
+        this.contentInterfacePreprends(doc);
+
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
+    }
 
+    /**
+     * Add in the necessary Content Interface prepends 
+     * @param {DomElement} doc - containing Mammoth html conversion
+     */
+
+    contentInterfacePreprends(doc) {
+        for (const divstyle in CI_STYLE_PREPEND) {
+            let selector = `div.${divstyle}`;
+            // find all elements matching css selector
+            doc.querySelectorAll(selector).forEach(function (elem) {
+                elem.insertAdjacentHTML('afterbegin', CI_STYLE_PREPEND[divstyle]);
+            });
+        }
+
+        // and styles we wish to empty and prepend
+        for (const divstyle in CI_EMPTY_STYLE_PREPEND) {
+            let selector = `div.${divstyle}`;
+            // find all elements matching css selector
+            doc.querySelectorAll(selector).forEach(function (elem) {
+                elem.insertAdjacentHTML('afterbegin', CI_EMPTY_STYLE_PREPEND[divstyle]);
+            });
+        }
     }
 
     /**
@@ -3007,9 +3065,26 @@ class c2m_Controller {
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
 
+		// inject on module as well
+		this.injectCss();
+		// but if only on a pages page, finish up
+		let currentPageUrl = window.location.href;
+		if (currentPageUrl.match(/courses\/[0-9]*\/pages/)) {
+			return;
+		}
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
+	}
+
+	/**
+	 * Inject the CI CSS into a Canvas page 
+	 */
+	injectCss() {
+		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
+
+		// inject css string element at end of head
+		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css);
 	}
 
 	/**
