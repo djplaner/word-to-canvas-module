@@ -1588,6 +1588,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
         "p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
         "p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+        "p[style-name='activity'] => div.activity > div.instructions > p:fresh",
         /*"p[style-name='Activity'] => span.activity",*/
         "p[style-name='Bibliography'] => div.apa > p:fresh",
         "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
@@ -2991,7 +2992,7 @@ class c2m_Controller {
 	*/
 
 	getCourseId() {
-		var courseId = ENV.COURSE_ID || ENV.course_id;
+		let courseId = ENV.COURSE_ID || ENV.course_id;
 		if (!courseId) {
 			var urlPartIncludingCourseId = window.location.href.split("courses/")[1];
 			if (urlPartIncludingCourseId) {
