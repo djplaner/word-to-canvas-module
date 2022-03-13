@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.5.1
+// @version      1.5.3
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -360,6 +360,31 @@ const CHECK_HTML_HTML = `
 
 <style>
 
+.w2c-message-warning {
+	background-color: #fcf8e3;
+	list-style: none;
+	padding: 0.1em;
+	padding-left: 1em;
+}
+
+.w2c-message-error {
+	background-color: #f2dede;
+	list-style: none;
+	padding: 0.1em;
+	padding-left: 1em;
+}
+
+span.w2c-error {
+    font-size: 50%;
+    margin: 1em;
+    background-color: #ff0000;
+    color: white;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
 
 .w2c-content {
 	clear:both;
@@ -561,15 +586,13 @@ class c2m_CheckHtmlView extends c2m_View {
 	 */
 
 	generateMessageHtml(messages) {
-		let messageHtml = "";
+		let messageHtml = "<ul>";
 		messages.forEach(function (message) {
 			console.log(message);
 			messageHtml += `
-			<div class="w2c-message">
-			  <span class="w2c-message-type">${message.type}</span>
-			  <span class="w2c-message-message">${message.message}</span>
-			</div>`;
+			   <li class="w2c-message-${message.type}">${message.message}</li>`;
 		});
+		messageHtml+= "</ul>";
 		return messageHtml;
 	}
 
@@ -1697,7 +1720,9 @@ class c2m_WordConverter {
         // TODO move this out an additional class
         // find all span.embed in mammothResult and log innerhtml
         // parse the string 
-        this.postConvert()
+        this.postConvert();
+
+        this.generateWarnings();
 
         // generate mammoth-results event
         const event = new Event('mammoth-results');
@@ -1708,13 +1733,95 @@ class c2m_WordConverter {
     }
 
     /**
+     * After conversion and post conversion check for various known
+     * warnings or errors and update the mammothResult object and the
+     * messages
+     * - messages are stored in this.mammothResult.messages);
+     */
+
+    generateWarnings() {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(this.mammothResult.value, "text/html");
+
+        // headings with no text/name can't be used
+        this.checkEmptyHeadings(doc);
+
+        // Canvas culls the base64 images and they pose a size problem
+        this.checkBase64Images(doc);
+
+        this.mammothResult.value = doc.documentElement.outerHTML;
+    }
+
+    /**
+     * Check all the Heading 1 equivalents and see if any are empty
+     * - these need to be highlighted, reported as an error and then
+     *   removed before the next step
+     * 
+     * :param doc: the document (as parser) to check
+     */
+    checkEmptyHeadings(doc) {
+
+        // get all the h1 elements
+        let h1s = doc.querySelectorAll('h1');
+
+        // loop through the h1s and check for empty text
+        let empty = 0;
+        for (let i = 0; i < h1s.length; i++) {
+            let h1 = h1s[i];
+            if (h1.innerHTML.trim() === "") {
+                empty+=1;
+                // insert a <span class="w2c-error"> into the h1
+                const error = '<span class="w2c-error">empty heading 1</span>';
+                h1.insertAdjacentHTML('beforeend', error);
+            }
+        }
+
+        if (empty>0) {
+                this.mammothResult.messages.push({
+                    "type": "error",
+                    "message": `Found ${empty} empty Heading 1s (see below). Remove and try again.`,
+                });
+        }
+    }
+
+    /**
+     * Check the doc for any img tags using base64 encoded images
+     * @param {DOM} doc 
+     */
+
+    checkBase64Images(doc) {
+        // get all the img tags
+        let imgs = doc.querySelectorAll('img');
+
+        // loop through the imgs and check for base64 encoded images
+        let base64 = 0;
+        for (let i = 0; i < imgs.length; i++) {
+            let img = imgs[i];
+            if (img.src.indexOf('base64') > 0) {
+                base64+=1;
+                // insert a <span class="w2c-error"> into the img
+                const error = '<span class="w2c-error">base64 image</span>';
+                img.insertAdjacentHTML('beforebegin', error);
+            }
+        }
+        if (base64>0) { 
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `Found ${base64} base64 images (see below). 
+                           These will be replaced with placeholders. 
+                           <a href="">for more <i class="icon-question"></i></a>`,
+                });
+        }
+
+    } 
+
+    /**
      * Do all post mammoth conversions
      * - span.embed decoded HTML
      * - span.talisCanvasLink to a link
      */
     postConvert() {
         let parser = new DOMParser();
-
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
         // span.embed
@@ -2352,7 +2459,7 @@ class c2m_Modules {
             .then((json) => {
                 // push json onto this.createdItems array
                 item.createdItem = json;
-                console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
+                console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
             })

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.5.2
+// @version      1.5.3
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -2342,7 +2342,7 @@ class c2m_Modules {
             .then((json) => {
                 // push json onto this.createdItems array
                 item.createdItem = json;
-                console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
+                console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
             })

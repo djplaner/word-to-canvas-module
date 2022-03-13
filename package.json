@@ -1,6 +1,6 @@
 {
   "name": "word-to-canvas-module",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Userscript to create a new Canvas LMS Module from a Word document",
   "main": "./src/index.js",
   "userscript": {

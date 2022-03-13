@@ -181,7 +181,9 @@ export default class c2m_WordConverter {
         // TODO move this out an additional class
         // find all span.embed in mammothResult and log innerhtml
         // parse the string 
-        this.postConvert()
+        this.postConvert();
+
+        this.generateWarnings();
 
         // generate mammoth-results event
         const event = new Event('mammoth-results');
@@ -192,13 +194,95 @@ export default class c2m_WordConverter {
     }
 
     /**
+     * After conversion and post conversion check for various known
+     * warnings or errors and update the mammothResult object and the
+     * messages
+     * - messages are stored in this.mammothResult.messages);
+     */
+
+    generateWarnings() {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(this.mammothResult.value, "text/html");
+
+        // headings with no text/name can't be used
+        this.checkEmptyHeadings(doc);
+
+        // Canvas culls the base64 images and they pose a size problem
+        this.checkBase64Images(doc);
+
+        this.mammothResult.value = doc.documentElement.outerHTML;
+    }
+
+    /**
+     * Check all the Heading 1 equivalents and see if any are empty
+     * - these need to be highlighted, reported as an error and then
+     *   removed before the next step
+     * 
+     * :param doc: the document (as parser) to check
+     */
+    checkEmptyHeadings(doc) {
+
+        // get all the h1 elements
+        let h1s = doc.querySelectorAll('h1');
+
+        // loop through the h1s and check for empty text
+        let empty = 0;
+        for (let i = 0; i < h1s.length; i++) {
+            let h1 = h1s[i];
+            if (h1.innerHTML.trim() === "") {
+                empty+=1;
+                // insert a <span class="w2c-error"> into the h1
+                const error = '<span class="w2c-error">empty heading 1</span>';
+                h1.insertAdjacentHTML('beforeend', error);
+            }
+        }
+
+        if (empty>0) {
+                this.mammothResult.messages.push({
+                    "type": "error",
+                    "message": `Found ${empty} empty Heading 1s (see below). Remove and try again.`,
+                });
+        }
+    }
+
+    /**
+     * Check the doc for any img tags using base64 encoded images
+     * @param {DOM} doc 
+     */
+
+    checkBase64Images(doc) {
+        // get all the img tags
+        let imgs = doc.querySelectorAll('img');
+
+        // loop through the imgs and check for base64 encoded images
+        let base64 = 0;
+        for (let i = 0; i < imgs.length; i++) {
+            let img = imgs[i];
+            if (img.src.indexOf('base64') > 0) {
+                base64+=1;
+                // insert a <span class="w2c-error"> into the img
+                const error = '<span class="w2c-error">base64 image</span>';
+                img.insertAdjacentHTML('beforebegin', error);
+            }
+        }
+        if (base64>0) { 
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `Found ${base64} base64 images <small>(labeled in HTML)</small>. 
+                           These will be replaced with placeholders.<br /> 
+                           <small><strong><a href="">For more <i class="icon-question"></i></a></strong></small>`,
+                });
+        }
+
+    } 
+
+    /**
      * Do all post mammoth conversions
      * - span.embed decoded HTML
      * - span.talisCanvasLink to a link
      */
     postConvert() {
         let parser = new DOMParser();
-
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
         // span.embed

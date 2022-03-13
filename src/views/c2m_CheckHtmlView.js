@@ -93,6 +93,31 @@ const CHECK_HTML_HTML = `
 
 <style>
 
+.w2c-message-warning {
+	background-color: #fcf8e3;
+	list-style: none;
+	padding: 0.1em;
+	padding-left: 1em;
+}
+
+.w2c-message-error {
+	background-color: #f2dede;
+	list-style: none;
+	padding: 0.1em;
+	padding-left: 1em;
+}
+
+span.w2c-error {
+    font-size: 50%;
+    margin: 1em;
+    background-color: #ff0000;
+    color: white;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
 
 .w2c-content {
 	clear:both;
@@ -294,15 +319,13 @@ export default class c2m_CheckHtmlView extends c2m_View {
 	 */
 
 	generateMessageHtml(messages) {
-		let messageHtml = "";
+		let messageHtml = "<ul>";
 		messages.forEach(function (message) {
 			console.log(message);
 			messageHtml += `
-			<div class="w2c-message">
-			  <span class="w2c-message-type">${message.type}</span>
-			  <span class="w2c-message-message">${message.message}</span>
-			</div>`;
+			   <li class="w2c-message-${message.type}">${message.message}</li>`;
 		});
+		messageHtml+= "</ul>";
 		return messageHtml;
 	}
 

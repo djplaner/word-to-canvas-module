@@ -190,7 +190,7 @@ export default class c2m_Modules {
             .then((json) => {
                 // push json onto this.createdItems array
                 item.createdItem = json;
-                console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
+                console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
             })
