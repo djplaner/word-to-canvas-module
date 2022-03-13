@@ -14,7 +14,7 @@ Manually creating a complex module using the Canvas web interface can be a touch
 
 1. Doesn't handle images embedded in Word documents.
 
-   The Canvas editor [removes base64 encoded images from HTML](https://community.canvaslms.com/t5/Canvas-Question-Forum/base64-Images-Not-Displaying-in-Course-Pages/td-p/464739). The method ```word2canvas``` uses to convert the Word document to HTML converts images to base64 encoded images.
+   The Canvas editor [removes base64 encoded images from HTML](https://community.canvaslms.com/t5/Canvas-Question-Forum/base64-Images-Not-Displaying-in-Course-Pages/td-p/464739). The method ```word2canvas``` uses to convert the Word document to HTML converts images to base64 encoded images. The [current suggested "solution"](./docs/warnings/htmlConversion.md#base64-images) requires manual saving of these images and using them to replace placeholder images via the Canvas RCE. 
 
 2. Required to use very specific Word styles.
 

@@ -270,7 +270,8 @@ export default class c2m_WordConverter {
                 "type": "error",
                 "message": `Found ${base64} base64 images <small>(labeled in HTML)</small>. 
                            These will be replaced with placeholders.<br /> 
-                           <small><strong><a href="">For more <i class="icon-question"></i></a></strong></small>`,
+                           <small><strong>
+                             <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/htmlConversion.html#base64-images">For more <i class="icon-question"></i></a></strong></small>`,
                 });
         }
 

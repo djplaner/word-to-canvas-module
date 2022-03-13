@@ -173,6 +173,7 @@ export default class c2m_CheckModuleView extends c2m_View {
 		console.log("3. Check the Canvas Module");
 
 		// perform the test conversion of the HTML (Mammoth) to Canvas Module
+    this.model.postProcessMammothResult();
 		this.model.testHtmlToModule();
 
 		let c2mDiv = this.createEmptyDialogDiv();
