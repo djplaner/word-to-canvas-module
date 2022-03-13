@@ -1,4 +1,3 @@
-
 /**
  * c2m_View.js
  * Parent view class, define
@@ -343,6 +342,31 @@ const CHECK_HTML_HTML = `
 
 <style>
 
+.w2c-message-warning {
+	background-color: #fcf8e3;
+	list-style: none;
+	padding: 0.1em;
+	padding-left: 1em;
+}
+
+.w2c-message-error {
+	background-color: #f2dede;
+	list-style: none;
+	padding: 0.1em;
+	padding-left: 1em;
+}
+
+span.w2c-error {
+    font-size: 50%;
+    margin: 1em;
+    background-color: #ff0000;
+    color: white;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
 
 .w2c-content {
 	clear:both;
@@ -544,15 +568,13 @@ class c2m_CheckHtmlView extends c2m_View {
 	 */
 
 	generateMessageHtml(messages) {
-		let messageHtml = "";
+		let messageHtml = "<ul>";
 		messages.forEach(function (message) {
 			console.log(message);
 			messageHtml += `
-			<div class="w2c-message">
-			  <span class="w2c-message-type">${message.type}</span>
-			  <span class="w2c-message-message">${message.message}</span>
-			</div>`;
+			   <li class="w2c-message-${message.type}">${message.message}</li>`;
 		});
+		messageHtml+= "</ul>";
 		return messageHtml;
 	}
 
@@ -977,6 +999,7 @@ class c2m_CheckModuleView extends c2m_View {
 		console.log("3. Check the Canvas Module");
 
 		// perform the test conversion of the HTML (Mammoth) to Canvas Module
+    this.model.postProcessMammothResult();
 		this.model.testHtmlToModule();
 
 		let c2mDiv = this.createEmptyDialogDiv();
@@ -1283,6 +1306,7 @@ class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.model.findFileLinks();
+//        this.model.findOrCreateModuleItems();
     }
 
     /**
@@ -1566,6 +1590,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
         "p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
         "p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+        "p[style-name='activity'] => div.activity > div.instructions > p:fresh",
         /*"p[style-name='Activity'] => span.activity",*/
         "p[style-name='Bibliography'] => div.apa > p:fresh",
         "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
@@ -1608,6 +1633,36 @@ const DEFAULT_OPTIONS = {
 
 };
 
+// Wrap arounds for various types of activity always required because
+// Mammoth isn't able (as I've configured it) to do it all
+// - key indicates <div style to be preprended
+// - value is what will be prepended
+const CI_STYLE_PREPEND = {
+  reading: `<div class="readingImage">&nbsp;</div>`,
+  activity: `<div class="activityImage">&nbsp;</div>`,
+  flashback: `<div class="flashbackImage">&nbsp;</div>`,
+  //"canaryExercise" : `<div class="canaryImage"></div>`,
+  // COM14
+  canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
+  //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
+  "ael-note": `<div class="noteImage">&nbsp;</div>`,
+  weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
+  comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
+  filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
+  goReading: `<div class="goReadingImage">&nbsp;</div>`,
+};
+
+const CI_EMPTY_STYLE_PREPEND = {
+  goStartHere: `<div class="goStartHereImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/start-here.svg" /> </div>`,
+  goActivity: `<div class="goActivityImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/activity.svg" /> </div>`,
+  goReflect: `<div class="goReflectImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reflection.svg" /> </div>`,
+  goWatch: `<div class="goWatchImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/video.svg" /> </div>`,
+  goDownload: `<div class="goDownloadImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/download.svg" /> </div>`,
+  goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
+};
+
+const TABLE_CLASS= ["table", "stripe-row-odd"];
+
 class c2m_WordConverter {
 
     /**
@@ -1644,7 +1699,9 @@ class c2m_WordConverter {
         // TODO move this out an additional class
         // find all span.embed in mammothResult and log innerhtml
         // parse the string 
-        this.postConvert()
+        this.postConvert();
+
+        this.generateWarnings();
 
         // generate mammoth-results event
         const event = new Event('mammoth-results');
@@ -1655,13 +1712,96 @@ class c2m_WordConverter {
     }
 
     /**
+     * After conversion and post conversion check for various known
+     * warnings or errors and update the mammothResult object and the
+     * messages
+     * - messages are stored in this.mammothResult.messages);
+     */
+
+    generateWarnings() {
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(this.mammothResult.value, "text/html");
+
+        // headings with no text/name can't be used
+        this.checkEmptyHeadings(doc);
+
+        // Canvas culls the base64 images and they pose a size problem
+        this.checkBase64Images(doc);
+
+        this.mammothResult.value = doc.documentElement.outerHTML;
+    }
+
+    /**
+     * Check all the Heading 1 equivalents and see if any are empty
+     * - these need to be highlighted, reported as an error and then
+     *   removed before the next step
+     * 
+     * :param doc: the document (as parser) to check
+     */
+    checkEmptyHeadings(doc) {
+
+        // get all the h1 elements
+        let h1s = doc.querySelectorAll('h1');
+
+        // loop through the h1s and check for empty text
+        let empty = 0;
+        for (let i = 0; i < h1s.length; i++) {
+            let h1 = h1s[i];
+            if (h1.innerHTML.trim() === "") {
+                empty+=1;
+                // insert a <span class="w2c-error"> into the h1
+                const error = '<span class="w2c-error">empty heading 1</span>';
+                h1.insertAdjacentHTML('beforeend', error);
+            }
+        }
+
+        if (empty>0) {
+                this.mammothResult.messages.push({
+                    "type": "error",
+                    "message": `Found ${empty} empty Heading 1s (see below). Remove and try again.`,
+                });
+        }
+    }
+
+    /**
+     * Check the doc for any img tags using base64 encoded images
+     * @param {DOM} doc 
+     */
+
+    checkBase64Images(doc) {
+        // get all the img tags
+        let imgs = doc.querySelectorAll('img');
+
+        // loop through the imgs and check for base64 encoded images
+        let base64 = 0;
+        for (let i = 0; i < imgs.length; i++) {
+            let img = imgs[i];
+            if (img.src.indexOf('base64') > 0) {
+                base64+=1;
+                // insert a <span class="w2c-error"> into the img
+                const error = '<span class="w2c-error">base64 image</span>';
+                img.insertAdjacentHTML('beforebegin', error);
+            }
+        }
+        if (base64>0) { 
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `Found ${base64} base64 images <small>(labeled in HTML)</small>. 
+                           These will be replaced with placeholders.<br /> 
+                           <small><strong>
+                             <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/htmlConversion.html#base64-images">For more <i class="icon-question"></i></a></strong></small>`,
+                });
+        }
+
+    } 
+
+    /**
      * Do all post mammoth conversions
      * - span.embed decoded HTML
      * - span.talisCanvasLink to a link
      */
     postConvert() {
         let parser = new DOMParser();
-
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
         // span.embed
@@ -1692,9 +1832,45 @@ class c2m_WordConverter {
             hiddenElem.parentNode.removeChild(hiddenElem);
         }
 
+        // Content Interface pre-pends
+        this.contentInterfacePreprends(doc);
+
+        // add class TABLE_CLASS to all of the tables
+        doc.querySelectorAll('table').forEach( (elem) => {
+            // add class TABLE_CLASS to elem 
+            TABLE_CLASS.forEach( (tableClass) => {
+                elem.classList.add(tableClass);
+
+            });
+        });
+
+
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
+    }
 
+    /**
+     * Add in the necessary Content Interface prepends 
+     * @param {DomElement} doc - containing Mammoth html conversion
+     */
+
+    contentInterfacePreprends(doc) {
+        for (const divstyle in CI_STYLE_PREPEND) {
+            let selector = `div.${divstyle}`;
+            // find all elements matching css selector
+            doc.querySelectorAll(selector).forEach(function (elem) {
+                elem.insertAdjacentHTML('afterbegin', CI_STYLE_PREPEND[divstyle]);
+            });
+        }
+
+        // and styles we wish to empty and prepend
+        for (const divstyle in CI_EMPTY_STYLE_PREPEND) {
+            let selector = `div.${divstyle}`;
+            // find all elements matching css selector
+            doc.querySelectorAll(selector).forEach(function (elem) {
+                elem.insertAdjacentHTML('afterbegin', CI_EMPTY_STYLE_PREPEND[divstyle]);
+            });
+        }
     }
 
     /**
@@ -2190,6 +2366,7 @@ class c2m_Modules {
         }
 
         if (item.type === "Page" || item.type==="ExistingPage") {
+//            body.module_item['content_id'] = item.createdItem.page_id;
             body.module_item['page_url'] = item.createdItem.url;
             body.module_item['type'] = 'Page';
         }
@@ -2198,6 +2375,8 @@ class c2m_Modules {
             // TODO need to do more to extract the URL here
             body.module_item['external_url'] = item.content;
         }
+//        console.log('creating module item');
+//        console.log(body);
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',
@@ -2218,6 +2397,8 @@ class c2m_Modules {
                 item['addedItem'] = json;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
+//                if (item.type === "SubHeader") {
+//                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
  //               } else {
                 this.dispatchEvent( 'w2c-module-item-added',{'item':index});
   //              }
@@ -2256,7 +2437,7 @@ class c2m_Modules {
             .then((json) => {
                 // push json onto this.createdItems array
                 item.createdItem = json;
-                console.log(`c2m_Modules -> createPage: ${this.createdItem}`);
+                console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
             })
@@ -2418,6 +2599,8 @@ class c2m_Modules {
             let fileName = file.name.trim();
 
             if ( elementName.includes(fileName)) {
+//                console.log(
+//                    `findFileInList: elementName ${elementName} includes ${fileName}`);
                 file.response = element;
                 file.status = 'found';
                 return;
@@ -2477,11 +2660,13 @@ class c2m_Modules {
  * 
  */
 
+// Import the c2m_Converter class
 
 
 
 
 
+// Define enum for stage
 
 
 class c2m_Model {
@@ -2538,6 +2723,7 @@ class c2m_Model {
         console.log("-----------------------------");
 */
         let items = this.htmlConverter.items;
+//        console.log(items);
 
         // set up infrastructure
         // - this.fileLinks array of objects for required fileLinks
@@ -2566,6 +2752,7 @@ class c2m_Model {
 
             // loop thru the fileLinks
             for (let j = 0; j < fileLinks.length; j++) {
+//                console.log(fileLinks[j]);
 
                 let {name, descriptor} = this.setNameDescriptor( fileLinks[j]);
 
@@ -2581,6 +2768,8 @@ class c2m_Model {
             }
         }
 
+//        console.log("Found the following links")
+//       console.log(this.canvasModules.fileLinks);
 
         // if there are no fileLinks
         if (this.canvasModules.fileLinks.length === 0) {
@@ -2708,9 +2897,11 @@ class c2m_Model {
                 // replace originalLink with template in item.content
                 console.log(`replaceCanvasFileLinks: replacing **${originalLink}** with **${template}**`);
                 item.content = item.content.replace(originalLink, template);
+//                let newLink = parser.parseFromString(template, "text/html");
                 // TODO if fileLinks name and descriptor don't match, then we have
                 // a htmlFileLinks with a anchor wrapper, replace the parent
  //               htmlFileLinks[i].parentNode.replaceChild(newLink.body.firstElementChild, htmlFileLinks[i]);
+//                console.log(htmlFileLinks[i]);
                 console.log(item.content);
                 //
             } else {
@@ -2760,6 +2951,8 @@ class c2m_Model {
             case 'SubHeader':
                 // Don't need to find/create just generate event
                 this.dispatchEvent('w2c-item-found-created', { item: index });
+//                this.canvasModules.addModuleItem(index).then(() => {
+//                });
                 break;
             case 'File':
                 this.canvasModules.findItem(index).then(() => {});
@@ -2806,6 +2999,7 @@ class c2m_Model {
             // don't need to add some items
  //           const notToAdd = ['SubHeader'];
 
+//            let item = this.canvasModules.items[i];
             this.addModuleItem(i);
         }
     }
@@ -2826,6 +3020,8 @@ class c2m_Model {
         this.canvasModules.addModuleItem(itemIndex)
             .then(() => {
                 // TODO generate signal when item is added
+//                console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
+//                console.log(this.canvasModules.createdModuleItems);
             });
 
     }
@@ -2839,6 +3035,48 @@ class c2m_Model {
         catch (e) {
             console.error(`c2m_Model -> convertWordDoc error: ${e}`);
         }
+    }
+
+    
+    /**
+     * Perform any necessary cleanup of the HTML generated by Mammoth
+     */
+    postProcessMammothResult() {
+        // create dom element from mammoth result
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(this.wordConverter.mammothResult.value, "text/html");
+
+        // remove any span.w2c-error 
+        this.removeSpanErrors(doc);
+
+        // replace base64 images with placeholder images
+        this.replaceBase64Images(doc);
+
+        this.wordConverter.mammothResult.value = doc.documentElement.outerHTML;
+    }
+
+    /**
+     * remove all the span.w2c-error elements from the document
+     * @param {DOM} doc 
+     */
+    removeSpanErrors(doc) {
+        // find all span.w2c-error elements
+        doc.querySelectorAll('span.w2c-error').forEach( (elem) => {
+            elem.remove();
+        });
+    }
+
+    replaceBase64Images(doc) {
+        // find all img elements
+        doc.querySelectorAll('img').forEach( (elem) => {
+            // if the src starts with data:
+            if (elem.src.startsWith('data:')) {
+                const width = 320;
+                const height = 200;
+                // replace with placeholder image
+                elem.src = `https://dummyimage.com/${width}x${height}/000/fff&text=Base64Image`;
+            }
+        });
     }
 
     /**
@@ -2893,6 +3131,7 @@ class c2m_Model {
 
 
 
+// Define the states
 
 const c2m_Initialised = "c2m_Initialised";
 const c2m_ChooseWord = "c2m_ChooseWord";
@@ -2944,7 +3183,7 @@ class c2m_Controller {
 	*/
 
 	getCourseId() {
-		var courseId = ENV.COURSE_ID || ENV.course_id;
+		let courseId = ENV.COURSE_ID || ENV.course_id;
 		if (!courseId) {
 			var urlPartIncludingCourseId = window.location.href.split("courses/")[1];
 			if (urlPartIncludingCourseId) {
@@ -2959,9 +3198,27 @@ class c2m_Controller {
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
 
+		// inject on module as well
+		this.injectCss();
+		// but if only on a pages page, finish up
+		let currentPageUrl = window.location.href;
+		if (currentPageUrl.match(/courses\/[0-9]*\/pages/)) {
+			return;
+		}
 
 		const view = eval(`new ${this.currentState}View(this.model, this)`);
 		view.render();
+	}
+
+	/**
+	 * Inject the CI CSS into a Canvas page 
+	 */
+	injectCss() {
+//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
+		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
+
+		// inject css string element at end of head
+		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css);
 	}
 
 	/**
@@ -3013,6 +3270,8 @@ function canvas2Module(){
  window.addEventListener('load', function(){
         // getting very kludgy here, haven't got a good solution...yet #14
         // - module content is dynamically loaded, wait (dumbly) for it to finish
+//        this.setTimeout(
+//            () => {
                 let controller = new c2m_Controller();
  //           }, 2000);
     });
