@@ -130,8 +130,7 @@ const CI_STYLE_PREPEND = {
   //"canaryExercise" : `<div class="canaryImage"></div>`,
   // COM14
   canaryExercise: `<div class="canaryImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/Tweety.svg.png"  alt="Tweety bird"  /></div>`,
-  //ael-note : `<div class="icon"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png"></div>`,
-  "ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png"></div>`,
+  "ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
   weeklyWorkout: `<div class="weeklyWorkoutImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/weeklyWorkout.png" alt="Female weight lifter" /></div>`,
   comingSoon: `<div class="comingSoonImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg"></div>`,
   filmWatchingOptions: `<div class="filmWatchingOptionsImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-movie-beginning-64.png" alt="Film Watching icon"> </div>`,
@@ -244,14 +243,14 @@ export default class c2m_WordConverter {
      */
 
     contentInterfacePreprends(doc) {
-        for (const divstyle in CI_STYLE_PREPEND) {
+/*        for (const divstyle in CI_STYLE_PREPEND) {
             let selector = `div.${divstyle}`;
             // find all elements matching css selector
             doc.querySelectorAll(selector).forEach(function (elem) {
                 elem.insertAdjacentHTML('afterbegin', CI_STYLE_PREPEND[divstyle]);
             });
         }
-
+*/
         // and styles we wish to empty and prepend
         for (const divstyle in CI_EMPTY_STYLE_PREPEND) {
             let selector = `div.${divstyle}`;
