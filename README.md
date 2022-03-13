@@ -1,10 +1,31 @@
-# Word to Canvas Module
+# Word to Canvas (```word2canvas```) Module
+
+## What is ```word2canvas```?
 
 A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new [Canvas LMS](https://canvas.instructure.com/) module from a Word document (using some specific Word styles) - see [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) for an annotated example.
 
 > :exclamation: The contents of your Word documents always remain on your computer, your web browser, and eventually as a Module in the Canvas instance you are working with.
 
-## How to use
+## Why use ```word2canvas```?
+
+Manually creating a complex module using the Canvas web interface can be a touch tedious. Each item must be edited on its individual page. Multiple clicks... Especially if you already have the module content in a Word document and/or you are creating many modules. (e.g. migrating from one LMS to another)
+
+## Why not?
+
+1. Doesn't handle images embedded in Word documents.
+
+   The Canvas editor [removes base64 encoded images from HTML](https://community.canvaslms.com/t5/Canvas-Question-Forum/base64-Images-Not-Displaying-in-Course-Pages/td-p/464739). The method ```word2canvas``` uses to convert the Word document to HTML converts images to base64 encoded images.
+
+2. Required to use very specific Word styles.
+
+   Your Word document must [use very specific styles](https://github.com/djplaner/word-to-canvas-module/blob/main/docs/create.md#summary-word-2-canvas-styles-and-their-purpose) to correctly create Canvas Modules and their items. There is a learning curve involved.
+
+2. Doesn't work for [new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+
+   Entirely because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+
+
+## How to use ```word2canvas```
 
 1. [Install the userscript](./docs/install.md) 
 
@@ -12,7 +33,7 @@ A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new
 
 2. [Test the userscript](./docs/test.md)
 
-   Use the [test userscript](./docs/test.md) to test the userscript.
+   By creating a module from the sample Word document.
 
 3. [Create a Word document](./docs/create.md) containing content for your new Canvas module.  
 4. Visit the modules page of a Canvas course and [use word-2-canvas](./docs/use.md) to create a new module.
@@ -23,7 +44,7 @@ A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new
 
 ## Current Status
 
-> **Note:** :warning: word-2-canvas appears to be working and is being used. But there remain rough edges and missing features.
+> **Note:** :warning: ```word2canvas`` is largely working and is being used. There remain some rough edges and missing features.
 
 Currently creates Canvas modules including
 - Creating new: pages, sub-headers, and external urls.
@@ -38,17 +59,6 @@ Currently creates Canvas modules including
 
 1. The word-2-canvas button may not always appear on the Modules page.
    **Solution:** Reload the modules page. **Apparent cause:** Navigation between pages in a Canvas course doesn't always invoke word2Canvas to check if it's on the module page. A reload of the modules page forces the issue
-
-## :warning: Known limitations
-
-1. Use specific Word styles for full functionality.
-
-   Each Canvas module item type is identified by a specific Word style (based on the _Heading 1_ style). The [sample w2c.docx](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) has defined these styles: Canvas Assignment; Canvas Discussion; Canvas Quiz; Canvas File; Exiting Canvas Page; Canvas SubHeader, Canvas External Url.
-
-2. Doesn't work for [new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
-
-   Entirely because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
-  
 
 ## Development
 

@@ -1636,18 +1636,18 @@ const DEFAULT_OPTIONS = {
 // - key indicates <div style to be preprended
 // - value is what will be prepended
 const CI_STYLE_PREPEND = {
-  reading: `<div class="readingImage"></div>`,
-  activity: `<div class="activityImage"></div>`,
-  flashback: `<div class="flashbackImage"></div>`,
+  reading: `<div class="readingImage">&nbsp;</div>`,
+  activity: `<div class="activityImage">&nbsp;</div>`,
+  flashback: `<div class="flashbackImage">&nbsp;</div>`,
   //"canaryExercise" : `<div class="canaryImage"></div>`,
   // COM14
-  canaryExercise: `<div class="canaryImage"></div>`,
+  canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
   //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
-  "ael-note": `<div class="noteImage"></div>`,
-  weeklyWorkout: `<div class="weeklyWorkoutImage"></div>`,
-  comingSoon: `<div class="comingSoonImage"></div>`,
-  filmWatchingOptions: `<div class="filmWatchingOptionsImage"></div>`,
-  goReading: `<div class="goReadingImage"></div>`,
+  "ael-note": `<div class="noteImage">&nbsp;</div>`,
+  weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
+  comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
+  filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
+  goReading: `<div class="goReadingImage">&nbsp;</div>`,
 };
 
 const CI_EMPTY_STYLE_PREPEND = {
