@@ -143,6 +143,8 @@ const CI_EMPTY_STYLE_PREPEND = {
   goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
 };
 
+const TABLE_CLASS= ["table", "stripe-row-odd"];
+
 export default class c2m_WordConverter {
 
     /**
@@ -229,6 +231,16 @@ export default class c2m_WordConverter {
 
         // Content Interface pre-pends
         this.contentInterfacePreprends(doc);
+
+        // add class TABLE_CLASS to all of the tables
+        doc.querySelectorAll('table').forEach( (elem) => {
+            // add class TABLE_CLASS to elem 
+            TABLE_CLASS.forEach( (tableClass) => {
+                elem.classList.add(tableClass);
+
+            });
+        });
+
 
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
