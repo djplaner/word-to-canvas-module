@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.5.0
+// @version      1.5.1
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
-// @match        https://*/courses/*/modules*
+// @match        https://*/courses/*
 // @grant        none
 // @source       https://github.com/djplaner/word-to-canvas-module.git
 // @license      MIT
