@@ -6,9 +6,15 @@ A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new
 
 ## How to use
 
-1. [Install the userscript](./docs/install.md) - Install a userscript manager (e.g. [TamperMonkey](https://www.tampermonkey.net/)) on your browser of choice and then install the [word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.live.user.js).
-2. [Test the userscript](./docs/test.md) - Use the [test userscript](./docs/test.md) to test the userscript.
-2. [Create a Word document](./docs/create.md) containing content for your new Canvas module.  
+1. [Install the userscript](./docs/install.md) 
+
+   Install a userscript manager (e.g. [TamperMonkey](https://www.tampermonkey.net/)) on your browser of choice and then install the [word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.live.user.js).
+
+2. [Test the userscript](./docs/test.md)
+
+   Use the [test userscript](./docs/test.md) to test the userscript.
+
+3. [Create a Word document](./docs/create.md) containing content for your new Canvas module.  
 4. Visit the modules page of a Canvas course and [use word-2-canvas](./docs/use.md) to create a new module.
 
 > :grey_question: Feel free to use this [repo's Issues](https://github.com/djplaner/word-to-canvas-module/issues) to ask questions. Especially in these early development stages.
@@ -26,8 +32,7 @@ Currently creates Canvas modules including
 ## To be done
 
 1. Better error checking and messaging
-2. Support for a _Canvas File Link_ style
-3. Figure out a better, more consistent way to handle images
+3. Figure out how to [handle embedded images](https://github.com/djplaner/word-to-canvas-module/issues/28).
 
 ## :warning: Known issues
 
@@ -40,7 +45,7 @@ Currently creates Canvas modules including
 
    Each Canvas module item type is identified by a specific Word style (based on the _Heading 1_ style). The [sample w2c.docx](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) has defined these styles: Canvas Assignment; Canvas Discussion; Canvas Quiz; Canvas File; Exiting Canvas Page; Canvas SubHeader, Canvas External Url.
 
-2. Doesn't work for new Quizzes[](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+2. Doesn't work for [new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
 
    Entirely because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
   

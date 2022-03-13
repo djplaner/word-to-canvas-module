@@ -1636,21 +1636,18 @@ const DEFAULT_OPTIONS = {
 // - key indicates <div style to be preprended
 // - value is what will be prepended
 const CI_STYLE_PREPEND = {
-  reading: `<div class="readingImage">
-    <img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-reading-48.png" alt="Reading icon" />
-  </div>`,
-  activity: `<div class="activityImage">
-    <img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-dancing-48.png" alt="Activity icon" />
-  </div>`,
-  flashback: `<div class="flashbackImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png" alt="Flashback logo" /></div>`,
+  reading: `<div class="readingImage"></div>`,
+  activity: `<div class="activityImage"></div>`,
+  flashback: `<div class="flashbackImage"></div>`,
   //"canaryExercise" : `<div class="canaryImage"></div>`,
   // COM14
-  canaryExercise: `<div class="canaryImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/Tweety.svg.png"  alt="Tweety bird"  /></div>`,
-  "ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
-  weeklyWorkout: `<div class="weeklyWorkoutImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/weeklyWorkout.png" alt="Female weight lifter" /></div>`,
-  comingSoon: `<div class="comingSoonImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg"></div>`,
-  filmWatchingOptions: `<div class="filmWatchingOptionsImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-movie-beginning-64.png" alt="Film Watching icon"> </div>`,
-  goReading: `<div class="goReadingImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reading.svg" /> </div>`,
+  canaryExercise: `<div class="canaryImage"></div>`,
+  //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
+  "ael-note": `<div class="noteImage"></div>`,
+  weeklyWorkout: `<div class="weeklyWorkoutImage"></div>`,
+  comingSoon: `<div class="comingSoonImage"></div>`,
+  filmWatchingOptions: `<div class="filmWatchingOptionsImage"></div>`,
+  goReading: `<div class="goReadingImage"></div>`,
 };
 
 const CI_EMPTY_STYLE_PREPEND = {
@@ -3080,7 +3077,8 @@ class c2m_Controller {
 	 * Inject the CI CSS into a Canvas page 
 	 */
 	injectCss() {
-		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
+//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
+		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
 
 		// inject css string element at end of head
 		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css);
