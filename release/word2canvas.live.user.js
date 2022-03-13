@@ -4,7 +4,7 @@
 // @version      1.5.4
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
-// @match        https://*/courses/*/modules*
+// @match        https://*/courses/*/*
 // @grant        none
 // @source       https://github.com/djplaner/word-to-canvas-module.git
 // @license      MIT
