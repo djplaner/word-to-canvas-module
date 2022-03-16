@@ -60,6 +60,8 @@ Currently creates Canvas modules including
 1. The word-2-canvas button may not always appear on the Modules page.
    **Solution:** Reload the modules page. **Apparent cause:** Navigation between pages in a Canvas course doesn't always invoke word2Canvas to check if it's on the module page. A reload of the modules page forces the issue
 
+   :warning: It appears that this is a particular problem when using Firefox. Chromium-based browsers (e.g. Chrome and Edge) appear to work better.
+
 ## Development
 
 - Uses [mammoth.js](https://github.com/mwilliamson/mammoth.js/) for Word to HTML conversion
