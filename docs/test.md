@@ -6,7 +6,7 @@ The process below is
 
 1. Prepare pre-requisites
 2. View the modules page and ```word2canvas``` in action.
-3. Use ```word2canvas``` to create a new module from the [sample w2c.docx file](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx)
+3. Use ```word2canvas``` to create a new module from the [firstTextDocument file](https://github.com/djplaner/word-to-canvas-module/raw/main/docs/firstTestDocument.docx)
 
 ## 1. Prepare pre-requisites
 
@@ -14,8 +14,7 @@ To test ```word2canvas``` you will need
 
 1. A browser with the ```word2canvas``` userscript installed.
 2. A Canvas course site on which you can create Modules.
-3. Have downloaded the [sample w2c.docx file](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) to your computer.
-4. Have uploaded a copy of the ```sample w2c.docx``` file to the Canvas course site.
+3. Have downloaded the [firstTestDocument.docx file](https://github.com/djplaner/word-to-canvas-module/raw/main/docs/firstTestDocument.docx) to your computer.
 
 ## 2. View the modules page and ```word2canvas``` in action.
 
@@ -31,7 +30,6 @@ If you don't see this button, there is a problem that [needs to diagnosed and re
 
 Create a new module by clicking the **.docx 2 + Module** button. This should add the **.docx 2 + Canvas Module** interface at the top of the page you're viewing. e.g. the following image.
 
-Use the _Browse_ button to select the ```sample w2c.docx``` file you downloaded. Follow the advice shown and your module should be created.
+Use the _Browse_ button to select the ```firstTestDocument.docx``` file you downloaded. Follow the advice shown and your module should be created and you'll end up with something like the following.
 
-![](images/w2cChooseDocx.png)
-
+![](images/myFirstTest.png)
