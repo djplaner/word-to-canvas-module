@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.5.3
+// @version      1.5.4
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -3223,6 +3223,13 @@ class c2m_Controller {
 		console.log('----------------- render -----------------');
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
+
+		// select li.section > a.syllabus
+		const syllabus = document.querySelector('li.section > a.syllabus');
+		if (syllabus) {
+			// hide syllabus
+			syllabus.style.display = 'none';
+		}
 
 		// inject on module as well
 		this.injectCss();

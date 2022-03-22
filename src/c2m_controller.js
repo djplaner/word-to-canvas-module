@@ -82,6 +82,12 @@ export default class c2m_Controller {
 		console.log(`rendering state ${this.currentState}`);
 		console.log(` -- token ${this.csrfToken}`);
 
+		// select li.section > a.syllabus
+/*		const syllabus = document.querySelector('li.section > a.syllabus');
+		if (syllabus) {
+			syllabus.style.display = 'none';
+		}*/
+
 		// inject on module as well
 		this.injectCss();
 		// but if only on a pages page, finish up
