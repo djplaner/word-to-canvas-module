@@ -1353,7 +1353,8 @@ class c2m_CompletedView extends c2m_View {
         // check that the file has been found correctly
         if ( file.status==="found") {
             // add to the progress display
-            this.addProgressList(` File "<em>${file.name}</em>": found` );
+            this.addProgressList(
+                `<span class="text-success"> File "<em>${file.name}</em>": found</span>` );
         } else {
             // failed to find it
             this.addProgressList(
@@ -1418,8 +1419,8 @@ class c2m_CompletedView extends c2m_View {
         if (this.numFoundCreatedItems == this.model.canvasModules.items.length) {
             this.addProgressList(`
             <span class="text-success">
-              All ${this.numFoundCreatedItems} items found or created
-              (created ${this.numFoundCreatedItems} out of ${this.model.canvasModules.items.length})
+              <strong>All ${this.numFoundCreatedItems} items found or created
+              (created ${this.numFoundCreatedItems} out of ${this.model.canvasModules.items.length})</strong>
             </span>`
             );
             this.addProgressList('Starting to add items to the module');
@@ -2510,7 +2511,11 @@ class c2m_Modules {
             // do the same event, regardless, the item will be set to indicate
             // success or failure
             this.dispatchEvent( 'w2c-file-found',{'file':index});
-        })
+        }).catch((error) => {
+            console.log(`canvas::c2m_Modules::findFile - caught error - ${error}`);
+            file.status = 'error';
+            this.dispatchEvent( 'w2c-file-found',{'file':index});
+        });
     }
 
     /**
@@ -3225,11 +3230,10 @@ class c2m_Controller {
 		console.log(` -- token ${this.csrfToken}`);
 
 		// select li.section > a.syllabus
-		const syllabus = document.querySelector('li.section > a.syllabus');
+/*		const syllabus = document.querySelector('li.section > a.syllabus');
 		if (syllabus) {
-			// hide syllabus
 			syllabus.style.display = 'none';
-		}
+		}*/
 
 		// inject on module as well
 		this.injectCss();

@@ -239,7 +239,11 @@ export default class c2m_Modules {
             // do the same event, regardless, the item will be set to indicate
             // success or failure
             this.dispatchEvent( 'w2c-file-found',{'file':index});
-        })
+        }).catch((error) => {
+            console.log(`canvas::c2m_Modules::findFile - caught error - ${error}`);
+            file.status = 'error';
+            this.dispatchEvent( 'w2c-file-found',{'file':index});
+        });
     }
 
     /**
