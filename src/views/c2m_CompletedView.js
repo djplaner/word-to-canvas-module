@@ -4,6 +4,7 @@
  * from a converted Word doc. This view will create the new view and display the 
  * result
  */
+ /* jslint: esversion: 6 */
 
 import { c2m_View } from './c2m_View.js';
 
@@ -269,7 +270,7 @@ export default class c2m_CompletedView extends c2m_View {
         if ( file.status==="found") {
             // add to the progress display
             this.addProgressList(
-                `<span class="text-success"> File "<em>${file.name}</em>": found</span>` );
+                `File "<em>${file.name}</em>": found` );
         } else {
             // failed to find it
             this.addProgressList(
@@ -384,12 +385,13 @@ export default class c2m_CompletedView extends c2m_View {
             this.model.addModuleItem(this.numAddedItems);
         } else {
             this.addProgressList(`
-            <span class="text-success">
+            <span class="text-success"><strong>
               All ${this.numFoundCreatedItems} items added to the module
               (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
+              </strong>
             </span>`
             );
-            this.addProgressList(`<span class="text-success">Module created!</span>`);
+            this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
             this.renderCreationResults();
         }
     }
@@ -404,7 +406,7 @@ export default class c2m_CompletedView extends c2m_View {
         // get number of items in progressList
         let li = document.createElement("li");
         li.innerHTML = `
-        <span class="w2c-progress-label text-info">${message}</span>
+        <span class="w2c-progress-label">${message}</span>
         `;
         // add li to progressList
         progressList.appendChild(li);

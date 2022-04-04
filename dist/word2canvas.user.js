@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.5.4
+// @version      1.6.0
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -1354,7 +1354,7 @@ class c2m_CompletedView extends c2m_View {
         if ( file.status==="found") {
             // add to the progress display
             this.addProgressList(
-                `<span class="text-success"> File "<em>${file.name}</em>": found</span>` );
+                `File "<em>${file.name}</em>": found` );
         } else {
             // failed to find it
             this.addProgressList(
@@ -1469,12 +1469,13 @@ class c2m_CompletedView extends c2m_View {
             this.model.addModuleItem(this.numAddedItems);
         } else {
             this.addProgressList(`
-            <span class="text-success">
+            <span class="text-success"><strong>
               All ${this.numFoundCreatedItems} items added to the module
               (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
+              </strong>
             </span>`
             );
-            this.addProgressList(`<span class="text-success">Module created!</span>`);
+            this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
             this.renderCreationResults();
         }
     }
@@ -1489,7 +1490,7 @@ class c2m_CompletedView extends c2m_View {
         // get number of items in progressList
         let li = document.createElement("li");
         li.innerHTML = `
-        <span class="w2c-progress-label text-info">${message}</span>
+        <span class="w2c-progress-label">${message}</span>
         `;
         // add li to progressList
         progressList.appendChild(li);
