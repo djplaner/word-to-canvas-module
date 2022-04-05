@@ -1,17 +1,3 @@
-
-/**
- * c2m_View.js
- * Parent view class, define
- * - createEmptyDialogDiv
- * - configureAccordions 
- */
-
-//const BOOTSTRAP_CSS = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">';
-//const BOOTSTRAP_JS = '<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>';
-
-
-
-
 class c2m_View {
 	/**
 	 * create view object
@@ -121,7 +107,7 @@ const CHOOSE_WORD_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span>
+       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version">(v1.7.0)</span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -162,6 +148,13 @@ const CHOOSE_WORD_HTML = `
 </div> <!-- end of w2c-container -->
 
 <style>
+
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
 
 .w2c-content {
     clear:both;
@@ -256,7 +249,7 @@ const CHECK_HTML_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span>
+       <span class="name">.docx 2 + Canvas Module</span> <span class="w2c-version">v1.7.0</span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -342,6 +335,13 @@ const CHECK_HTML_HTML = `
 
 
 <style>
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
+
 
 .w2c-message-warning {
 	background-color: #fcf8e3;
@@ -1069,6 +1069,7 @@ class c2m_CheckModuleView extends c2m_View {
  * from a converted Word doc. This view will create the new view and display the 
  * result
  */
+ /* jslint: esversion: 6 */
 
 
 
@@ -1307,6 +1308,7 @@ class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.model.findFileLinks();
+//        this.model.findOrCreateModuleItems();
     }
 
     /**
@@ -1333,7 +1335,7 @@ class c2m_CompletedView extends c2m_View {
         if ( file.status==="found") {
             // add to the progress display
             this.addProgressList(
-                `<span class="text-success"> File "<em>${file.name}</em>": found</span>` );
+                `File "<em>${file.name}</em>": found` );
         } else {
             // failed to find it
             this.addProgressList(
@@ -1448,12 +1450,13 @@ class c2m_CompletedView extends c2m_View {
             this.model.addModuleItem(this.numAddedItems);
         } else {
             this.addProgressList(`
-            <span class="text-success">
+            <span class="text-success"><strong>
               All ${this.numFoundCreatedItems} items added to the module
               (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
+              </strong>
             </span>`
             );
-            this.addProgressList(`<span class="text-success">Module created!</span>`);
+            this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
             this.renderCreationResults();
         }
     }
@@ -1468,7 +1471,7 @@ class c2m_CompletedView extends c2m_View {
         // get number of items in progressList
         let li = document.createElement("li");
         li.innerHTML = `
-        <span class="w2c-progress-label text-info">${message}</span>
+        <span class="w2c-progress-label">${message}</span>
         `;
         // add li to progressList
         progressList.appendChild(li);
@@ -1634,6 +1637,10 @@ const DEFAULT_OPTIONS = {
 
 };
 
+// Wrap arounds for various types of activity always required because
+// Mammoth isn't able (as I've configured it) to do it all
+// - key indicates <div style to be preprended
+// - value is what will be prepended
 const CI_STYLE_PREPEND = {
   reading: `<div class="readingImage">&nbsp;</div>`,
   activity: `<div class="activityImage">&nbsp;</div>`,
@@ -2363,6 +2370,7 @@ class c2m_Modules {
         }
 
         if (item.type === "Page" || item.type==="ExistingPage") {
+//            body.module_item['content_id'] = item.createdItem.page_id;
             body.module_item['page_url'] = item.createdItem.url;
             body.module_item['type'] = 'Page';
         }
@@ -2371,6 +2379,8 @@ class c2m_Modules {
             // TODO need to do more to extract the URL here
             body.module_item['external_url'] = item.content;
         }
+//        console.log('creating module item');
+//        console.log(body);
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',
@@ -2391,6 +2401,8 @@ class c2m_Modules {
                 item['addedItem'] = json;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
+//                if (item.type === "SubHeader") {
+//                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
  //               } else {
                 this.dispatchEvent( 'w2c-module-item-added',{'item':index});
   //              }
@@ -2595,6 +2607,8 @@ class c2m_Modules {
             let fileName = file.name.trim();
 
             if ( elementName.includes(fileName)) {
+//                console.log(
+//                    `findFileInList: elementName ${elementName} includes ${fileName}`);
                 file.response = element;
                 file.status = 'found';
                 return;
@@ -2654,11 +2668,13 @@ class c2m_Modules {
  * 
  */
 
+// Import the c2m_Converter class
 
 
 
 
 
+// Define enum for stage
 
 
 class c2m_Model {
@@ -2715,6 +2731,7 @@ class c2m_Model {
         console.log("-----------------------------");
 */
         let items = this.htmlConverter.items;
+//        console.log(items);
 
         // set up infrastructure
         // - this.fileLinks array of objects for required fileLinks
@@ -2743,6 +2760,7 @@ class c2m_Model {
 
             // loop thru the fileLinks
             for (let j = 0; j < fileLinks.length; j++) {
+//                console.log(fileLinks[j]);
 
                 let {name, descriptor} = this.setNameDescriptor( fileLinks[j]);
 
@@ -2758,6 +2776,8 @@ class c2m_Model {
             }
         }
 
+//        console.log("Found the following links")
+//       console.log(this.canvasModules.fileLinks);
 
         // if there are no fileLinks
         if (this.canvasModules.fileLinks.length === 0) {
@@ -2885,9 +2905,11 @@ class c2m_Model {
                 // replace originalLink with template in item.content
                 console.log(`replaceCanvasFileLinks: replacing **${originalLink}** with **${template}**`);
                 item.content = item.content.replace(originalLink, template);
+//                let newLink = parser.parseFromString(template, "text/html");
                 // TODO if fileLinks name and descriptor don't match, then we have
                 // a htmlFileLinks with a anchor wrapper, replace the parent
  //               htmlFileLinks[i].parentNode.replaceChild(newLink.body.firstElementChild, htmlFileLinks[i]);
+//                console.log(htmlFileLinks[i]);
                 console.log(item.content);
                 //
             } else {
@@ -2937,6 +2959,8 @@ class c2m_Model {
             case 'SubHeader':
                 // Don't need to find/create just generate event
                 this.dispatchEvent('w2c-item-found-created', { item: index });
+//                this.canvasModules.addModuleItem(index).then(() => {
+//                });
                 break;
             case 'File':
                 this.canvasModules.findItem(index).then(() => {});
@@ -2983,6 +3007,7 @@ class c2m_Model {
             // don't need to add some items
  //           const notToAdd = ['SubHeader'];
 
+//            let item = this.canvasModules.items[i];
             this.addModuleItem(i);
         }
     }
@@ -3003,6 +3028,8 @@ class c2m_Model {
         this.canvasModules.addModuleItem(itemIndex)
             .then(() => {
                 // TODO generate signal when item is added
+//                console.log(`c2m_Model -> createModuleItems: item ${itemIndex + 1} - ${item.title} created`);
+//                console.log(this.canvasModules.createdModuleItems);
             });
 
     }
@@ -3112,6 +3139,7 @@ class c2m_Model {
 
 
 
+// Define the states
 
 const c2m_Initialised = "c2m_Initialised";
 const c2m_ChooseWord = "c2m_ChooseWord";
@@ -3256,6 +3284,8 @@ function canvas2Module(){
  window.addEventListener('load', function(){
         // getting very kludgy here, haven't got a good solution...yet #14
         // - module content is dynamically loaded, wait (dumbly) for it to finish
+//        this.setTimeout(
+//            () => {
                 let controller = new c2m_Controller();
  //           }, 2000);
     });
