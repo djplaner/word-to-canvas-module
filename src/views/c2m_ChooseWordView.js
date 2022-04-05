@@ -8,7 +8,7 @@ const CHOOSE_WORD_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span>
+       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version">(v1.7.0)</span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -49,6 +49,13 @@ const CHOOSE_WORD_HTML = `
 </div> <!-- end of w2c-container -->
 
 <style>
+
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
 
 .w2c-content {
     clear:both;
