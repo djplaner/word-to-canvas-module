@@ -92,7 +92,7 @@ export default class c2m_Model {
         for (let i = 0; i<items.length; i++ ) {
             // extract all span.canvasFileLink from the body of the item
             let body = items[i].content;
-            console.log('item ${i} content');
+            console.log(`item ${i} content`);
             console.log(body);
             let bodyDoc = parser.parseFromString(body, "text/html");
             // find all the canvasFileLinks
