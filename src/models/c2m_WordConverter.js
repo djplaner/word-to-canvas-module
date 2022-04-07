@@ -120,30 +120,30 @@ const DEFAULT_OPTIONS = {
 // - key indicates <div style to be preprended
 // - value is what will be prepended
 const CI_STYLE_PREPEND = {
-  reading: `<div class="readingImage">&nbsp;</div>`,
-  activity: `<div class="activityImage">&nbsp;</div>`,
-  flashback: `<div class="flashbackImage">&nbsp;</div>`,
-  //"canaryExercise" : `<div class="canaryImage"></div>`,
-  // COM14
-  canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
-  //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
-  "ael-note": `<div class="noteImage">&nbsp;</div>`,
-  weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
-  comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
-  filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
-  goReading: `<div class="goReadingImage">&nbsp;</div>`,
+    reading: `<div class="readingImage">&nbsp;</div>`,
+    activity: `<div class="activityImage">&nbsp;</div>`,
+    flashback: `<div class="flashbackImage">&nbsp;</div>`,
+    //"canaryExercise" : `<div class="canaryImage"></div>`,
+    // COM14
+    canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
+    //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
+    "ael-note": `<div class="noteImage">&nbsp;</div>`,
+    weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
+    comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
+    filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
+    goReading: `<div class="goReadingImage">&nbsp;</div>`,
 };
 
 const CI_EMPTY_STYLE_PREPEND = {
-  goStartHere: `<div class="goStartHereImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/start-here.svg" /> </div>`,
-  goActivity: `<div class="goActivityImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/activity.svg" /> </div>`,
-  goReflect: `<div class="goReflectImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reflection.svg" /> </div>`,
-  goWatch: `<div class="goWatchImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/video.svg" /> </div>`,
-  goDownload: `<div class="goDownloadImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/download.svg" /> </div>`,
-  goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
+    goStartHere: `<div class="goStartHereImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/start-here.svg" /> </div>`,
+    goActivity: `<div class="goActivityImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/activity.svg" /> </div>`,
+    goReflect: `<div class="goReflectImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reflection.svg" /> </div>`,
+    goWatch: `<div class="goWatchImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/video.svg" /> </div>`,
+    goDownload: `<div class="goDownloadImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/download.svg" /> </div>`,
+    goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
 };
 
-const TABLE_CLASS= ["table", "stripe-row-odd"];
+const TABLE_CLASS = ["table", "stripe-row-odd"];
 
 export default class c2m_WordConverter {
 
@@ -210,6 +210,9 @@ export default class c2m_WordConverter {
         // Canvas culls the base64 images and they pose a size problem
         this.checkBase64Images(doc);
 
+        // Canvas External URL module items can't have descriptive content
+        this.checkExternalUrls(doc);
+
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
 
@@ -230,18 +233,50 @@ export default class c2m_WordConverter {
         for (let i = 0; i < h1s.length; i++) {
             let h1 = h1s[i];
             if (h1.innerHTML.trim() === "") {
-                empty+=1;
+                empty += 1;
                 // insert a <span class="w2c-error"> into the h1
                 const error = '<span class="w2c-error">empty heading 1</span>';
                 h1.insertAdjacentHTML('beforeend', error);
             }
         }
 
-        if (empty>0) {
-                this.mammothResult.messages.push({
-                    "type": "error",
-                    "message": `Found ${empty} empty Heading 1s (see below). Remove and try again.`,
-                });
+        if (empty > 0) {
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `Found ${empty} empty Heading 1s (see below). Remove and try again.`,
+            });
+        }
+    }
+
+    /**
+     * Look for all the h1.canvasExternalUrl and check to see if their section only
+     * contains a URL
+     * @param {Object} doc - the html element/document with the converted module
+     */
+    checkExternalUrls(doc) {
+        let extUrls = doc.querySelectorAll('h1.canvasExternalUrl');
+
+        let problems = [];
+        for (let i = 0; i < extUrls.length; i++) {
+            let extUrl = extUrls[i];
+            let content = this.nextUntil(extUrl, 'h1');
+
+            if (content) {
+                // get innerText for each element of content array
+                for (let j = 0; j < content.length; j++) {
+                    if (!this.isValidHttpUrl(content[j].innerText)) {
+                        // append the innerText of extUrl to the problems array
+                        problems.push(extUrl.innerText);
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < problems.length; i++) {
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.`,
+            });
         }
     }
 
@@ -259,23 +294,23 @@ export default class c2m_WordConverter {
         for (let i = 0; i < imgs.length; i++) {
             let img = imgs[i];
             if (img.src.indexOf('base64') > 0) {
-                base64+=1;
+                base64 += 1;
                 // insert a <span class="w2c-error"> into the img
                 const error = '<span class="w2c-error">base64 image</span>';
                 img.insertAdjacentHTML('beforebegin', error);
             }
         }
-        if (base64>0) { 
+        if (base64 > 0) {
             this.mammothResult.messages.push({
                 "type": "error",
                 "message": `Found ${base64} base64 images <small>(labeled in HTML)</small>. 
                            These will be replaced with placeholders.<br /> 
                            <small><strong>
                              <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/htmlConversion.html#base64-images">For more <i class="icon-question"></i></a></strong></small>`,
-                });
+            });
         }
 
-    } 
+    }
 
     /**
      * Do all post mammoth conversions
@@ -318,9 +353,9 @@ export default class c2m_WordConverter {
         this.contentInterfacePreprends(doc);
 
         // add class TABLE_CLASS to all of the tables
-        doc.querySelectorAll('table').forEach( (elem) => {
+        doc.querySelectorAll('table').forEach((elem) => {
             // add class TABLE_CLASS to elem 
-            TABLE_CLASS.forEach( (tableClass) => {
+            TABLE_CLASS.forEach((tableClass) => {
                 elem.classList.add(tableClass);
 
             });
@@ -423,6 +458,61 @@ export default class c2m_WordConverter {
     }
 
 
+    /** 
+     * 
+     * Get all following siblings of each element up to but not including the element matched by the selector
+     * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
+     * @param  {Node}   elem     The element
+     * @param  {String} selector The selector to stop at
+     * @param  {String} filter   The selector to match siblings against [optional]
+     * @return {Array}           The siblings
+     */
+    nextUntil(elem, selector, filter) {
 
+        // Setup siblings array
+        var siblings = [];
+
+        // Get the next sibling element
+        elem = elem.nextElementSibling;
+
+        // As long as a sibling exists
+        while (elem) {
+
+            // If we've reached our match, bail
+            if (elem.matches(selector)) break;
+
+            // If filtering by a selector, check if the sibling matches
+            if (filter && !elem.matches(filter)) {
+                elem = elem.nextElementSibling;
+                continue;
+            }
+
+            // Otherwise, push it to the siblings array
+            siblings.push(elem);
+
+            // Get the next sibling element
+            elem = elem.nextElementSibling;
+
+        }
+
+        return siblings;
+
+    }
+
+
+    /**
+     * check if a string is a valid URL
+     * https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url 
+     */
+    isValidHttpUrl(string) {
+        let url;
+        try {
+            url = new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
 
 }

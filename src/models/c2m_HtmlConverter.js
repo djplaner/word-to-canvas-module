@@ -184,7 +184,7 @@ export default class c2m_HtmlConverter {
 				let contentObj = {
 					displayName: item.title,
 					fileName: item.title
-				}
+				};
 				// if item.content is not empty, then it must be the filename
 				if ( item.content.trim()!=='' ) {
 					contentObj.fileName = item.content;
