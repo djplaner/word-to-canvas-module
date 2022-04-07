@@ -1828,8 +1828,7 @@ class c2m_WordConverter {
             if (content) {
                 // get innerText for each element of content array
                 for (let j = 0; j < content.length; j++) {
-                    if ( ! this.isValidHttpUrl(content[j].innerText)) {
-                        alert(`Not a URL ${content[j].innerText}`);
+                    if (!this.isValidHttpUrl(content[j].innerText)) {
                         // append the innerText of extUrl to the problems array
                         problems.push(extUrl.innerText);
                     }
@@ -1837,7 +1836,7 @@ class c2m_WordConverter {
             }
         }
 
-        for (let i=0; i<problems.length; i++) {
+        for (let i = 0; i < problems.length; i++) {
             this.mammothResult.messages.push({
                 "type": "error",
                 "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.`,
