@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.6.0
+// @version      1.7.0
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -1120,7 +1120,7 @@ const COMPLETE_HTML = `
        </div>
     </div> <!-- end ig-header -->
 
-    <div class="content border border-trbl">
+    <div class="content border border-trbl"
 
 <div class="w2c-nav">
   <ul>
@@ -1469,11 +1469,17 @@ class c2m_CompletedView extends c2m_View {
         let item = this.model.canvasModules.items[index];
         this.numAddedItems++;
 
-        //        console.log(`created item ${item.createdItem}`);
-        this.addProgressList(
-            `item (${item.title}) added to module in position ${index} 
-            (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
-        );
+        if (item.added ) {
+            this.addProgressList( 
+                `item (${item.title}) added to module in position ${index} 
+                (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
+            );
+        } else {
+            console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
+            this.addProgressList(
+                `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
+            );
+        }
 
         // TODO check the JSON in item.createdItem
         // this is where error checking should happen
@@ -2436,6 +2442,7 @@ class c2m_Modules {
                 // update the createdItem property for the item 
                 // with the results of the JSON call
                 item['addedItem'] = json;
+                item['added'] = true;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
 //                if (item.type === "SubHeader") {
@@ -2443,7 +2450,12 @@ class c2m_Modules {
  //               } else {
                 this.dispatchEvent( 'w2c-module-item-added',{'item':index});
   //              }
-            })
+            }).catch((error) => {
+                console.log(`canvas::c2m_Modules::addModuleItem - caught error - ${error}`);
+                item['error'] = error;
+                item['added'] = false;
+                this.dispatchEvent( 'w2c-module-item-added',{'item':index});
+        });
 
     }
 
@@ -2788,7 +2800,7 @@ class c2m_Model {
         for (let i = 0; i<items.length; i++ ) {
             // extract all span.canvasFileLink from the body of the item
             let body = items[i].content;
-            console.log('item ${i} content');
+            console.log(`item ${i} content`);
             console.log(body);
             let bodyDoc = parser.parseFromString(body, "text/html");
             // find all the canvasFileLinks

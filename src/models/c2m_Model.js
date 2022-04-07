@@ -58,7 +58,7 @@ export default class c2m_Model {
                 // this is done in modules, because that's where it 
                 // actually waits
                 //                this.dispatchEvent('w2c-empty-module-created')
-            )
+            );
     }
 
     /**
@@ -183,7 +183,7 @@ export default class c2m_Model {
             // find the item we're trying to link to
             this.findOrCreateItem(i);
         }
-        console.log("------------- END of create module items")
+        console.log("------------- END of create module items");
     }
 
 
@@ -363,7 +363,7 @@ export default class c2m_Model {
      */
     addModuleItem(itemIndex) {
 
-        console.log('Shogin createdModuleItem')
+        console.log('Shogin createdModuleItem');
 
         // may need to pass in item order
         //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
@@ -377,7 +377,7 @@ export default class c2m_Model {
     }
 
     convertWordDoc(event) {
-        console.log('c2m_Model -> convertWordDoc')
+        console.log('c2m_Model -> convertWordDoc');
 
         try {
             this.wordConverter.handleFileSelect(event);

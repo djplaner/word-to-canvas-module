@@ -91,7 +91,7 @@ export default class c2m_Modules {
                 console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-empty-module-created');
-            })
+            });
     }
 
     /**
@@ -115,18 +115,18 @@ export default class c2m_Modules {
         };
 
         if ([ "File", "Discussion", "Assignment", "Quiz"].includes(item.type) ) {
-            body.module_item['content_id'] = item.createdItem.id;
+            body.module_item.content_id = item.createdItem.id;
         }
 
         if (item.type === "Page" || item.type==="ExistingPage") {
 //            body.module_item['content_id'] = item.createdItem.page_id;
-            body.module_item['page_url'] = item.createdItem.url;
-            body.module_item['type'] = 'Page';
+            body.module_item.page_url = item.createdItem.url;
+            body.module_item.type = 'Page';
         }
 
         if (["ExternalUrl","ExternalTool"].includes(item.type)) {
             // TODO need to do more to extract the URL here
-            body.module_item['external_url'] = item.content;
+            body.module_item.external_url = item.content;
         }
 //        console.log('creating module item');
 //        console.log(body);
@@ -147,7 +147,8 @@ export default class c2m_Modules {
             .then((json) => {
                 // update the createdItem property for the item 
                 // with the results of the JSON call
-                item['addedItem'] = json;
+                item.addedItem = json;
+                item.added = true;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
 //                if (item.type === "SubHeader") {
@@ -155,7 +156,12 @@ export default class c2m_Modules {
  //               } else {
                 this.dispatchEvent( 'w2c-module-item-added',{'item':index});
   //              }
-            })
+            }).catch((error) => {
+                console.log(`canvas::c2m_Modules::addModuleItem - caught error - ${error}`);
+                item.error = error;
+                item.added = false;
+                this.dispatchEvent( 'w2c-module-item-added',{'item':index});
+        });
 
     }
 
@@ -193,7 +199,7 @@ export default class c2m_Modules {
                 console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            })
+            });
 
     }
 
@@ -263,7 +269,7 @@ export default class c2m_Modules {
             "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`,
             "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`,
             "Quiz" : `/api/v1/courses/${this.courseId}/quizzes?`
-        }
+        };
 
         let searchTerm = item.title;
 
@@ -296,7 +302,7 @@ export default class c2m_Modules {
                 // do the same event, regardless, the content of item.createdItem
                 // will indicate failure or not
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            })
+            });
     }
 
     /**
@@ -336,7 +342,7 @@ export default class c2m_Modules {
         item.createdItem = {
             "error": `file not found: ${item.title}`,
             "index": index
-        }
+        };
     }
 
     /**
@@ -373,11 +379,11 @@ export default class c2m_Modules {
      */
     status(response) {
         if (response.status >= 200 && response.status < 300) {
-            return Promise.resolve(response)
+            return Promise.resolve(response);
         } else {
             console.log("---- STATUS bad response status");
             console.log(response);
-            return Promise.reject(new Error(response.statusText))
+            return Promise.reject(new Error(response.statusText));
         }
     }
     /*

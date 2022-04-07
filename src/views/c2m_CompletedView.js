@@ -4,7 +4,7 @@
  * from a converted Word doc. This view will create the new view and display the 
  * result
  */
- /* jslint: esversion: 6 */
+ /* jshint: esversion: 6 */
 
 import { c2m_View } from './c2m_View.js';
 
@@ -21,7 +21,7 @@ const COMPLETE_HTML = `
        </div>
     </div> <!-- end ig-header -->
 
-    <div class="content border border-trbl">
+    <div class="content border border-trbl"
 
 <div class="w2c-nav">
   <ul>
@@ -275,7 +275,7 @@ export default class c2m_CompletedView extends c2m_View {
             // failed to find it
             this.addProgressList(
                 `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
-            )
+            );
         }
 
         // increment the number of files we've heard about
@@ -299,7 +299,7 @@ export default class c2m_CompletedView extends c2m_View {
      */
     checkItemFoundCreated(e) {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
-        console.log(e)
+        console.log(e);
 
         let index = e.detail.item;
         // TODO what if index greater than # items
@@ -363,18 +363,24 @@ export default class c2m_CompletedView extends c2m_View {
 
     checkModuleItemAdded(e) {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
-        console.log(e)
+        console.log(e);
 
         let index = e.detail.item;
         // TODO what if index greater than # items
         let item = this.model.canvasModules.items[index];
         this.numAddedItems++;
 
-        //        console.log(`created item ${item.createdItem}`);
-        this.addProgressList(
-            `item (${item.title}) added to module in position ${index} 
-            (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
-        );
+        if (item.added ) {
+            this.addProgressList( 
+                `item (${item.title}) added to module in position ${index} 
+                (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
+            );
+        } else {
+            console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
+            this.addProgressList(
+                `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
+            );
+        }
 
         // TODO check the JSON in item.createdItem
         // this is where error checking should happen
