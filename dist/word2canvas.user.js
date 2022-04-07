@@ -1097,13 +1097,14 @@ class c2m_CheckModuleView extends c2m_View {
 }
 
 // src/views/c2m_CompletedView.js
+/* eslint-disable no-undef */
 /**
  * c2m_CompletedView.js
  * Handles the completed view state. i.e. user has clicked to create a new module
  * from a converted Word doc. This view will create the new view and display the 
  * result
  */
- /* jslint: esversion: 6 */
+ /* jshint: esversion: 6 */
 
 
 
@@ -1120,7 +1121,7 @@ const COMPLETE_HTML = `
        </div>
     </div> <!-- end ig-header -->
 
-    <div class="content border border-trbl"
+    <div class="content border border-trbl">
 
 <div class="w2c-nav">
   <ul>
@@ -1374,7 +1375,7 @@ class c2m_CompletedView extends c2m_View {
             // failed to find it
             this.addProgressList(
                 `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
-            )
+            );
         }
 
         // increment the number of files we've heard about
@@ -1398,7 +1399,7 @@ class c2m_CompletedView extends c2m_View {
      */
     checkItemFoundCreated(e) {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
-        console.log(e)
+        console.log(e);
 
         let index = e.detail.item;
         // TODO what if index greater than # items
@@ -1462,7 +1463,7 @@ class c2m_CompletedView extends c2m_View {
 
     checkModuleItemAdded(e) {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
-        console.log(e)
+        console.log(e);
 
         let index = e.detail.item;
         // TODO what if index greater than # items
@@ -1478,7 +1479,7 @@ class c2m_CompletedView extends c2m_View {
             console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
             this.addProgressList(
                 `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
-            );
+          );
         }
 
         // TODO check the JSON in item.createdItem
@@ -2385,7 +2386,7 @@ class c2m_Modules {
                 console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-empty-module-created');
-            })
+            });
     }
 
     /**
@@ -2409,18 +2410,18 @@ class c2m_Modules {
         };
 
         if ([ "File", "Discussion", "Assignment", "Quiz"].includes(item.type) ) {
-            body.module_item['content_id'] = item.createdItem.id;
+            body.module_item.content_id = item.createdItem.id;
         }
 
         if (item.type === "Page" || item.type==="ExistingPage") {
 //            body.module_item['content_id'] = item.createdItem.page_id;
-            body.module_item['page_url'] = item.createdItem.url;
-            body.module_item['type'] = 'Page';
+            body.module_item.page_url = item.createdItem.url;
+            body.module_item.type = 'Page';
         }
 
         if (["ExternalUrl","ExternalTool"].includes(item.type)) {
             // TODO need to do more to extract the URL here
-            body.module_item['external_url'] = item.content;
+            body.module_item.external_url = item.content;
         }
 //        console.log('creating module item');
 //        console.log(body);
@@ -2441,8 +2442,8 @@ class c2m_Modules {
             .then((json) => {
                 // update the createdItem property for the item 
                 // with the results of the JSON call
-                item['addedItem'] = json;
-                item['added'] = true;
+                item.addedItem = json;
+                item.added = true;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
 //                if (item.type === "SubHeader") {
@@ -2452,8 +2453,8 @@ class c2m_Modules {
   //              }
             }).catch((error) => {
                 console.log(`canvas::c2m_Modules::addModuleItem - caught error - ${error}`);
-                item['error'] = error;
-                item['added'] = false;
+                item.error = error;
+                item.added = false;
                 this.dispatchEvent( 'w2c-module-item-added',{'item':index});
         });
 
@@ -2493,7 +2494,7 @@ class c2m_Modules {
                 console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            })
+            });
 
     }
 
@@ -2563,7 +2564,7 @@ class c2m_Modules {
             "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`,
             "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`,
             "Quiz" : `/api/v1/courses/${this.courseId}/quizzes?`
-        }
+        };
 
         let searchTerm = item.title;
 
@@ -2596,7 +2597,7 @@ class c2m_Modules {
                 // do the same event, regardless, the content of item.createdItem
                 // will indicate failure or not
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            })
+            });
     }
 
     /**
@@ -2636,7 +2637,7 @@ class c2m_Modules {
         item.createdItem = {
             "error": `file not found: ${item.title}`,
             "index": index
-        }
+        };
     }
 
     /**
@@ -2673,11 +2674,11 @@ class c2m_Modules {
      */
     status(response) {
         if (response.status >= 200 && response.status < 300) {
-            return Promise.resolve(response)
+            return Promise.resolve(response);
         } else {
             console.log("---- STATUS bad response status");
             console.log(response);
-            return Promise.reject(new Error(response.statusText))
+            return Promise.reject(new Error(response.statusText));
         }
     }
     /*
@@ -2766,7 +2767,7 @@ class c2m_Model {
                 // this is done in modules, because that's where it 
                 // actually waits
                 //                this.dispatchEvent('w2c-empty-module-created')
-            )
+            );
     }
 
     /**
@@ -2891,7 +2892,7 @@ class c2m_Model {
             // find the item we're trying to link to
             this.findOrCreateItem(i);
         }
-        console.log("------------- END of create module items")
+        console.log("------------- END of create module items");
     }
 
 
@@ -3071,7 +3072,7 @@ class c2m_Model {
      */
     addModuleItem(itemIndex) {
 
-        console.log('Shogin createdModuleItem')
+        console.log('Shogin createdModuleItem');
 
         // may need to pass in item order
         //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
@@ -3085,7 +3086,7 @@ class c2m_Model {
     }
 
     convertWordDoc(event) {
-        console.log('c2m_Model -> convertWordDoc')
+        console.log('c2m_Model -> convertWordDoc');
 
         try {
             this.wordConverter.handleFileSelect(event);

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /**
  * c2m_CompletedView.js
  * Handles the completed view state. i.e. user has clicked to create a new module
@@ -21,7 +22,7 @@ const COMPLETE_HTML = `
        </div>
     </div> <!-- end ig-header -->
 
-    <div class="content border border-trbl"
+    <div class="content border border-trbl">
 
 <div class="w2c-nav">
   <ul>
@@ -379,7 +380,7 @@ export default class c2m_CompletedView extends c2m_View {
             console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
             this.addProgressList(
                 `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
-            );
+          );
         }
 
         // TODO check the JSON in item.createdItem
