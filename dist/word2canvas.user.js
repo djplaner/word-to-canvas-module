@@ -1820,10 +1820,14 @@ class c2m_WordConverter {
     checkExternalUrls(doc) {
         let extUrls = doc.querySelectorAll('h1.canvasExternalUrl');
 
+        // track names of any external URLs with more than just a URL
         let problems = [];
+        // true for each externalUrl heading that has a valid URL
+        let validUrls = {};
         for (let i = 0; i < extUrls.length; i++) {
             let extUrl = extUrls[i];
             let content = this.nextUntil(extUrl, 'h1');
+            validUrls[extUrl.innerText] = false;
 
             if (content) {
                 // get innerText for each element of content array
@@ -1831,15 +1835,28 @@ class c2m_WordConverter {
                     if (!this.isValidHttpUrl(content[j].innerText)) {
                         // append the innerText of extUrl to the problems array
                         problems.push(extUrl.innerText);
+                    } else {
+                        validUrls[extUrl.innerText] = true;
                     }
                 }
             }
         }
 
         for (let i = 0; i < problems.length; i++) {
-            this.mammothResult.messages.push({
+            // only show error for external URL that has more than a URL, if it has a valid URL
+            if ( validUrls[problems[i]] ) {
+                this.mammothResult.messages.push({
                 "type": "error",
                 "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.`,
+                });
+            }
+        }
+
+        // loop thru keys of validUrls
+        for (let key in validUrls) {
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `The Canvas External URL heading - <em>${key}</em> - does not include a valid URL.`,
             });
         }
     }

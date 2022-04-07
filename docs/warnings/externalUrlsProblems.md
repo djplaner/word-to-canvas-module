@@ -11,6 +11,19 @@ There are two common problems when using this style
 
 ## No valid URL is provided
 
+A _Canvas External URL_ section must include a valid URL. The following image is an example of a _Canvas External URL_ section without a valid URL (it's missing the ```https://``` required at the start of a URL).
+
+![Example of Canvas External URL section not containing a valid URL](images/noValidUrlExample.png)
+
+> **Note:** A valid URL means it meets [the standard](https://www.w3.org/TR/2011/WD-html5-20110525/urls.html#:~:text=A%20URL%20is%20a%20string,it%20has%20no%20query%20component.) for a web link (starting with https or http). It does not mean that there is something at the URL.
+
+### Solution
+
+Make sure the URL is a valid URL. Can you use it in a web browser to access a resource on the web?
+
+```word2canvas``` will generate an error
+
+![word2canvas error message when no valid url](images/noValidUrlError.png)
 
 ## More than a valid URL is provided
 
