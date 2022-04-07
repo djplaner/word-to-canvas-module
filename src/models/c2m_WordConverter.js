@@ -283,7 +283,10 @@ export default class c2m_WordConverter {
             if ( validUrls[problems[i]] ) {
                 this.mammothResult.messages.push({
                 "type": "error",
-                "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.`,
+                "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
+                                <small><strong><a target="_blank" 
+                   href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
+                   For more <i class="icon-question"></i></a></strong></small>`,
                 });
             }
         }
@@ -292,7 +295,10 @@ export default class c2m_WordConverter {
         for (let key in validUrls) {
             this.mammothResult.messages.push({
                 "type": "error",
-                "message": `The Canvas External URL heading - <em>${key}</em> - does not include a valid URL.`,
+                "message": `The Canvas External URL heading - <em>${key}</em> - does not include a valid URL
+                <small><strong><a target="_blank" 
+                   href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
+                   For more <i class="icon-question"></i></a></strong></small>`,
             });
         }
     }
