@@ -302,7 +302,12 @@ export default class c2m_Modules {
                 // do the same event, regardless, the content of item.createdItem
                 // will indicate failure or not
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            });
+            }).catch((error) => {
+                console.log(`canvas::c2m_Modules::findItem - caught error - ${error}`);
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index,
+                                          'error': `Error finding item - ${error}`});
+        });
+
     }
 
     /**
