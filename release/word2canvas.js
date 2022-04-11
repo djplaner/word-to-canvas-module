@@ -21,9 +21,21 @@ class c2m_View {
 	constructor(model, controller) {
 		this.model = model;
 		this.controller = controller;
+
+		this.version = "1.7.3";
 	}
 
 
+	/**
+	 * Add version information to span.w2c-version
+	 */
+	addW2cVersion() {
+		// find span.w2c-version
+		let w2cVersion = document.querySelector("span.w2c-version");
+		if (w2cVersion) {
+			w2cVersion.innerHTML = `(v${this.version})`;
+		}
+	}
 
 	/**
 	 * Add an empty div.c2m_dialog to the page or empty the existing one
@@ -121,7 +133,7 @@ const CHOOSE_WORD_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version">(v1.7.2)</span>
+       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -254,6 +266,8 @@ class c2m_ChooseWordView extends c2m_View {
 		let closeButton = document.getElementById("w2c-btn-close");
 		let confirmButton = document.getElementById("w2c-btn-confirm");
 		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+
+    this.addW2cVersion();
 	}
 
 }
@@ -263,7 +277,7 @@ const CHECK_HTML_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span> <span class="w2c-version">v1.7.2</span>
+       <span class="name">.docx 2 + Canvas Module</span> <span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -545,6 +559,8 @@ class c2m_CheckHtmlView extends c2m_View {
 
 		let startAgainButton = document.getElementById("w2c-btn-start-again");
 		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
+
+		this.addW2cVersion();
 
 	}
 
@@ -857,6 +873,7 @@ const CHECK_MODULE_HTML = `
 
     <div class="ig-header header">
        <span class="name">.docx 2 + Canvas Module</span>
+       <span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -910,6 +927,13 @@ const CHECK_MODULE_HTML = `
 
 
 <style>
+
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
 
 
 .w2c-content {
@@ -1042,6 +1066,8 @@ class c2m_CheckModuleView extends c2m_View {
 		let confirmButton = document.getElementById("w2c-btn-confirm");
 		confirmButton.onclick = () => this.controller.handleClick(c2m_Completed);
 
+    this.addW2cVersion();
+
 		// check to see if conversion results are in
 		// does the model have a htmlConvert property
 		if (
@@ -1091,7 +1117,7 @@ class c2m_CheckModuleView extends c2m_View {
  * from a converted Word doc. This view will create the new view and display the 
  * result
  */
- /* jshint: esversion: 6 */
+/* jshint: esversion: 6 */
 
 
 
@@ -1103,6 +1129,7 @@ const COMPLETE_HTML = `
 
     <div class="ig-header header">
        <span class="name">.docx 2 + Canvas Module</span>
+       <span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -1142,7 +1169,7 @@ const COMPLETE_HTML = `
 
 <div class="w2c-error" style="display:none">
   <h4>Problem with creating the module</h4>
-  <p>Unable to create the new Module. Erorr message:
+  <p>Unable to create the new Module. Error message:
   <blockquote><span class="text-error" id="c2m_error_message"></span></blockquote>
   </p>
 
@@ -1175,6 +1202,13 @@ const COMPLETE_HTML = `
 
 <style>
 
+
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
 
 .w2c-content {
     clear:both;
@@ -1275,7 +1309,7 @@ class c2m_CompletedView extends c2m_View {
      * once created an event will cause "renderUpdate"
      */
     render() {
-        console.log("4. Complete");
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 4. Complete");
 
         let c2mDiv = this.createEmptyDialogDiv();
 
@@ -1309,6 +1343,7 @@ class c2m_CompletedView extends c2m_View {
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
 
+        this.addW2cVersion();
         this.model.createModule();
     }
 
@@ -1329,7 +1364,9 @@ class c2m_CompletedView extends c2m_View {
         this.addProgressList(`Empty module create: <em>${moduleName}</em>`);
 
         this.numFoundCreatedItems = 0;
+        this.numItemErrors = 0;
         this.model.findFileLinks();
+        //        this.model.findOrCreateModuleItems();
     }
 
     /**
@@ -1353,10 +1390,10 @@ class c2m_CompletedView extends c2m_View {
         console.log(file);
 
         // check that the file has been found correctly
-        if ( file.status==="found") {
+        if (file.status === "found") {
             // add to the progress display
             this.addProgressList(
-                `File "<em>${file.name}</em>": found` );
+                `File "<em>${file.name}</em>": found`);
         } else {
             // failed to find it
             this.addProgressList(
@@ -1365,10 +1402,14 @@ class c2m_CompletedView extends c2m_View {
         }
 
         // increment the number of files we've heard about
-        this.model.canvasModules.numFoundFileLinks+=1;
+        this.model.canvasModules.numFoundFileLinks += 1;
+
+        this.addProgressList(
+            `<span class="text-info">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
+        );
 
         // if we've heard from all 
-        if ( this.model.canvasModules.numFoundFileLinks===this.model.canvasModules.fileLinks.length) {
+        if (this.model.canvasModules.numFoundFileLinks === this.model.canvasModules.fileLinks.length) {
             // then we've found all the files
             // so now we can find or create the items
             // TODO but not yet
@@ -1392,8 +1433,18 @@ class c2m_CompletedView extends c2m_View {
         let item = this.model.canvasModules.items[index];
         // TODO check the content of the item, esp. createdItem (the JSON)
 
-        // if item.createdItem has a property "error" then handle error
-        if (
+        // increment the num found regardless of error or not
+        this.numFoundCreatedItems++;
+
+        // Caught and error when trying to find item
+        if (Object.hasOwnProperty.call(e, 'error')) {
+            this.addProgressList(`
+                Error finding item "<em>${item.title}</em>": error - 
+                <span class="text-error">${error}</span>`
+            );
+            this.numItemErrors++;
+        } else if (
+            // if item.createdItem has a property "error" then handle error
             Object.hasOwnProperty.call(item, 'createdItem') &&
             Object.hasOwnProperty.call(item.createdItem, 'error')
         ) {
@@ -1403,32 +1454,40 @@ class c2m_CompletedView extends c2m_View {
                 Error finding item "<em>${item.title}</em>": error - 
                 <span class="text-error">${error}</span>`
             );
-            return;
-        }
-
-        this.numFoundCreatedItems++;
-
-        this.addProgressList(
-            `item "<em>${item.title}</em>" found or created
+            this.numItemErrors++;
+        } else {
+            this.addProgressList(
+                `item "<em>${item.title}</em>" found or created
               (created ${this.numFoundCreatedItems} out of 
                 ${this.model.canvasModules.items.length})`
-        );
+            );
+        }
 
         // TODO check the JSON in item.createdItem
 
         // increment the number of found/created items
         // check if all items have been found/created
         if (this.numFoundCreatedItems == this.model.canvasModules.items.length) {
-            this.addProgressList(`
+            if (this.numItemErrors === 0) {
+                this.addProgressList(`
             <span class="text-success">
               <strong>All ${this.numFoundCreatedItems} items found or created
               (created ${this.numFoundCreatedItems} out of ${this.model.canvasModules.items.length})</strong>
             </span>`
-            );
+                );
+            } else {
+                this.addProgressList(`
+            <span class="text-error">
+              <strong>Unable to find ${this.numItemErrors} items (out of ${this.model.canvasModules.items.length}) for this module</strong>.
+              Ignoring those for now.
+            </span>`
+                );
+            }
             this.addProgressList('Starting to add items to the module');
             // numAddedItems counts number already added and used to
             // identify which item to add next
             this.numAddedItems = 0;
+            this.numAddErrors = 0;
             //this.model.addItemsToModule();
             this.model.addModuleItem(this.numAddedItems);
         }
@@ -1456,8 +1515,8 @@ class c2m_CompletedView extends c2m_View {
         let item = this.model.canvasModules.items[index];
         this.numAddedItems++;
 
-        if (item.added ) {
-            this.addProgressList( 
+        if (item.added) {
+            this.addProgressList(
                 `item (${item.title}) added to module in position ${index} 
                 (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
             );
@@ -1465,7 +1524,8 @@ class c2m_CompletedView extends c2m_View {
             console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
             this.addProgressList(
                 `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
-          );
+            );
+            this.numAddErrors++;
         }
 
         // TODO check the JSON in item.createdItem
@@ -1476,14 +1536,26 @@ class c2m_CompletedView extends c2m_View {
         if (this.numAddedItems != this.model.canvasModules.items.length) {
             this.model.addModuleItem(this.numAddedItems);
         } else {
-            this.addProgressList(`
+
+            if (this.numAddErrors === 0) {
+
+                this.addProgressList(`
             <span class="text-success"><strong>
               All ${this.numFoundCreatedItems} items added to the module
               (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
               </strong>
             </span>`
-            );
-            this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
+                );
+                this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
+            } else {
+                this.addProgressList(`
+            <strong>Module created, but
+            <span class="text-error">
+              Unable to add ${this.numAddErrors} items (out of ${this.model.canvasModules.items.length}) for this module
+            </span>
+              </strong>`
+                );
+            }
             this.renderCreationResults();
         }
     }
@@ -2742,7 +2814,12 @@ class c2m_Modules {
                 // do the same event, regardless, the content of item.createdItem
                 // will indicate failure or not
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            });
+            }).catch((error) => {
+                console.log(`canvas::c2m_Modules::findItem - caught error - ${error}`);
+                this.dispatchEvent( 'w2c-item-found-created',{'item':index,
+                                          'error': `Error finding item - ${error}`});
+        });
+
     }
 
     /**
