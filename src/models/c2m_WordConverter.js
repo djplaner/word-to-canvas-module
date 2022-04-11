@@ -213,6 +213,8 @@ export default class c2m_WordConverter {
         // Canvas External URL module items can't have descriptive content
         this.checkExternalUrls(doc);
 
+        this.checkBlackboardUrls(doc);
+
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
 
@@ -250,7 +252,7 @@ export default class c2m_WordConverter {
 
     /**
      * Look for all the h1.canvasExternalUrl and check to see if their section only
-     * contains a URL
+     * contains a URL and it's a valid URL
      * @param {Object} doc - the html element/document with the converted module
      */
     checkExternalUrls(doc) {
@@ -258,7 +260,7 @@ export default class c2m_WordConverter {
 
         // track names of any external URLs with more than just a URL
         let problems = [];
-        // true for each externalUrl heading that has a valid URL
+        // true for each externalUrl heading that has a valid URL (and nothing else)
         let validUrls = {};
         for (let i = 0; i < extUrls.length; i++) {
             let extUrl = extUrls[i];
@@ -267,40 +269,96 @@ export default class c2m_WordConverter {
 
             if (content) {
                 // get innerText for each element of content array
+                let valid = false;
+                let invalid = false;
                 for (let j = 0; j < content.length; j++) {
                     if (!this.isValidHttpUrl(content[j].innerText)) {
                         // append the innerText of extUrl to the problems array
-                        problems.push(extUrl.innerText);
+                        invalid = true;
                     } else {
-                        validUrls[extUrl.innerText] = true;
+                        valid = true;
+                        //validUrls[extUrl.innerText] = true;
                     }
+                }
+                // we have a problem, if there is no valid URL or there is invalid data
+                if (!valid || invalid) {
+                    problems.push(extUrl.innerText);
                 }
             }
         }
 
         for (let i = 0; i < problems.length; i++) {
             // only show error for external URL that has more than a URL, if it has a valid URL
-            if ( validUrls[problems[i]] ) {
-                this.mammothResult.messages.push({
+            this.mammothResult.messages.push({
                 "type": "error",
                 "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
                                 <small><strong><a target="_blank" 
                    href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
                    For more <i class="icon-question"></i></a></strong></small>`,
-                });
-            }
+            });
         }
 
         // loop thru keys of validUrls
-        for (let key in validUrls) {
-            this.mammothResult.messages.push({
-                "type": "error",
-                "message": `The Canvas External URL heading - <em>${key}</em> - does not include a valid URL
-                <small><strong><a target="_blank" 
-                   href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
-                   For more <i class="icon-question"></i></a></strong></small>`,
-            });
+        /*        for (let key in validUrls) {
+                    this.mammothResult.messages.push({
+                        "type": "error",
+                        "message": `YYThe Canvas External URL heading - <em>${key}</em> - does not include a valid URL
+                        <small><strong><a target="_blank" 
+                           href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
+                           For more <i class="icon-question"></i></a></strong></small>`,
+                    });
+                } */
+    }
+
+    /**
+     * Check all the links to see if there are any Blackboard links
+     * @param {DOM} doc 
+     */
+
+    checkBlackboardUrls(doc) {
+        // get all the links from doc
+        let links = doc.querySelectorAll('a');
+
+        let blackboardLinks = {};
+        // loop through the links and check for blackboard links
+        for (let i = 0; i < links.length; i++) {
+            let link = links[i];
+            // is link.href already a key for blackboardLinks
+            if (blackboardLinks[link.href]) {
+                blackboardLinks[link.href].text.push(link.innerText);
+            }
+            else if (this.isBlackboardLink(link.href)) {
+                blackboardLinks[link.href] = {
+                    "text": [link.innerText]
+                };
+            }
         }
+
+        // loop through keys of blackboardLinks
+        // - for each link show the number of times and texts it was used with
+        for (let link in blackboardLinks) {
+            let message = `Found Blackboard link - <em><small>${link}</small></em> - ${blackboardLinks[link].text.length} times, including:<ul>`;
+            for (let i = 0; i < blackboardLinks[link].text.length; i++) {
+                message += ` <li>${blackboardLinks[link].text[i]}</li>`;
+            }
+            message += `</ul>`;
+
+            this.mammothResult.messages.push({ "type": "error", "message": message });
+        }
+
+    }
+
+    /**
+     * Return true iff the link is a blackboard link
+     * @param {String} link 
+     */
+
+    isBlackboardLink(link) {
+        return (
+            link.includes('https://bblearn.griffith.edu.au') ||
+            link.includes('https://bblearn-blaed.griffith.edu.au') ||
+            link.startsWith('/webapps/')
+        );
     }
 
     /**
