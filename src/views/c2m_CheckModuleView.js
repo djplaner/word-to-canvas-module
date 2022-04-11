@@ -9,6 +9,7 @@ const CHECK_MODULE_HTML = `
 
     <div class="ig-header header">
        <span class="name">.docx 2 + Canvas Module</span>
+       <span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -62,6 +63,13 @@ const CHECK_MODULE_HTML = `
 
 
 <style>
+
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
 
 
 .w2c-content {
@@ -193,6 +201,8 @@ export default class c2m_CheckModuleView extends c2m_View {
 
 		let confirmButton = document.getElementById("w2c-btn-confirm");
 		confirmButton.onclick = () => this.controller.handleClick(c2m_Completed);
+
+    this.addW2cVersion();
 
 		// check to see if conversion results are in
 		// does the model have a htmlConvert property

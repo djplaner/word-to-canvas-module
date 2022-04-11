@@ -8,7 +8,7 @@ const CHOOSE_WORD_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version">(v1.7.2)</span>
+       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -141,6 +141,8 @@ export default class c2m_ChooseWordView extends c2m_View {
 		let closeButton = document.getElementById("w2c-btn-close");
 		let confirmButton = document.getElementById("w2c-btn-confirm");
 		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+
+    this.addW2cVersion();
 	}
 
 }

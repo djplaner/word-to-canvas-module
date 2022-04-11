@@ -35,9 +35,21 @@ class c2m_View {
 	constructor(model, controller) {
 		this.model = model;
 		this.controller = controller;
+
+		this.version = "1.7.3";
 	}
 
 
+	/**
+	 * Add version information to span.w2c-version
+	 */
+	addW2cVersion() {
+		// find span.w2c-version
+		let w2cVersion = document.querySelector("span.w2c-version");
+		if (w2cVersion) {
+			w2cVersion.innerHTML = `(v${this.version})`;
+		}
+	}
 
 	/**
 	 * Add an empty div.c2m_dialog to the page or empty the existing one
@@ -137,7 +149,7 @@ const CHOOSE_WORD_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version">(v1.7.2)</span>
+       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -270,6 +282,8 @@ class c2m_ChooseWordView extends c2m_View {
 		let closeButton = document.getElementById("w2c-btn-close");
 		let confirmButton = document.getElementById("w2c-btn-confirm");
 		closeButton.onclick = () => this.controller.handleClick(c2m_Initialised);
+
+    this.addW2cVersion();
 	}
 
 }
@@ -280,7 +294,7 @@ const CHECK_HTML_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span> <span class="w2c-version">v1.7.2</span>
+       <span class="name">.docx 2 + Canvas Module</span> <span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -562,6 +576,8 @@ class c2m_CheckHtmlView extends c2m_View {
 
 		let startAgainButton = document.getElementById("w2c-btn-start-again");
 		startAgainButton.onclick = () => this.controller.handleClick(c2m_ChooseWord);
+
+		this.addW2cVersion();
 
 	}
 
@@ -876,6 +892,7 @@ const CHECK_MODULE_HTML = `
 
     <div class="ig-header header">
        <span class="name">.docx 2 + Canvas Module</span>
+       <span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -929,6 +946,13 @@ const CHECK_MODULE_HTML = `
 
 
 <style>
+
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
 
 
 .w2c-content {
@@ -1061,6 +1085,8 @@ class c2m_CheckModuleView extends c2m_View {
 		let confirmButton = document.getElementById("w2c-btn-confirm");
 		confirmButton.onclick = () => this.controller.handleClick(c2m_Completed);
 
+    this.addW2cVersion();
+
 		// check to see if conversion results are in
 		// does the model have a htmlConvert property
 		if (
@@ -1123,6 +1149,7 @@ const COMPLETE_HTML = `
 
     <div class="ig-header header">
        <span class="name">.docx 2 + Canvas Module</span>
+       <span class="w2c-version"></span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -1195,6 +1222,13 @@ const COMPLETE_HTML = `
 
 <style>
 
+
+.w2c-version {
+  font-size: 60%;
+  color: #999;
+  vertical-align:text-bottom;
+  margin-left: 1em;
+}
 
 .w2c-content {
     clear:both;
@@ -1329,6 +1363,7 @@ class c2m_CompletedView extends c2m_View {
         // TODO update this to starting to create the module and its items
         console.log("---- trying to create the module");
 
+        this.addW2cVersion();
         this.model.createModule();
     }
 
@@ -1472,6 +1507,7 @@ class c2m_CompletedView extends c2m_View {
             // numAddedItems counts number already added and used to
             // identify which item to add next
             this.numAddedItems = 0;
+            this.numAddErrors = 0;
             //this.model.addItemsToModule();
             this.model.addModuleItem(this.numAddedItems);
         }
@@ -1509,6 +1545,7 @@ class c2m_CompletedView extends c2m_View {
             this.addProgressList(
                 `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
             );
+            this.numAddErrors++;
         }
 
         // TODO check the JSON in item.createdItem
@@ -1519,14 +1556,26 @@ class c2m_CompletedView extends c2m_View {
         if (this.numAddedItems != this.model.canvasModules.items.length) {
             this.model.addModuleItem(this.numAddedItems);
         } else {
-            this.addProgressList(`
+
+            if (this.numAddErrors === 0) {
+
+                this.addProgressList(`
             <span class="text-success"><strong>
               All ${this.numFoundCreatedItems} items added to the module
               (created ${this.numAddedItems} out of ${this.model.canvasModules.items.length})
               </strong>
             </span>`
-            );
-            this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
+                );
+                this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
+            } else {
+                this.addProgressList(`
+            <strong>Module created, but
+            <span class="text-error">
+              Unable to add ${this.numAddErrors} items (out of ${this.model.canvasModules.items.length}) for this module
+            </span>
+              </strong>`
+                );
+            }
             this.renderCreationResults();
         }
     }

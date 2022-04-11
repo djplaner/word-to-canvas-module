@@ -20,9 +20,21 @@ export default class c2m_View {
 	constructor(model, controller) {
 		this.model = model;
 		this.controller = controller;
+
+		this.version = "1.7.3";
 	}
 
 
+	/**
+	 * Add version information to span.w2c-version
+	 */
+	addW2cVersion() {
+		// find span.w2c-version
+		let w2cVersion = document.querySelector("span.w2c-version");
+		if (w2cVersion) {
+			w2cVersion.innerHTML = `(v${this.version})`;
+		}
+	}
 
 	/**
 	 * Add an empty div.c2m_dialog to the page or empty the existing one
