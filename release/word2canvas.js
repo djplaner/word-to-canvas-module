@@ -121,7 +121,7 @@ const CHOOSE_WORD_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version">(v1.7.0)</span>
+       <span class="name">.docx 2 + Canvas Module</span><span class="w2c-version">(v1.7.2)</span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
@@ -263,7 +263,7 @@ const CHECK_HTML_HTML = `
   <div class="item-group-condensed context_module">
 
     <div class="ig-header header">
-       <span class="name">.docx 2 + Canvas Module</span> <span class="w2c-version">v1.7.0</span>
+       <span class="name">.docx 2 + Canvas Module</span> <span class="w2c-version">v1.7.2</span>
        <div class="ig-header-admin">
          <button aria-label="Close .docx 2 Canvas Module" id="w2c-btn-close">X</button>
        </div>
