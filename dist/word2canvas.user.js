@@ -373,19 +373,26 @@ const CHECK_HTML_HTML = `
   margin-left: 1em;
 }
 
+#c2m_messages ul {
+}
+
+#c2m_messages li {
+	list-style-type: disc;
+	font-size: 90%;
+	margin-top: 0.25rem;
+	margin-right: -0.8rem;
+}
 
 .w2c-message-warning {
 	background-color: #fcf8e3;
 	list-style: none;
 	padding: 0.1em;
-	padding-left: 1em;
 }
 
 .w2c-message-error {
 	background-color: #f2dede;
 	list-style: none;
 	padding: 0.1em;
-	padding-left: 1em;
 }
 
 span.w2c-error {
@@ -1855,7 +1862,7 @@ class c2m_WordConverter {
             // only show error for external URL that has more than a URL, if it has a valid URL
             this.mammothResult.messages.push({
                 "type": "error",
-                "message": `XXThe Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
+                "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
                                 <small><strong><a target="_blank" 
                    href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
                    For more <i class="icon-question"></i></a></strong></small>`,

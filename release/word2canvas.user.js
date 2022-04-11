@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.7.0
+// @version      1.7.1
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -369,19 +369,26 @@ const CHECK_HTML_HTML = `
   margin-left: 1em;
 }
 
+#c2m_messages ul {
+}
+
+#c2m_messages li {
+	list-style-type: disc;
+	font-size: 90%;
+	margin-top: 0.25rem;
+	margin-right: -0.8rem;
+}
 
 .w2c-message-warning {
 	background-color: #fcf8e3;
 	list-style: none;
 	padding: 0.1em;
-	padding-left: 1em;
 }
 
 .w2c-message-error {
 	background-color: #f2dede;
 	list-style: none;
 	padding: 0.1em;
-	padding-left: 1em;
 }
 
 span.w2c-error {
@@ -1090,13 +1097,14 @@ class c2m_CheckModuleView extends c2m_View {
 
 }
 
+/* eslint-disable no-undef */
 /**
  * c2m_CompletedView.js
  * Handles the completed view state. i.e. user has clicked to create a new module
  * from a converted Word doc. This view will create the new view and display the 
  * result
  */
- /* jslint: esversion: 6 */
+ /* jshint: esversion: 6 */
 
 
 
@@ -1367,7 +1375,7 @@ class c2m_CompletedView extends c2m_View {
             // failed to find it
             this.addProgressList(
                 `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
-            )
+            );
         }
 
         // increment the number of files we've heard about
@@ -1391,7 +1399,7 @@ class c2m_CompletedView extends c2m_View {
      */
     checkItemFoundCreated(e) {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
-        console.log(e)
+        console.log(e);
 
         let index = e.detail.item;
         // TODO what if index greater than # items
@@ -1455,18 +1463,24 @@ class c2m_CompletedView extends c2m_View {
 
     checkModuleItemAdded(e) {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
-        console.log(e)
+        console.log(e);
 
         let index = e.detail.item;
         // TODO what if index greater than # items
         let item = this.model.canvasModules.items[index];
         this.numAddedItems++;
 
-        //        console.log(`created item ${item.createdItem}`);
-        this.addProgressList(
-            `item (${item.title}) added to module in position ${index} 
-            (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
-        );
+        if (item.added ) {
+            this.addProgressList( 
+                `item (${item.title}) added to module in position ${index} 
+                (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
+            );
+        } else {
+            console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
+            this.addProgressList(
+                `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
+          );
+        }
 
         // TODO check the JSON in item.createdItem
         // this is where error checking should happen
@@ -1669,30 +1683,30 @@ const DEFAULT_OPTIONS = {
 // - key indicates <div style to be preprended
 // - value is what will be prepended
 const CI_STYLE_PREPEND = {
-  reading: `<div class="readingImage">&nbsp;</div>`,
-  activity: `<div class="activityImage">&nbsp;</div>`,
-  flashback: `<div class="flashbackImage">&nbsp;</div>`,
-  //"canaryExercise" : `<div class="canaryImage"></div>`,
-  // COM14
-  canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
-  //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
-  "ael-note": `<div class="noteImage">&nbsp;</div>`,
-  weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
-  comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
-  filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
-  goReading: `<div class="goReadingImage">&nbsp;</div>`,
+    reading: `<div class="readingImage">&nbsp;</div>`,
+    activity: `<div class="activityImage">&nbsp;</div>`,
+    flashback: `<div class="flashbackImage">&nbsp;</div>`,
+    //"canaryExercise" : `<div class="canaryImage"></div>`,
+    // COM14
+    canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
+    //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
+    "ael-note": `<div class="noteImage">&nbsp;</div>`,
+    weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
+    comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
+    filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
+    goReading: `<div class="goReadingImage">&nbsp;</div>`,
 };
 
 const CI_EMPTY_STYLE_PREPEND = {
-  goStartHere: `<div class="goStartHereImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/start-here.svg" /> </div>`,
-  goActivity: `<div class="goActivityImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/activity.svg" /> </div>`,
-  goReflect: `<div class="goReflectImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reflection.svg" /> </div>`,
-  goWatch: `<div class="goWatchImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/video.svg" /> </div>`,
-  goDownload: `<div class="goDownloadImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/download.svg" /> </div>`,
-  goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
+    goStartHere: `<div class="goStartHereImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/start-here.svg" /> </div>`,
+    goActivity: `<div class="goActivityImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/activity.svg" /> </div>`,
+    goReflect: `<div class="goReflectImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/reflection.svg" /> </div>`,
+    goWatch: `<div class="goWatchImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/video.svg" /> </div>`,
+    goDownload: `<div class="goDownloadImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/download.svg" /> </div>`,
+    goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
 };
 
-const TABLE_CLASS= ["table", "stripe-row-odd"];
+const TABLE_CLASS = ["table", "stripe-row-odd"];
 
 class c2m_WordConverter {
 
@@ -1759,6 +1773,11 @@ class c2m_WordConverter {
         // Canvas culls the base64 images and they pose a size problem
         this.checkBase64Images(doc);
 
+        // Canvas External URL module items can't have descriptive content
+        this.checkExternalUrls(doc);
+
+        this.checkBlackboardUrls(doc);
+
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
 
@@ -1779,19 +1798,130 @@ class c2m_WordConverter {
         for (let i = 0; i < h1s.length; i++) {
             let h1 = h1s[i];
             if (h1.innerHTML.trim() === "") {
-                empty+=1;
+                empty += 1;
                 // insert a <span class="w2c-error"> into the h1
                 const error = '<span class="w2c-error">empty heading 1</span>';
                 h1.insertAdjacentHTML('beforeend', error);
             }
         }
 
-        if (empty>0) {
-                this.mammothResult.messages.push({
-                    "type": "error",
-                    "message": `Found ${empty} empty Heading 1s (see below). Remove and try again.`,
-                });
+        if (empty > 0) {
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `Found ${empty} empty Heading 1s (see below). Remove and try again.`,
+            });
         }
+    }
+
+    /**
+     * Look for all the h1.canvasExternalUrl and check to see if their section only
+     * contains a URL and it's a valid URL
+     * @param {Object} doc - the html element/document with the converted module
+     */
+    checkExternalUrls(doc) {
+        let extUrls = doc.querySelectorAll('h1.canvasExternalUrl');
+
+        // track names of any external URLs with more than just a URL
+        let problems = [];
+        // true for each externalUrl heading that has a valid URL (and nothing else)
+        let validUrls = {};
+        for (let i = 0; i < extUrls.length; i++) {
+            let extUrl = extUrls[i];
+            let content = this.nextUntil(extUrl, 'h1');
+            validUrls[extUrl.innerText] = false;
+
+            if (content) {
+                // get innerText for each element of content array
+                let valid = false;
+                let invalid = false;
+                for (let j = 0; j < content.length; j++) {
+                    if (!this.isValidHttpUrl(content[j].innerText)) {
+                        // append the innerText of extUrl to the problems array
+                        invalid = true;
+                    } else {
+                        valid = true;
+                        //validUrls[extUrl.innerText] = true;
+                    }
+                }
+                // we have a problem, if there is no valid URL or there is invalid data
+                if (!valid || invalid) {
+                    problems.push(extUrl.innerText);
+                }
+            }
+        }
+
+        for (let i = 0; i < problems.length; i++) {
+            // only show error for external URL that has more than a URL, if it has a valid URL
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
+                                <small><strong><a target="_blank" 
+                   href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
+                   For more <i class="icon-question"></i></a></strong></small>`,
+            });
+        }
+
+        // loop thru keys of validUrls
+        /*        for (let key in validUrls) {
+                    this.mammothResult.messages.push({
+                        "type": "error",
+                        "message": `YYThe Canvas External URL heading - <em>${key}</em> - does not include a valid URL
+                        <small><strong><a target="_blank" 
+                           href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
+                           For more <i class="icon-question"></i></a></strong></small>`,
+                    });
+                } */
+    }
+
+    /**
+     * Check all the links to see if there are any Blackboard links
+     * @param {DOM} doc 
+     */
+
+    checkBlackboardUrls(doc) {
+        // get all the links from doc
+        let links = doc.querySelectorAll('a');
+
+        let blackboardLinks = {};
+        // loop through the links and check for blackboard links
+        for (let i = 0; i < links.length; i++) {
+            let link = links[i];
+            // is link.href already a key for blackboardLinks
+            if (blackboardLinks[link.href]) {
+                blackboardLinks[link.href].text.push(link.innerText);
+            }
+            else if (this.isBlackboardLink(link.href)) {
+                blackboardLinks[link.href] = {
+                    "text": [link.innerText]
+                };
+            }
+        }
+
+        // loop through keys of blackboardLinks
+        // - for each link show the number of times and texts it was used with
+        for (let link in blackboardLinks) {
+            let message = `Found Blackboard link - <em><small>${link}</small></em> - ${blackboardLinks[link].text.length} times, including:<ul>`;
+            for (let i = 0; i < blackboardLinks[link].text.length; i++) {
+                message += ` <li>${blackboardLinks[link].text[i]}</li>`;
+            }
+            message += `</ul>`;
+
+            this.mammothResult.messages.push({ "type": "error", "message": message });
+        }
+
+    }
+
+    /**
+     * Return true iff the link is a blackboard link
+     * @param {String} link 
+     */
+
+    isBlackboardLink(link) {
+        return (
+            link.includes('https://bblearn.griffith.edu.au') ||
+            link.includes('https://bblearn-blaed.griffith.edu.au') ||
+            link.startsWith('/webapps/')
+        );
     }
 
     /**
@@ -1808,23 +1938,23 @@ class c2m_WordConverter {
         for (let i = 0; i < imgs.length; i++) {
             let img = imgs[i];
             if (img.src.indexOf('base64') > 0) {
-                base64+=1;
+                base64 += 1;
                 // insert a <span class="w2c-error"> into the img
                 const error = '<span class="w2c-error">base64 image</span>';
                 img.insertAdjacentHTML('beforebegin', error);
             }
         }
-        if (base64>0) { 
+        if (base64 > 0) {
             this.mammothResult.messages.push({
                 "type": "error",
                 "message": `Found ${base64} base64 images <small>(labeled in HTML)</small>. 
                            These will be replaced with placeholders.<br /> 
                            <small><strong>
                              <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/htmlConversion.html#base64-images">For more <i class="icon-question"></i></a></strong></small>`,
-                });
+            });
         }
 
-    } 
+    }
 
     /**
      * Do all post mammoth conversions
@@ -1867,9 +1997,9 @@ class c2m_WordConverter {
         this.contentInterfacePreprends(doc);
 
         // add class TABLE_CLASS to all of the tables
-        doc.querySelectorAll('table').forEach( (elem) => {
+        doc.querySelectorAll('table').forEach((elem) => {
             // add class TABLE_CLASS to elem 
-            TABLE_CLASS.forEach( (tableClass) => {
+            TABLE_CLASS.forEach((tableClass) => {
                 elem.classList.add(tableClass);
 
             });
@@ -1972,7 +2102,62 @@ class c2m_WordConverter {
     }
 
 
+    /** 
+     * 
+     * Get all following siblings of each element up to but not including the element matched by the selector
+     * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
+     * @param  {Node}   elem     The element
+     * @param  {String} selector The selector to stop at
+     * @param  {String} filter   The selector to match siblings against [optional]
+     * @return {Array}           The siblings
+     */
+    nextUntil(elem, selector, filter) {
 
+        // Setup siblings array
+        var siblings = [];
+
+        // Get the next sibling element
+        elem = elem.nextElementSibling;
+
+        // As long as a sibling exists
+        while (elem) {
+
+            // If we've reached our match, bail
+            if (elem.matches(selector)) break;
+
+            // If filtering by a selector, check if the sibling matches
+            if (filter && !elem.matches(filter)) {
+                elem = elem.nextElementSibling;
+                continue;
+            }
+
+            // Otherwise, push it to the siblings array
+            siblings.push(elem);
+
+            // Get the next sibling element
+            elem = elem.nextElementSibling;
+
+        }
+
+        return siblings;
+
+    }
+
+
+    /**
+     * check if a string is a valid URL
+     * https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url 
+     */
+    isValidHttpUrl(string) {
+        let url;
+        try {
+            url = new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
 
 }
 
@@ -2162,7 +2347,7 @@ class c2m_HtmlConverter {
 				let contentObj = {
 					displayName: item.title,
 					fileName: item.title
-				}
+				};
 				// if item.content is not empty, then it must be the filename
 				if ( item.content.trim()!=='' ) {
 					contentObj.fileName = item.content;
@@ -2369,7 +2554,7 @@ class c2m_Modules {
                 console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-empty-module-created');
-            })
+            });
     }
 
     /**
@@ -2393,18 +2578,18 @@ class c2m_Modules {
         };
 
         if ([ "File", "Discussion", "Assignment", "Quiz"].includes(item.type) ) {
-            body.module_item['content_id'] = item.createdItem.id;
+            body.module_item.content_id = item.createdItem.id;
         }
 
         if (item.type === "Page" || item.type==="ExistingPage") {
 //            body.module_item['content_id'] = item.createdItem.page_id;
-            body.module_item['page_url'] = item.createdItem.url;
-            body.module_item['type'] = 'Page';
+            body.module_item.page_url = item.createdItem.url;
+            body.module_item.type = 'Page';
         }
 
         if (["ExternalUrl","ExternalTool"].includes(item.type)) {
             // TODO need to do more to extract the URL here
-            body.module_item['external_url'] = item.content;
+            body.module_item.external_url = item.content;
         }
 //        console.log('creating module item');
 //        console.log(body);
@@ -2425,7 +2610,8 @@ class c2m_Modules {
             .then((json) => {
                 // update the createdItem property for the item 
                 // with the results of the JSON call
-                item['addedItem'] = json;
+                item.addedItem = json;
+                item.added = true;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
 //                if (item.type === "SubHeader") {
@@ -2433,7 +2619,12 @@ class c2m_Modules {
  //               } else {
                 this.dispatchEvent( 'w2c-module-item-added',{'item':index});
   //              }
-            })
+            }).catch((error) => {
+                console.log(`canvas::c2m_Modules::addModuleItem - caught error - ${error}`);
+                item.error = error;
+                item.added = false;
+                this.dispatchEvent( 'w2c-module-item-added',{'item':index});
+        });
 
     }
 
@@ -2471,7 +2662,7 @@ class c2m_Modules {
                 console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            })
+            });
 
     }
 
@@ -2541,7 +2732,7 @@ class c2m_Modules {
             "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`,
             "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`,
             "Quiz" : `/api/v1/courses/${this.courseId}/quizzes?`
-        }
+        };
 
         let searchTerm = item.title;
 
@@ -2574,7 +2765,7 @@ class c2m_Modules {
                 // do the same event, regardless, the content of item.createdItem
                 // will indicate failure or not
                 this.dispatchEvent( 'w2c-item-found-created',{'item':index});
-            })
+            });
     }
 
     /**
@@ -2614,7 +2805,7 @@ class c2m_Modules {
         item.createdItem = {
             "error": `file not found: ${item.title}`,
             "index": index
-        }
+        };
     }
 
     /**
@@ -2651,11 +2842,11 @@ class c2m_Modules {
      */
     status(response) {
         if (response.status >= 200 && response.status < 300) {
-            return Promise.resolve(response)
+            return Promise.resolve(response);
         } else {
             console.log("---- STATUS bad response status");
             console.log(response);
-            return Promise.reject(new Error(response.statusText))
+            return Promise.reject(new Error(response.statusText));
         }
     }
     /*
@@ -2743,7 +2934,7 @@ class c2m_Model {
                 // this is done in modules, because that's where it 
                 // actually waits
                 //                this.dispatchEvent('w2c-empty-module-created')
-            )
+            );
     }
 
     /**
@@ -2777,7 +2968,7 @@ class c2m_Model {
         for (let i = 0; i<items.length; i++ ) {
             // extract all span.canvasFileLink from the body of the item
             let body = items[i].content;
-            console.log('item ${i} content');
+            console.log(`item ${i} content`);
             console.log(body);
             let bodyDoc = parser.parseFromString(body, "text/html");
             // find all the canvasFileLinks
@@ -2868,7 +3059,7 @@ class c2m_Model {
             // find the item we're trying to link to
             this.findOrCreateItem(i);
         }
-        console.log("------------- END of create module items")
+        console.log("------------- END of create module items");
     }
 
 
@@ -3048,7 +3239,7 @@ class c2m_Model {
      */
     addModuleItem(itemIndex) {
 
-        console.log('Shogin createdModuleItem')
+        console.log('Shogin createdModuleItem');
 
         // may need to pass in item order
         //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
@@ -3062,7 +3253,7 @@ class c2m_Model {
     }
 
     convertWordDoc(event) {
-        console.log('c2m_Model -> convertWordDoc')
+        console.log('c2m_Model -> convertWordDoc');
 
         try {
             this.wordConverter.handleFileSelect(event);

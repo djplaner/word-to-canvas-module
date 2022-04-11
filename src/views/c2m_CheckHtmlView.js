@@ -99,19 +99,26 @@ const CHECK_HTML_HTML = `
   margin-left: 1em;
 }
 
+#c2m_messages ul {
+}
+
+#c2m_messages li {
+	list-style-type: disc;
+	font-size: 90%;
+	margin-top: 0.25rem;
+	margin-right: -0.8rem;
+}
 
 .w2c-message-warning {
 	background-color: #fcf8e3;
 	list-style: none;
 	padding: 0.1em;
-	padding-left: 1em;
 }
 
 .w2c-message-error {
 	background-color: #f2dede;
 	list-style: none;
 	padding: 0.1em;
-	padding-left: 1em;
 }
 
 span.w2c-error {
