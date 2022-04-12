@@ -215,8 +215,70 @@ export default class c2m_WordConverter {
 
         this.checkBlackboardUrls(doc);
 
+        this.checkCIBlackboardStyles(doc);
+
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
+
+    /**
+     * Identify all the Content Interface Blackboard specific styles and generate warnings
+     * @param {Object} doc dom element
+     */
+
+    checkCIBlackboardStyles(doc) {
+        const ciBlackboardStyles = [ 
+            'h1.blackboard', 'h2.blackboard', 'span.blackboardLink', 
+            'span.blackboardContentLink', 'span.blackboardMenuLink'
+        ];
+
+        // hash of arrays of hashes recording all problematic finds
+        // TODO add in heading
+        // foundStyles[h1.blackboard] = [ { text: "", heading: ""}]
+        let foundStyles = {};
+
+        // for each of the ciBlackboardStyles check if any of the elements exist
+        ciBlackboardStyles.forEach(style => {
+            let elements = doc.querySelectorAll(style);
+            // for each of the elements, save the text and the h1 they belong to
+            for (let i=0; i<elements.length; i++) {
+                let element = elements[i];
+                let text = element.innerText;
+                // a h1 style is it's own heading
+                let heading = "not found";
+                if (style.startsWith('h1.')) {
+                    heading = text;
+                } else {
+                    // get the h1 element before element
+                    let previous = element.previousElementSibling || element.parentNode;
+                    while (previous && previous.tagName !== 'H1') {
+                        previous = previous.previousElementSibling || previous.parentNode;
+                    }
+                    if (previous) {
+                        heading = previous.innerText;
+                    }
+                }
+                if (text.length > 0) {
+                    if (foundStyles[style]) {
+                        foundStyles[style].push({ text: text, heading: heading });
+                    } else {
+                        foundStyles[style] = [{ text: text, heading: heading }];
+                    }
+                }   
+            }
+        });
+
+        // loop thru each key of foundStyles
+        for (const style in foundStyles) {
+            let message = `<p>Found Blackboard specific style - <em>${style}</em> - ${foundStyles[style].length} times:</p><ul>`;
+            for (let i=0; i<foundStyles[style].length; i++) {
+                message += `<li> under heading <em>${foundStyles[style][i].heading}</em> with text <em>${foundStyles[style][i].text}</em></li>`;
+            }
+            message += '</ul>';
+            this.mammothResult.messages.push({ "type": "error", "message": message });
+        }
+
+    }
+
 
     /**
      * Check all the Heading 1 equivalents and see if any are empty
