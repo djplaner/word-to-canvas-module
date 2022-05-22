@@ -1660,6 +1660,8 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
+        "r[style-name='Blackboard Image'] => span.blackboardImage",
+        "p[style-name='Blackboard Image p'] => span.blackboardImage",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
