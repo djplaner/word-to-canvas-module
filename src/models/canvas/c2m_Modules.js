@@ -211,13 +211,22 @@ export default class c2m_Modules {
      *   descriptor:  descriptor for link
      *   status:
      *   response:
+     *   event:
      * }
-     * @param {*} index 
+     * @param {Integer} index - index into array of files to find
+     * @param {String} event - name of event/object to find
      */
 
-    async findFile(index) {
-        let file = this.fileLinks[index];
-
+    async findFile(index,event='w2c-file-found') {
+//        let itemList = undefined;
+        // figure out which list of items to search for
+        let itemList; 
+        if (event==='w2c-file-found'){
+            itemList = this.fileLinks;
+        } else if (event==='w2c-imageLink-found') {
+            itemList = this.fileLinks;
+        }
+        let file = itemList[index];
         let searchTerm = file.name;
 
         let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
@@ -241,14 +250,14 @@ export default class c2m_Modules {
         .then((json) => {
             // json - list of files from Canvas API matching request
             // see if we can find our file (fileLinks[index]) in the list
-            this.findFileInList(json, index);
+            this.findFileInList(json, index, itemList);
             // do the same event, regardless, the item will be set to indicate
             // success or failure
-            this.dispatchEvent( 'w2c-file-found',{'file':index});
+            this.dispatchEvent( event,{'file':index});
         }).catch((error) => {
             console.log(`canvas::c2m_Modules::findFile - caught error - ${error}`);
             file.status = 'error';
-            this.dispatchEvent( 'w2c-file-found',{'file':index});
+            this.dispatchEvent( event,{'file':index});
         });
     }
 
@@ -356,10 +365,12 @@ export default class c2m_Modules {
      * Set the item.status and item.response respectively
      * @param {Array} list - JSON list of Files returned by Canvas API 
      * @param {Integer} index - index info this.fileLinks list of required files
+     * @param {Array} searchlist - array of files/images we're looking for (index keys on this)
      */
 
-    findFileInList( list, index ) {
-        let file = this.fileLinks[index];
+    findFileInList( list, index, searchList) {
+        //let file = this.fileLinks[index];
+        let file = searchList[index];
 
         for (let i = 0; i < list.length; i++) {
             let element = list[i];

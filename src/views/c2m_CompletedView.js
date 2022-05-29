@@ -272,8 +272,12 @@ export default class c2m_CompletedView extends c2m_View {
      * Call the file link intiator
      */
 
-    checkImageLinkFound(event) {
-        alert("checkImageLinkFound event generated");
+    checkImageLinkFound(e) {
+        let index = e.detail.file;
+        let image = this.model.canvasModules.imageLinks[index];
+
+        console.log(`found file ${image.name} with id ${index}`);
+        console.log(image);
 
         // figure out what needs to happen here
         // - similar to checkFileLinksFound
@@ -283,6 +287,7 @@ export default class c2m_CompletedView extends c2m_View {
         this.addProgressList("Image link found");
 
 
+        alert("checkImageLinkFound event generated");
         this.model.findFileLinks();
     }
 
