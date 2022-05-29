@@ -219,6 +219,10 @@ export default class c2m_WordConverter {
 
         this.checkCIBlackboardStyles(doc);
 
+        // canvasImages may have filenames as URLs, i.e. broken images
+        // offer an explanation
+        this.checkCanvasImages(doc);
+
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
 
@@ -228,8 +232,8 @@ export default class c2m_WordConverter {
      */
 
     checkCIBlackboardStyles(doc) {
-        const ciBlackboardStyles = [ 
-            'h1.blackboard', 'h2.blackboard', 'span.blackboardLink', 
+        const ciBlackboardStyles = [
+            'h1.blackboard', 'h2.blackboard', 'span.blackboardLink',
             'span.blackboardContentLink', 'span.blackboardMenuLink'
         ];
 
@@ -242,7 +246,7 @@ export default class c2m_WordConverter {
         ciBlackboardStyles.forEach(style => {
             let elements = doc.querySelectorAll(style);
             // for each of the elements, save the text and the h1 they belong to
-            for (let i=0; i<elements.length; i++) {
+            for (let i = 0; i < elements.length; i++) {
                 let element = elements[i];
                 let text = element.innerText;
                 // a h1 style is it's own heading
@@ -265,14 +269,14 @@ export default class c2m_WordConverter {
                     } else {
                         foundStyles[style] = [{ text: text, heading: heading }];
                     }
-                }   
+                }
             }
         });
 
         // loop thru each key of foundStyles
         for (const style in foundStyles) {
             let message = `<p>Found Blackboard specific style - <em>${style}</em> - ${foundStyles[style].length} times:</p><ul>`;
-            for (let i=0; i<foundStyles[style].length; i++) {
+            for (let i = 0; i < foundStyles[style].length; i++) {
                 message += `<li> under heading <em>${foundStyles[style][i].heading}</em> with text <em>${foundStyles[style][i].text}</em></li>`;
             }
             message += '</ul>';
@@ -458,6 +462,69 @@ export default class c2m_WordConverter {
     }
 
     /**
+     * Check for any span.canvasImage
+     * @param {DOM} doc 
+     */
+
+    checkCanvasImages(doc) {
+        // search doc for any span.canvasImage
+        let canvasImages = doc.querySelectorAll('span.canvasImage');
+
+        const error = '<span class="w2c-error">canvasImage</span>';
+        // insert a warning next to each canvasImage
+        for (let i = 0; i < canvasImages.length; i++) {
+            let img = canvasImages[i];
+            img.insertAdjacentHTML('beforebegin', error);
+        }
+        this.mammothResult.messages.push({
+            "type": "error",
+            "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
+                       Broken images may be fixed in the final stage.<br /> 
+                       <small><strong>
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
+        });
+    }
+
+
+    /**
+     * Find all the span.blackboardImage
+     * - group all the sequential span.blackboardImage into a single tag
+     * - decode the entities into the content of the single span.canvasImage
+     * - remove the span.blackboardImage
+     * @param {DOMParser} doc 
+     */
+    handleBlackboardImage(doc) {
+
+        // get the next span.blackboardImage
+        let span = doc.querySelector('span.blackboardImage');
+        while (span) {
+            // set up the new span.canvasImage
+            let tmpSpan = doc.createElement('span');
+            // set tmpSpan class to "canvasImage"
+            tmpSpan.classList.add('canvasImage');
+            // insert tmpSpan before span
+            span.parentNode.insertBefore(tmpSpan, span);
+
+            // get all the sibling span.blackboardImage and add content to tmpSpan
+            while (span && span.tagName === "SPAN" && span.className === "blackboardImage") {
+                let content = span.innerHTML;
+                tmpSpan.innerHTML += content;
+
+                // get the next sibling element
+                let oldSpan = span;
+                span = span.nextElementSibling;
+                // remove oldSpan
+                oldSpan.parentNode.removeChild(oldSpan);
+            }
+            // translate the old content from encoded
+            tmpSpan.innerHTML = this.decodeEntities(tmpSpan.innerHTML);
+
+            // get the next span.blackboardImage (i.e. not a sibling)
+            span = doc.querySelector('span.blackboardImage');
+        }
+    }
+
+    /**
      * Do all post mammoth conversions
      * - span.embed decoded HTML
      * - span.talisCanvasLink to a link
@@ -471,8 +538,12 @@ export default class c2m_WordConverter {
         // iterate over the embeds and use this.decodeEntities to decode the innerHTML
         for (let i = 0; i < embeds.length; i++) {
             let embed = embeds[i];
+            console.error(embed.innerHTML);
             embed.innerHTML = this.decodeEntities(embed.innerHTML);
+            console.error(embed.innerHTML);
         }
+
+        this.handleBlackboardImage(doc);
 
         // convert span.talisCanvasLink innerHTML to a link
         let links = doc.querySelectorAll('span.talisCanvasLink');
