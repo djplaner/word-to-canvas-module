@@ -61,6 +61,117 @@ export default class c2m_Model {
             );
     }
 
+
+    /**
+     * For any span.canvasImage in the current DOM, check the
+     * image URL.  If it's a filename, then generate an API request
+     * to get the URL to show that filename as an image
+     */
+
+    findImageLinks() {
+/*        console.log("-----------------------------");
+        console.log("-----------------------------");
+        console.log("FIND IMAGE LINKS");
+        console.log("-----------------------------");
+*/
+        let items = this.htmlConverter.items;
+
+        // set up infrastructure
+        // - this.imageLinks array of objects for required fileLinks
+        //   - name of file link
+        //   - index of the item for which it's required
+        //   - status of find API call
+        //   - response from find API call
+        // - this.numFoundFileLinks - count of the number file links found
+
+        this.canvasModules.imageLinks = [];
+        this.canvasModules.numFoundImageLinks = 0;
+
+        let parser = new DOMParser();
+
+        // loop thru this.htmlConverter.items
+        for (let i = 0; i<items.length; i++ ) {
+            // extract all span.canvasFileLink from the body of the item
+            let body = items[i].content;
+//            console.log(`item ${i} content`);
+//            console.log(body);
+            let bodyDoc = parser.parseFromString(body, "text/html");
+            // find all the canvasFileLinks
+            let imageLinks = bodyDoc.querySelectorAll('span.canvasImage');
+
+            console.log(`found ${imageLinks.length} file links in item ${i}`);
+
+            // loop thru the imageLinks
+            for (let j = 0; j < imageLinks.length; j++) {
+                let name = this.extractImageFileName( imageLinks[j]);
+
+                // if name undefined set it to DONT_FIND
+                if (!name) {
+                    name = 'DONT_FIND';
+                }
+
+                // TODO perhaps pass in another parameter here to indicate that we want
+                // the image URL for the file
+                let newImageLink = {
+                    itemIndex: i,
+                    name: name,
+                    descriptor: undefined,
+                    status: "initialised",
+                    response: undefined
+                };
+                // append newFileLink to fileLinks
+                this.canvasModules.imageLinks.push(newImageLink);
+            }
+        }
+
+//        console.log("Found the following links")
+//       console.log(this.canvasModules.fileLinks);
+
+        // if there are no fileLinks
+        if (this.canvasModules.imageLinks.length === 0) {
+            // ignore this step and start finding/creating other items
+            this.findFileLinks();
+        }
+
+        // loop through each fileLinks and call find API
+        for (let i = 0; i < this.canvasModules.imageLinks.length; i++) {
+            // TODO should this be findFile or some other function more
+            // specific to the task here
+            //this.canvasModules.findFile(i).then(() => {});
+            alert(`need to find image link ${i} for ${this.canvasModules.imageLinks[i].name}`);
+        }
+    }
+
+    /**
+     * Examine a span.canvasImage element and extract the img.src within it
+     * Return that as the name if its not a URL, undefined if no img.src or it is a URL
+     * @param {*} imageSpan 
+     */
+    extractImageFileName(imageSpan) {
+        // find the img within imageSpan
+        let img = imageSpan.querySelector('img');
+        console.log(`------ extractImageFileName`);
+        console.log("image span");
+        console.log(imageSpan.innerHTML);
+        console.log("img ");
+        console.log(img.innerHTML);
+        console.log(`src of image is ${img.src}`);
+        if (img) {
+            // remove the documentbaseURI from the src
+            let src = img.src.replace(document.baseURI.replace(/modules$/,''), '');
+            console.log(`src of image is ${src}`);
+            console.log(`baseURI is ${document.baseURI}`);
+            // return the src if it's not a url
+            if (! src.startsWith('http')) {
+                return src;
+            }
+        }
+        console.log(`------ extractImageFileName`);
+        return undefined;
+    }
+    
+
+
     /**
      * Generate events and appropriate infrastrcutre to find all the 
      * necessary canvasFileLink spans

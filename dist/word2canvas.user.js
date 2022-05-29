@@ -1327,6 +1327,11 @@ class c2m_CompletedView extends c2m_View {
     /**
      * Start the call to create the module and set up the display
      * once created an event will cause "renderUpdate"
+     * 
+     * All events require
+     * - an event name/label
+     * - an intiator
+     * - an event handler (which also calls the next initiator in sequence)
      */
     render() {
         console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 4. Complete");
@@ -1337,6 +1342,8 @@ class c2m_CompletedView extends c2m_View {
         //c2mDiv.addEventListener('w2c_module_created', this.renderCreationResults.bind(this));
         c2mDiv.addEventListener(
             'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-imageLink-found', this.checkImageLinkFound.bind(this));
         c2mDiv.addEventListener(
             'w2c-file-found', this.checkFileLinksFound.bind(this));
         c2mDiv.addEventListener(
@@ -1367,6 +1374,7 @@ class c2m_CompletedView extends c2m_View {
         this.model.createModule();
     }
 
+
     /**
      * Event handler for w2c-empty-module-created event.
      * Indicates that an empty Canvas module has been created.
@@ -1385,8 +1393,29 @@ class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.numItemErrors = 0;
-        this.model.findFileLinks();
+        this.model.findImageLinks();
+        //this.model.findFileLinks();
         //        this.model.findOrCreateModuleItems();
+    }
+
+        /**
+     * Event handler for the w2c-imageLink-found event.
+     * ???
+     * Call the file link intiator
+     */
+
+    checkImageLinkFound(event) {
+        alert("checkImageLinkFound event generated");
+
+        // figure out what needs to happen here
+        // - similar to checkFileLinksFound
+        // - check the found status from event
+        // - use that to indicate progress and update model
+
+        this.addProgressList("Image link found");
+
+
+        this.model.findFileLinks();
     }
 
     /**
@@ -2123,7 +2152,7 @@ class c2m_WordConverter {
             "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
                        Broken images may be fixed in the final stage.<br /> 
                        <small><strong>
-                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/htmlConversion.html#base64-images">For more <i class="icon-question"></i></a></strong></small>`,
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
         });
     }
 
@@ -3158,6 +3187,117 @@ class c2m_Model {
                 //                this.dispatchEvent('w2c-empty-module-created')
             );
     }
+
+
+    /**
+     * For any span.canvasImage in the current DOM, check the
+     * image URL.  If it's a filename, then generate an API request
+     * to get the URL to show that filename as an image
+     */
+
+    findImageLinks() {
+/*        console.log("-----------------------------");
+        console.log("-----------------------------");
+        console.log("FIND IMAGE LINKS");
+        console.log("-----------------------------");
+*/
+        let items = this.htmlConverter.items;
+
+        // set up infrastructure
+        // - this.imageLinks array of objects for required fileLinks
+        //   - name of file link
+        //   - index of the item for which it's required
+        //   - status of find API call
+        //   - response from find API call
+        // - this.numFoundFileLinks - count of the number file links found
+
+        this.canvasModules.imageLinks = [];
+        this.canvasModules.numFoundImageLinks = 0;
+
+        let parser = new DOMParser();
+
+        // loop thru this.htmlConverter.items
+        for (let i = 0; i<items.length; i++ ) {
+            // extract all span.canvasFileLink from the body of the item
+            let body = items[i].content;
+//            console.log(`item ${i} content`);
+//            console.log(body);
+            let bodyDoc = parser.parseFromString(body, "text/html");
+            // find all the canvasFileLinks
+            let imageLinks = bodyDoc.querySelectorAll('span.canvasImage');
+
+            console.log(`found ${imageLinks.length} file links in item ${i}`);
+
+            // loop thru the imageLinks
+            for (let j = 0; j < imageLinks.length; j++) {
+                let name = this.extractImageFileName( imageLinks[j]);
+
+                // if name undefined set it to DONT_FIND
+                if (!name) {
+                    name = 'DONT_FIND';
+                }
+
+                // TODO perhaps pass in another parameter here to indicate that we want
+                // the image URL for the file
+                let newImageLink = {
+                    itemIndex: i,
+                    name: name,
+                    descriptor: undefined,
+                    status: "initialised",
+                    response: undefined
+                };
+                // append newFileLink to fileLinks
+                this.canvasModules.imageLinks.push(newImageLink);
+            }
+        }
+
+//        console.log("Found the following links")
+//       console.log(this.canvasModules.fileLinks);
+
+        // if there are no fileLinks
+        if (this.canvasModules.imageLinks.length === 0) {
+            // ignore this step and start finding/creating other items
+            this.findFileLinks();
+        }
+
+        // loop through each fileLinks and call find API
+        for (let i = 0; i < this.canvasModules.imageLinks.length; i++) {
+            // TODO should this be findFile or some other function more
+            // specific to the task here
+            //this.canvasModules.findFile(i).then(() => {});
+            alert(`need to find image link ${i} for ${this.canvasModules.imageLinks[i].name}`);
+        }
+    }
+
+    /**
+     * Examine a span.canvasImage element and extract the img.src within it
+     * Return that as the name if its not a URL, undefined if no img.src or it is a URL
+     * @param {*} imageSpan 
+     */
+    extractImageFileName(imageSpan) {
+        // find the img within imageSpan
+        let img = imageSpan.querySelector('img');
+        console.log(`------ extractImageFileName`);
+        console.log("image span");
+        console.log(imageSpan.innerHTML);
+        console.log("img ");
+        console.log(img.innerHTML);
+        console.log(`src of image is ${img.src}`);
+        if (img) {
+            // remove the documentbaseURI from the src
+            let src = img.src.replace(document.baseURI.replace(/modules$/,''), '');
+            console.log(`src of image is ${src}`);
+            console.log(`baseURI is ${document.baseURI}`);
+            // return the src if it's not a url
+            if (! src.startsWith('http')) {
+                return src;
+            }
+        }
+        console.log(`------ extractImageFileName`);
+        return undefined;
+    }
+    
+
 
     /**
      * Generate events and appropriate infrastrcutre to find all the 

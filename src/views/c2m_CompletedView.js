@@ -195,6 +195,11 @@ export default class c2m_CompletedView extends c2m_View {
     /**
      * Start the call to create the module and set up the display
      * once created an event will cause "renderUpdate"
+     * 
+     * All events require
+     * - an event name/label
+     * - an intiator
+     * - an event handler (which also calls the next initiator in sequence)
      */
     render() {
         console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 4. Complete");
@@ -205,6 +210,8 @@ export default class c2m_CompletedView extends c2m_View {
         //c2mDiv.addEventListener('w2c_module_created', this.renderCreationResults.bind(this));
         c2mDiv.addEventListener(
             'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-imageLink-found', this.checkImageLinkFound.bind(this));
         c2mDiv.addEventListener(
             'w2c-file-found', this.checkFileLinksFound.bind(this));
         c2mDiv.addEventListener(
@@ -235,6 +242,7 @@ export default class c2m_CompletedView extends c2m_View {
         this.model.createModule();
     }
 
+
     /**
      * Event handler for w2c-empty-module-created event.
      * Indicates that an empty Canvas module has been created.
@@ -253,8 +261,29 @@ export default class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.numItemErrors = 0;
-        this.model.findFileLinks();
+        this.model.findImageLinks();
+        //this.model.findFileLinks();
         //        this.model.findOrCreateModuleItems();
+    }
+
+        /**
+     * Event handler for the w2c-imageLink-found event.
+     * ???
+     * Call the file link intiator
+     */
+
+    checkImageLinkFound(event) {
+        alert("checkImageLinkFound event generated");
+
+        // figure out what needs to happen here
+        // - similar to checkFileLinksFound
+        // - check the found status from event
+        // - use that to indicate progress and update model
+
+        this.addProgressList("Image link found");
+
+
+        this.model.findFileLinks();
     }
 
     /**
