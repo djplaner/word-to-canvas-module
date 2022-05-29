@@ -224,7 +224,7 @@ export default class c2m_Modules {
         if (event==='w2c-file-found'){
             itemList = this.fileLinks;
         } else if (event==='w2c-imageLink-found') {
-            itemList = this.fileLinks;
+            itemList = this.imageLinks;
         }
         let file = itemList[index];
         let searchTerm = file.name;

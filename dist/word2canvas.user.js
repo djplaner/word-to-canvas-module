@@ -1404,8 +1404,14 @@ class c2m_CompletedView extends c2m_View {
      * Call the file link intiator
      */
 
-    checkImageLinkFound(event) {
-        alert("checkImageLinkFound event generated");
+    checkImageLinkFound(e) {
+        let index = e.detail.file;
+        let image = this.model.canvasModules.imageLinks[index];
+
+        console.log(`found file ${image.name} with id ${index}`);
+        console.log(image);
+
+        alert(`found file ${image.name} with id ${index}`);
 
         // figure out what needs to happen here
         // - similar to checkFileLinksFound
@@ -1415,6 +1421,7 @@ class c2m_CompletedView extends c2m_View {
         this.addProgressList("Image link found");
 
 
+        alert("checkImageLinkFound event generated");
         this.model.findFileLinks();
     }
 
@@ -2919,13 +2926,22 @@ class c2m_Modules {
      *   descriptor:  descriptor for link
      *   status:
      *   response:
+     *   event:
      * }
-     * @param {*} index 
+     * @param {Integer} index - index into array of files to find
+     * @param {String} event - name of event/object to find
      */
 
-    async findFile(index) {
-        let file = this.fileLinks[index];
-
+    async findFile(index,event='w2c-file-found') {
+//        let itemList = undefined;
+        // figure out which list of items to search for
+        let itemList; 
+        if (event==='w2c-file-found'){
+            itemList = this.fileLinks;
+        } else if (event==='w2c-imageLink-found') {
+            itemList = this.imageLinks;
+        }
+        let file = itemList[index];
         let searchTerm = file.name;
 
         let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
@@ -2949,14 +2965,14 @@ class c2m_Modules {
         .then((json) => {
             // json - list of files from Canvas API matching request
             // see if we can find our file (fileLinks[index]) in the list
-            this.findFileInList(json, index);
+            this.findFileInList(json, index, itemList);
             // do the same event, regardless, the item will be set to indicate
             // success or failure
-            this.dispatchEvent( 'w2c-file-found',{'file':index});
+            this.dispatchEvent( event,{'file':index});
         }).catch((error) => {
             console.log(`canvas::c2m_Modules::findFile - caught error - ${error}`);
             file.status = 'error';
-            this.dispatchEvent( 'w2c-file-found',{'file':index});
+            this.dispatchEvent( event,{'file':index});
         });
     }
 
@@ -3064,10 +3080,12 @@ class c2m_Modules {
      * Set the item.status and item.response respectively
      * @param {Array} list - JSON list of Files returned by Canvas API 
      * @param {Integer} index - index info this.fileLinks list of required files
+     * @param {Array} searchlist - array of files/images we're looking for (index keys on this)
      */
 
-    findFileInList( list, index ) {
-        let file = this.fileLinks[index];
+    findFileInList( list, index, searchList) {
+        //let file = this.fileLinks[index];
+        let file = searchList[index];
 
         for (let i = 0; i < list.length; i++) {
             let element = list[i];
@@ -3233,21 +3251,20 @@ class c2m_Model {
                 let name = this.extractImageFileName( imageLinks[j]);
 
                 // if name undefined set it to DONT_FIND
-                if (!name) {
-                    name = 'DONT_FIND';
+                if (name) {
+                    // TODO perhaps pass in another parameter here to indicate that we want
+                    // the image URL for the file
+                    let newImageLink = {
+                        itemIndex: i,
+                        name: name,
+                        descriptor: undefined,
+                        status: "initialised",
+                        response: undefined,
+                        event: 'w2c-imageLink-found'
+                    };
+                    // append newFileLink to fileLinks
+                    this.canvasModules.imageLinks.push(newImageLink);
                 }
-
-                // TODO perhaps pass in another parameter here to indicate that we want
-                // the image URL for the file
-                let newImageLink = {
-                    itemIndex: i,
-                    name: name,
-                    descriptor: undefined,
-                    status: "initialised",
-                    response: undefined
-                };
-                // append newFileLink to fileLinks
-                this.canvasModules.imageLinks.push(newImageLink);
             }
         }
 
@@ -3264,8 +3281,8 @@ class c2m_Model {
         for (let i = 0; i < this.canvasModules.imageLinks.length; i++) {
             // TODO should this be findFile or some other function more
             // specific to the task here
-            //this.canvasModules.findFile(i).then(() => {});
             alert(`need to find image link ${i} for ${this.canvasModules.imageLinks[i].name}`);
+            this.canvasModules.findFile(i,'w2c-imageLink-found').then(() => {});
         }
     }
 
@@ -3277,23 +3294,14 @@ class c2m_Model {
     extractImageFileName(imageSpan) {
         // find the img within imageSpan
         let img = imageSpan.querySelector('img');
-        console.log(`------ extractImageFileName`);
-        console.log("image span");
-        console.log(imageSpan.innerHTML);
-        console.log("img ");
-        console.log(img.innerHTML);
-        console.log(`src of image is ${img.src}`);
         if (img) {
             // remove the documentbaseURI from the src
             let src = img.src.replace(document.baseURI.replace(/modules$/,''), '');
-            console.log(`src of image is ${src}`);
-            console.log(`baseURI is ${document.baseURI}`);
             // return the src if it's not a url
             if (! src.startsWith('http')) {
                 return src;
             }
         }
-        console.log(`------ extractImageFileName`);
         return undefined;
     }
     
@@ -3349,7 +3357,8 @@ class c2m_Model {
                     name: name,
                     descriptor: descriptor,
                     status: "initialised",
-                    response: undefined
+                    response: undefined,
+                    event: 'w2c-file-found'
                 };
                 // append newFileLink to fileLinks
                 this.canvasModules.fileLinks.push(newFileLink);
@@ -3367,7 +3376,7 @@ class c2m_Model {
 
         // loop through each fileLinks and call find API
         for (let i = 0; i < this.canvasModules.fileLinks.length; i++) {
-            this.canvasModules.findFile(i).then(() => {});
+            this.canvasModules.findFile(i,'w2c-file-found').then(() => {});
         }
     }
 

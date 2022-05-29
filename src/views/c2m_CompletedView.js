@@ -279,16 +279,51 @@ export default class c2m_CompletedView extends c2m_View {
         console.log(`found file ${image.name} with id ${index}`);
         console.log(image);
 
+        alert(`found file ${image.name} with id ${index}`);
+
         // figure out what needs to happen here
         // - similar to checkFileLinksFound
         // - check the found status from event
         // - use that to indicate progress and update model
 
-        this.addProgressList("Image link found");
+        // image.response contains the Canvas API JSON response, including
+        // - mime_class: "image"
+        // - url: https://....files/"ID"/download?download_frd=1
+        //   want to convert it to
+        // https://lms.griffith.edu.au/courses/122/files/683216/preview
 
+        // check that the image has been found correctly
+        if (image.status === "found") {
+            if (image.response.mime_class==="image") {
+                this.addProgressList(
+                    `Link for image named "<em>${image.name}</em>": found`);
+            } else {
+                this.addProgressList(
+                `<span class="text-error">Wanted image file named "<em>${image.name}</em>" but found <em>${image.response.mime_class}</span>`
+                );
+            }
+        } else {
+            // failed to find it
+            this.addProgressList(
+                `<span class="text-error">Link for image named "<em>${file.name}</em>": not found</span>`
+            );
+        }
 
-        alert("checkImageLinkFound event generated");
-        this.model.findFileLinks();
+        // increment the number of files we've heard about
+        this.model.canvasModules.numFoundFileLinks += 1;
+
+        this.addProgressList(
+            `<span class="text-info">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
+        );
+
+        // if we've heard from all 
+        if (this.model.canvasModules.numFoundImageLinks === this.model.canvasModules.imageLinks.length) {
+            // then we've found all the files
+            // so now we can find or create the items
+            // TODO but not yet
+            this.model.findFileLinks();
+        }
+
     }
 
     /**
