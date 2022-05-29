@@ -229,6 +229,7 @@ export default class c2m_Modules {
         let file = itemList[index];
         let searchTerm = file.name;
 
+        console.log(`--- FindFile: ${searchTerm}`);
         let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
             {'search_term': searchTerm});
 

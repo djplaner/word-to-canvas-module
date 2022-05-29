@@ -136,7 +136,7 @@ export default class c2m_Model {
         for (let i = 0; i < this.canvasModules.imageLinks.length; i++) {
             // TODO should this be findFile or some other function more
             // specific to the task here
-            alert(`need to find image link ${i} for ${this.canvasModules.imageLinks[i].name}`);
+//            alert(`need to find image link ${i} for ${this.canvasModules.imageLinks[i].name}`);
             this.canvasModules.findFile(i,'w2c-imageLink-found').then(() => {});
         }
     }

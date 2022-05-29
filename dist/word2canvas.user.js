@@ -1338,6 +1338,10 @@ class c2m_CompletedView extends c2m_View {
 
         let c2mDiv = this.createEmptyDialogDiv();
 
+        // initialise some error variables
+        this.imageLinkErrors = 0;
+        this.fileLinkErrors = 0;
+
         // register the event handlers for module creation
         //c2mDiv.addEventListener('w2c_module_created', this.renderCreationResults.bind(this));
         c2mDiv.addEventListener(
@@ -1408,10 +1412,14 @@ class c2m_CompletedView extends c2m_View {
         let index = e.detail.file;
         let image = this.model.canvasModules.imageLinks[index];
 
-        console.log(`found file ${image.name} with id ${index}`);
-        console.log(image);
+        if ( this.model.canvasModules.numFoundImageLinks===0) {
+            // first image found, update the progress list
+            this.addProgressList(
+                `<span class="text-info">Trying to find links for ${this.model.canvasModules.imageLinks.length} images</span>`
+            );
+        }
 
-        alert(`found file ${image.name} with id ${index}`);
+//        alert(`found file ${image.name} with id ${index}`);
 
         // figure out what needs to happen here
         // - similar to checkFileLinksFound
@@ -1422,7 +1430,11 @@ class c2m_CompletedView extends c2m_View {
         // - mime_class: "image"
         // - url: https://....files/"ID"/download?download_frd=1
         //   want to convert it to
+        // Actually the url may just work
         // https://lms.griffith.edu.au/courses/122/files/683216/preview
+        // courseId = 122
+        // fileId = 683215
+        // https://lms.griffith.edu.au/courses/122/files/683215/download
 
         // check that the image has been found correctly
         if (image.status === "found") {
@@ -1433,23 +1445,32 @@ class c2m_CompletedView extends c2m_View {
                 this.addProgressList(
                 `<span class="text-error">Wanted image file named "<em>${image.name}</em>" but found <em>${image.response.mime_class}</span>`
                 );
+                this.imageLinkErrors+=1;
             }
         } else {
             // failed to find it
             this.addProgressList(
                 `<span class="text-error">Link for image named "<em>${file.name}</em>": not found</span>`
             );
+            this.imageLinkErrors+=1;
         }
 
         // increment the number of files we've heard about
         this.model.canvasModules.numFoundImageLinks += 1;
 
-        this.addProgressList(
-            `<span class="text-info">${this.model.canvasModules.numFoundImageLinks} of ${this.model.canvasModules.imageLinks.length} files found</span>`
-        );
 
         // if we've heard from all 
         if (this.model.canvasModules.numFoundImageLinks === this.model.canvasModules.imageLinks.length) {
+
+            if (this.imageLinkErrors === 0) {
+                this.addProgressList(
+                    `<span class="text-success">All image links found</span>`
+                );
+            } else {
+                this.addProgressList(
+                    `<span class="text-error">Errors finding image links: ${this.imageLinkErrors} </span>`
+                );
+            }
             // then we've found all the files
             // so now we can find or create the items
             // TODO but not yet
@@ -1478,6 +1499,13 @@ class c2m_CompletedView extends c2m_View {
         console.log(`found file ${file.name} with id ${index}`);
         console.log(file);
 
+        if ( this.model.canvasModules.numFoundFileLinks===0) {
+            // first image found, update the progress list
+            this.addProgressList(
+                `<span class="text-info">Trying to find links for ${this.model.canvasModules.fileLinks.length} files</span>`
+            );
+        }
+
         // check that the file has been found correctly
         if (file.status === "found") {
             // add to the progress display
@@ -1488,17 +1516,27 @@ class c2m_CompletedView extends c2m_View {
             this.addProgressList(
                 `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
             );
+            this.fileLinkErrors+=1;
         }
 
         // increment the number of files we've heard about
         this.model.canvasModules.numFoundFileLinks += 1;
 
-        this.addProgressList(
-            `<span class="text-info">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
-        );
 
         // if we've heard from all 
         if (this.model.canvasModules.numFoundFileLinks === this.model.canvasModules.fileLinks.length) {
+            if (this.fileLinkErrors===0) {
+                this.addProgressList(
+                    `<span class="text-success">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
+                );
+            } else {
+                this.addProgressList(
+                    `<span class="text-error">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found
+                    - with ${this.fileLinkErrors} errors
+                    </span>
+                    `
+                );
+            }
             // then we've found all the files
             // so now we can find or create the items
             // TODO but not yet
@@ -2977,6 +3015,7 @@ class c2m_Modules {
         let file = itemList[index];
         let searchTerm = file.name;
 
+        console.log(`--- FindFile: ${searchTerm}`);
         let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
             {'search_term': searchTerm});
 
@@ -2996,6 +3035,10 @@ class c2m_Modules {
             return response.json(); 
         }) 
         .then((json) => {
+            console.log(json);
+            if (event=== 'w2c-file-found') {
+                alert(`Found file ${json}`);
+            }
             // json - list of files from Canvas API matching request
             // see if we can find our file (fileLinks[index]) in the list
             this.findFileInList(json, index, itemList);
@@ -3314,7 +3357,7 @@ class c2m_Model {
         for (let i = 0; i < this.canvasModules.imageLinks.length; i++) {
             // TODO should this be findFile or some other function more
             // specific to the task here
-            alert(`need to find image link ${i} for ${this.canvasModules.imageLinks[i].name}`);
+//            alert(`need to find image link ${i} for ${this.canvasModules.imageLinks[i].name}`);
             this.canvasModules.findFile(i,'w2c-imageLink-found').then(() => {});
         }
     }
