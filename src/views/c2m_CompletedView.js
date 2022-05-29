@@ -290,7 +290,11 @@ export default class c2m_CompletedView extends c2m_View {
         // - mime_class: "image"
         // - url: https://....files/"ID"/download?download_frd=1
         //   want to convert it to
+        // Actually the url may just work
         // https://lms.griffith.edu.au/courses/122/files/683216/preview
+        // courseId = 122
+        // fileId = 683215
+        // https://lms.griffith.edu.au/courses/122/files/683215/download
 
         // check that the image has been found correctly
         if (image.status === "found") {
@@ -310,10 +314,10 @@ export default class c2m_CompletedView extends c2m_View {
         }
 
         // increment the number of files we've heard about
-        this.model.canvasModules.numFoundFileLinks += 1;
+        this.model.canvasModules.numFoundImageLinks += 1;
 
         this.addProgressList(
-            `<span class="text-info">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
+            `<span class="text-info">${this.model.canvasModules.numFoundImageLinks} of ${this.model.canvasModules.imageLinks.length} image links found</span>`
         );
 
         // if we've heard from all 

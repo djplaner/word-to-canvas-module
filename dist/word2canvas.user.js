@@ -1418,11 +1418,44 @@ class c2m_CompletedView extends c2m_View {
         // - check the found status from event
         // - use that to indicate progress and update model
 
-        this.addProgressList("Image link found");
+        // image.response contains the Canvas API JSON response, including
+        // - mime_class: "image"
+        // - url: https://....files/"ID"/download?download_frd=1
+        //   want to convert it to
+        // https://lms.griffith.edu.au/courses/122/files/683216/preview
 
+        // check that the image has been found correctly
+        if (image.status === "found") {
+            if (image.response.mime_class==="image") {
+                this.addProgressList(
+                    `Link for image named "<em>${image.name}</em>": found`);
+            } else {
+                this.addProgressList(
+                `<span class="text-error">Wanted image file named "<em>${image.name}</em>" but found <em>${image.response.mime_class}</span>`
+                );
+            }
+        } else {
+            // failed to find it
+            this.addProgressList(
+                `<span class="text-error">Link for image named "<em>${file.name}</em>": not found</span>`
+            );
+        }
 
-        alert("checkImageLinkFound event generated");
-        this.model.findFileLinks();
+        // increment the number of files we've heard about
+        this.model.canvasModules.numFoundImageLinks += 1;
+
+        this.addProgressList(
+            `<span class="text-info">${this.model.canvasModules.numFoundImageLinks} of ${this.model.canvasModules.imageLinks.length} files found</span>`
+        );
+
+        // if we've heard from all 
+        if (this.model.canvasModules.numFoundImageLinks === this.model.canvasModules.imageLinks.length) {
+            // then we've found all the files
+            // so now we can find or create the items
+            // TODO but not yet
+            this.model.findFileLinks();
+        }
+
     }
 
     /**
@@ -3507,6 +3540,86 @@ class c2m_Model {
         }
     }
 
+   /**
+     * For a given this.htmlConverter.items[index] replace any
+     *   <span class="canvasImage"> as appropriate
+     * - should contain a img tag with src being filename
+     * - replace that with the matching url from the response
+     * 
+     * Only called when creating a new page
+     * 
+     * @param {*} index 
+     */
+
+     replaceCanvasImageLinks( index ){
+        console.log("------------- replaceCanvasImageLinks");
+        // are there any this.canvasModules.fileLinks with itemIndex = index?
+        let imageLinks = this.canvasModules.imageLinks.filter(
+            imageLink => imageLink.itemIndex === index
+        );
+        // if there are no fileLinks, then there's nothing to do
+        if (imageLinks.length === 0) {
+            return;
+        }
+        console.log("------------- replaceCanvasImageLinks - starting");
+
+        // Parse the item content for span.fileLinks and replace
+        let item = this.htmlConverter.items[index];
+        let parser = new DOMParser();
+        let itemDoc = parser.parseFromString(item.content, "text/html");
+
+        // the number fileLinks found should match the number of links we find
+        // below
+        let htmlImageLinks = itemDoc.querySelectorAll('span.canvasImage');
+        // check length of htmlFileLinks and fileLinks
+        if (htmlImageLinks.length !== imageLinks.length) {
+            console.log(
+                `replaceCanvasFileLinks: number of imageLinks ${imageLinks.length} \
+                does not match number of htmlImageLinks ${htmlImageLinks.length}`);
+        }
+
+        // find and replace all the span.canvasFileLink
+        for (let i = 0; i < htmlImageLinks.length; i++) {
+            if ( imageLinks[i].status === "found" ) {
+                const response = imageLinks[i].response; 
+                const imageUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}/download`;
+                // remove "/download?download_frd=1" from the end of the url
+
+                // What we're going to replace <span class="canvasFileLink"> with
+/*                let template = `
+                <a id="${response.id}" class="instructure_file_link instructure_scribd_file inline_disabled" 
+                   href="${fileUrl}?wrap=1" target="_blank" rel="noopener" 
+                   data-canvas-previewable="true" 
+                   data-api-endpoint="${fileUrl}" data-api-returntype="File">
+                   ${fileLinks[i].descriptor}
+                </a>`; */
+
+                // find the html for the span
+                const originalHtml = htmlImageLinks[i].outerHTML;
+
+                // get the image tag within htmlImageLinks[i]
+                let imageTag = htmlImageLinks[i].querySelector('img');
+                const originalSrc = imageTag.src;
+                imageTag.src = imageUrl;
+
+                const newHtml = htmlImageLinks[i].outerHTML;
+    
+                // replace originalLink with template in item.content
+                console.log(`replaceCanvasImageLinks: replacing **${originalSrc}** with **${imageUrl}**`);
+                item.content = item.content.replace(originalHtml, newHtml);
+    //                let newLink = parser.parseFromString(template, "text/html");
+                    // TODO if fileLinks name and descriptor don't match, then we have
+                    // a htmlFileLinks with a anchor wrapper, replace the parent
+     //               htmlFileLinks[i].parentNode.replaceChild(newLink.body.firstElementChild, htmlFileLinks[i]);
+    //                console.log(htmlFileLinks[i]);
+ //               console.log(item.content);
+                //
+            } else {
+                // replace the span.canvasFileLink with an error
+            }
+        }
+    }
+
     /**
      * Depending on item type and contents, either find the matching
      * existing item or create a new item
@@ -3535,6 +3648,7 @@ class c2m_Model {
 
         switch (item.type) {
             case 'Page':
+                this.replaceCanvasImageLinks(index);
                 this.replaceCanvasFileLinks(index);
                 // TODO could do check of item to see if trying to find
                 // an existing page
