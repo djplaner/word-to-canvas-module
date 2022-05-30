@@ -1397,6 +1397,7 @@ class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.numItemErrors = 0;
+        this.findImageMessage=false;
         this.model.findImageLinks();
         //this.model.findFileLinks();
         //        this.model.findOrCreateModuleItems();
@@ -1412,29 +1413,13 @@ class c2m_CompletedView extends c2m_View {
         let index = e.detail.file;
         let image = this.model.canvasModules.imageLinks[index];
 
-        if ( this.model.canvasModules.numFoundImageLinks===0) {
+        if ( ! this.findImageMessage) {
+            this.findImageMessage=true;
             // first image found, update the progress list
             this.addProgressList(
                 `<span class="text-info">Trying to find links for ${this.model.canvasModules.imageLinks.length} images</span>`
             );
         }
-
-//        alert(`found file ${image.name} with id ${index}`);
-
-        // figure out what needs to happen here
-        // - similar to checkFileLinksFound
-        // - check the found status from event
-        // - use that to indicate progress and update model
-
-        // image.response contains the Canvas API JSON response, including
-        // - mime_class: "image"
-        // - url: https://....files/"ID"/download?download_frd=1
-        //   want to convert it to
-        // Actually the url may just work
-        // https://lms.griffith.edu.au/courses/122/files/683216/preview
-        // courseId = 122
-        // fileId = 683215
-        // https://lms.griffith.edu.au/courses/122/files/683215/download
 
         // check that the image has been found correctly
         if (image.status === "found") {
@@ -1450,7 +1435,7 @@ class c2m_CompletedView extends c2m_View {
         } else {
             // failed to find it
             this.addProgressList(
-                `<span class="text-error">Link for image named "<em>${file.name}</em>": not found</span>`
+                `<span class="text-error">Link for image named "<em>${image.name}</em>": not found</span>`
             );
             this.imageLinkErrors+=1;
         }
@@ -3035,10 +3020,6 @@ class c2m_Modules {
             return response.json(); 
         }) 
         .then((json) => {
-            console.log(json);
-            if (event=== 'w2c-file-found') {
-                alert(`Found file ${json}`);
-            }
             // json - list of files from Canvas API matching request
             // see if we can find our file (fileLinks[index]) in the list
             this.findFileInList(json, index, itemList);
