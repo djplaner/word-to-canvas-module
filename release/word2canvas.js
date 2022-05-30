@@ -22,7 +22,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "1.7.3";
+		this.version = "1.7.4";
 	}
 
 
@@ -1307,16 +1307,27 @@ class c2m_CompletedView extends c2m_View {
     /**
      * Start the call to create the module and set up the display
      * once created an event will cause "renderUpdate"
+     * 
+     * All events require
+     * - an event name/label
+     * - an intiator
+     * - an event handler (which also calls the next initiator in sequence)
      */
     render() {
         console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 4. Complete");
 
         let c2mDiv = this.createEmptyDialogDiv();
 
+        // initialise some error variables
+        this.imageLinkErrors = 0;
+        this.fileLinkErrors = 0;
+
         // register the event handlers for module creation
         //c2mDiv.addEventListener('w2c_module_created', this.renderCreationResults.bind(this));
         c2mDiv.addEventListener(
             'w2c-empty-module-created', this.checkEmptyModuleCreated.bind(this));
+        c2mDiv.addEventListener(
+            'w2c-imageLink-found', this.checkImageLinkFound.bind(this));
         c2mDiv.addEventListener(
             'w2c-file-found', this.checkFileLinksFound.bind(this));
         c2mDiv.addEventListener(
@@ -1347,6 +1358,7 @@ class c2m_CompletedView extends c2m_View {
         this.model.createModule();
     }
 
+
     /**
      * Event handler for w2c-empty-module-created event.
      * Indicates that an empty Canvas module has been created.
@@ -1365,8 +1377,71 @@ class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.numItemErrors = 0;
-        this.model.findFileLinks();
+        this.findImageMessage=false;
+        this.model.findImageLinks();
+        //this.model.findFileLinks();
         //        this.model.findOrCreateModuleItems();
+    }
+
+        /**
+     * Event handler for the w2c-imageLink-found event.
+     * ???
+     * Call the file link intiator
+     */
+
+    checkImageLinkFound(e) {
+        let index = e.detail.file;
+        let image = this.model.canvasModules.imageLinks[index];
+
+        if ( ! this.findImageMessage) {
+            this.findImageMessage=true;
+            // first image found, update the progress list
+            this.addProgressList(
+                `<span class="text-info">Trying to find links for ${this.model.canvasModules.imageLinks.length} images</span>`
+            );
+        }
+
+        // check that the image has been found correctly
+        if (image.status === "found") {
+            if (image.response.mime_class==="image") {
+                this.addProgressList(
+                    `Link for image named "<em>${image.name}</em>": found`);
+            } else {
+                this.addProgressList(
+                `<span class="text-error">Wanted image file named "<em>${image.name}</em>" but found <em>${image.response.mime_class}</span>`
+                );
+                this.imageLinkErrors+=1;
+            }
+        } else {
+            // failed to find it
+            this.addProgressList(
+                `<span class="text-error">Link for image named "<em>${image.name}</em>": not found</span>`
+            );
+            this.imageLinkErrors+=1;
+        }
+
+        // increment the number of files we've heard about
+        this.model.canvasModules.numFoundImageLinks += 1;
+
+
+        // if we've heard from all 
+        if (this.model.canvasModules.numFoundImageLinks === this.model.canvasModules.imageLinks.length) {
+
+            if (this.imageLinkErrors === 0) {
+                this.addProgressList(
+                    `<span class="text-success">All image links found</span>`
+                );
+            } else {
+                this.addProgressList(
+                    `<span class="text-error">Errors finding image links: ${this.imageLinkErrors} </span>`
+                );
+            }
+            // then we've found all the files
+            // so now we can find or create the items
+            // TODO but not yet
+            this.model.findFileLinks();
+        }
+
     }
 
     /**
@@ -1389,6 +1464,13 @@ class c2m_CompletedView extends c2m_View {
         console.log(`found file ${file.name} with id ${index}`);
         console.log(file);
 
+        if ( this.model.canvasModules.numFoundFileLinks===0) {
+            // first image found, update the progress list
+            this.addProgressList(
+                `<span class="text-info">Trying to find links for ${this.model.canvasModules.fileLinks.length} files</span>`
+            );
+        }
+
         // check that the file has been found correctly
         if (file.status === "found") {
             // add to the progress display
@@ -1399,17 +1481,27 @@ class c2m_CompletedView extends c2m_View {
             this.addProgressList(
                 `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
             );
+            this.fileLinkErrors+=1;
         }
 
         // increment the number of files we've heard about
         this.model.canvasModules.numFoundFileLinks += 1;
 
-        this.addProgressList(
-            `<span class="text-info">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
-        );
 
         // if we've heard from all 
         if (this.model.canvasModules.numFoundFileLinks === this.model.canvasModules.fileLinks.length) {
+            if (this.fileLinkErrors===0) {
+                this.addProgressList(
+                    `<span class="text-success">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
+                );
+            } else {
+                this.addProgressList(
+                    `<span class="text-error">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found
+                    - with ${this.fileLinkErrors} errors
+                    </span>
+                    `
+                );
+            }
             // then we've found all the files
             // so now we can find or create the items
             // TODO but not yet
@@ -1639,6 +1731,8 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
+        "r[style-name='Blackboard Image'] => span.blackboardImage",
+        "p[style-name='Blackboard Image p'] => span.blackboardImage",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
@@ -1832,8 +1926,74 @@ class c2m_WordConverter {
 
         this.checkBlackboardUrls(doc);
 
+        this.checkCIBlackboardStyles(doc);
+
+        // canvasImages may have filenames as URLs, i.e. broken images
+        // offer an explanation
+        this.checkCanvasImages(doc);
+
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
+
+    /**
+     * Identify all the Content Interface Blackboard specific styles and generate warnings
+     * @param {Object} doc dom element
+     */
+
+    checkCIBlackboardStyles(doc) {
+        const ciBlackboardStyles = [
+            'h1.blackboard', 'h2.blackboard', 'span.blackboardLink',
+            'span.blackboardContentLink', 'span.blackboardMenuLink'
+        ];
+
+        // hash of arrays of hashes recording all problematic finds
+        // TODO add in heading
+        // foundStyles[h1.blackboard] = [ { text: "", heading: ""}]
+        let foundStyles = {};
+
+        // for each of the ciBlackboardStyles check if any of the elements exist
+        ciBlackboardStyles.forEach(style => {
+            let elements = doc.querySelectorAll(style);
+            // for each of the elements, save the text and the h1 they belong to
+            for (let i = 0; i < elements.length; i++) {
+                let element = elements[i];
+                let text = element.innerText;
+                // a h1 style is it's own heading
+                let heading = "not found";
+                if (style.startsWith('h1.')) {
+                    heading = text;
+                } else {
+                    // get the h1 element before element
+                    let previous = element.previousElementSibling || element.parentNode;
+                    while (previous && previous.tagName !== 'H1') {
+                        previous = previous.previousElementSibling || previous.parentNode;
+                    }
+                    if (previous) {
+                        heading = previous.innerText;
+                    }
+                }
+                if (text.length > 0) {
+                    if (foundStyles[style]) {
+                        foundStyles[style].push({ text: text, heading: heading });
+                    } else {
+                        foundStyles[style] = [{ text: text, heading: heading }];
+                    }
+                }
+            }
+        });
+
+        // loop thru each key of foundStyles
+        for (const style in foundStyles) {
+            let message = `<p>Found Blackboard specific style - <em>${style}</em> - ${foundStyles[style].length} times:</p><ul>`;
+            for (let i = 0; i < foundStyles[style].length; i++) {
+                message += `<li> under heading <em>${foundStyles[style][i].heading}</em> with text <em>${foundStyles[style][i].text}</em></li>`;
+            }
+            message += '</ul>';
+            this.mammothResult.messages.push({ "type": "error", "message": message });
+        }
+
+    }
+
 
     /**
      * Check all the Heading 1 equivalents and see if any are empty
@@ -2011,6 +2171,69 @@ class c2m_WordConverter {
     }
 
     /**
+     * Check for any span.canvasImage
+     * @param {DOM} doc 
+     */
+
+    checkCanvasImages(doc) {
+        // search doc for any span.canvasImage
+        let canvasImages = doc.querySelectorAll('span.canvasImage');
+
+        const error = '<span class="w2c-error">canvasImage</span>';
+        // insert a warning next to each canvasImage
+        for (let i = 0; i < canvasImages.length; i++) {
+            let img = canvasImages[i];
+            img.insertAdjacentHTML('beforebegin', error);
+        }
+        this.mammothResult.messages.push({
+            "type": "error",
+            "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
+                       Broken images may be fixed in the final stage.<br /> 
+                       <small><strong>
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
+        });
+    }
+
+
+    /**
+     * Find all the span.blackboardImage
+     * - group all the sequential span.blackboardImage into a single tag
+     * - decode the entities into the content of the single span.canvasImage
+     * - remove the span.blackboardImage
+     * @param {DOMParser} doc 
+     */
+    handleBlackboardImage(doc) {
+
+        // get the next span.blackboardImage
+        let span = doc.querySelector('span.blackboardImage');
+        while (span) {
+            // set up the new span.canvasImage
+            let tmpSpan = doc.createElement('span');
+            // set tmpSpan class to "canvasImage"
+            tmpSpan.classList.add('canvasImage');
+            // insert tmpSpan before span
+            span.parentNode.insertBefore(tmpSpan, span);
+
+            // get all the sibling span.blackboardImage and add content to tmpSpan
+            while (span && span.tagName === "SPAN" && span.className === "blackboardImage") {
+                let content = span.innerHTML;
+                tmpSpan.innerHTML += content;
+
+                // get the next sibling element
+                let oldSpan = span;
+                span = span.nextElementSibling;
+                // remove oldSpan
+                oldSpan.parentNode.removeChild(oldSpan);
+            }
+            // translate the old content from encoded
+            tmpSpan.innerHTML = this.decodeEntities(tmpSpan.innerHTML);
+
+            // get the next span.blackboardImage (i.e. not a sibling)
+            span = doc.querySelector('span.blackboardImage');
+        }
+    }
+
+    /**
      * Do all post mammoth conversions
      * - span.embed decoded HTML
      * - span.talisCanvasLink to a link
@@ -2024,8 +2247,12 @@ class c2m_WordConverter {
         // iterate over the embeds and use this.decodeEntities to decode the innerHTML
         for (let i = 0; i < embeds.length; i++) {
             let embed = embeds[i];
+            console.error(embed.innerHTML);
             embed.innerHTML = this.decodeEntities(embed.innerHTML);
+            console.error(embed.innerHTML);
         }
+
+        this.handleBlackboardImage(doc);
 
         // convert span.talisCanvasLink innerHTML to a link
         let links = doc.querySelectorAll('span.talisCanvasLink');
@@ -2723,15 +2950,24 @@ class c2m_Modules {
      *   descriptor:  descriptor for link
      *   status:
      *   response:
+     *   event:
      * }
-     * @param {*} index 
+     * @param {Integer} index - index into array of files to find
+     * @param {String} event - name of event/object to find
      */
 
-    async findFile(index) {
-        let file = this.fileLinks[index];
-
+    async findFile(index,event='w2c-file-found') {
+        // figure out which list of items to search for
+        let itemList; 
+        if (event==='w2c-file-found'){
+            itemList = this.fileLinks;
+        } else if (event==='w2c-imageLink-found') {
+            itemList = this.imageLinks;
+        }
+        let file = itemList[index];
         let searchTerm = file.name;
 
+        console.log(`--- FindFile: ${searchTerm}`);
         let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
             {'search_term': searchTerm});
 
@@ -2753,14 +2989,14 @@ class c2m_Modules {
         .then((json) => {
             // json - list of files from Canvas API matching request
             // see if we can find our file (fileLinks[index]) in the list
-            this.findFileInList(json, index);
+            this.findFileInList(json, index, itemList);
             // do the same event, regardless, the item will be set to indicate
             // success or failure
-            this.dispatchEvent( 'w2c-file-found',{'file':index});
+            this.dispatchEvent( event,{'file':index});
         }).catch((error) => {
             console.log(`canvas::c2m_Modules::findFile - caught error - ${error}`);
             file.status = 'error';
-            this.dispatchEvent( 'w2c-file-found',{'file':index});
+            this.dispatchEvent( event,{'file':index});
         });
     }
 
@@ -2868,10 +3104,12 @@ class c2m_Modules {
      * Set the item.status and item.response respectively
      * @param {Array} list - JSON list of Files returned by Canvas API 
      * @param {Integer} index - index info this.fileLinks list of required files
+     * @param {Array} searchlist - array of files/images we're looking for (index keys on this)
      */
 
-    findFileInList( list, index ) {
-        let file = this.fileLinks[index];
+    findFileInList( list, index, searchList) {
+        //let file = this.fileLinks[index];
+        let file = searchList[index];
 
         for (let i = 0; i < list.length; i++) {
             let element = list[i];
@@ -2987,6 +3225,102 @@ class c2m_Model {
             );
     }
 
+
+    /**
+     * For any span.canvasImage in the current DOM, check the
+     * image URL.  If it's a filename, then generate an API request
+     * to get the URL to show that filename as an image
+     */
+
+    findImageLinks() {
+/*        console.log("-----------------------------");
+        console.log("-----------------------------");
+        console.log("FIND IMAGE LINKS");
+        console.log("-----------------------------");
+*/
+        let items = this.htmlConverter.items;
+
+        // set up infrastructure
+        // - this.imageLinks array of objects for required fileLinks
+        //   - name of file link
+        //   - index of the item for which it's required
+        //   - status of find API call
+        //   - response from find API call
+        // - this.numFoundFileLinks - count of the number file links found
+
+        this.canvasModules.imageLinks = [];
+        this.canvasModules.numFoundImageLinks = 0;
+
+        let parser = new DOMParser();
+
+        // loop thru this.htmlConverter.items
+        for (let i = 0; i<items.length; i++ ) {
+            // extract all span.canvasFileLink from the body of the item
+            let body = items[i].content;
+            let bodyDoc = parser.parseFromString(body, "text/html");
+            // find all the canvasFileLinks
+            let imageLinks = bodyDoc.querySelectorAll('span.canvasImage');
+
+            console.log(`found ${imageLinks.length} file links in item ${i}`);
+
+            // loop thru the imageLinks
+            for (let j = 0; j < imageLinks.length; j++) {
+                let name = this.extractImageFileName( imageLinks[j]);
+
+                // if name undefined set it to DONT_FIND
+                if (name) {
+                    // TODO perhaps pass in another parameter here to indicate that we want
+                    // the image URL for the file
+                    let newImageLink = {
+                        itemIndex: i,
+                        name: name,
+                        descriptor: undefined,
+                        status: "initialised",
+                        response: undefined,
+                        event: 'w2c-imageLink-found'
+                    };
+                    // append newFileLink to fileLinks
+                    this.canvasModules.imageLinks.push(newImageLink);
+                }
+            }
+        }
+
+
+        // if there are no fileLinks
+        if (this.canvasModules.imageLinks.length === 0) {
+            // ignore this step and start finding/creating other items
+            this.findFileLinks();
+        }
+
+        // loop through each fileLinks and call find API
+        for (let i = 0; i < this.canvasModules.imageLinks.length; i++) {
+            // TODO should this be findFile or some other function more
+            // specific to the task here
+            this.canvasModules.findFile(i,'w2c-imageLink-found').then(() => {});
+        }
+    }
+
+    /**
+     * Examine a span.canvasImage element and extract the img.src within it
+     * Return that as the name if its not a URL, undefined if no img.src or it is a URL
+     * @param {*} imageSpan 
+     */
+    extractImageFileName(imageSpan) {
+        // find the img within imageSpan
+        let img = imageSpan.querySelector('img');
+        if (img) {
+            // remove the documentbaseURI from the src
+            let src = img.src.replace(document.baseURI.replace(/modules$/,''), '');
+            // return the src if it's not a url
+            if (! src.startsWith('http')) {
+                return src;
+            }
+        }
+        return undefined;
+    }
+    
+
+
     /**
      * Generate events and appropriate infrastrcutre to find all the 
      * necessary canvasFileLink spans
@@ -3035,7 +3369,8 @@ class c2m_Model {
                     name: name,
                     descriptor: descriptor,
                     status: "initialised",
-                    response: undefined
+                    response: undefined,
+                    event: 'w2c-file-found'
                 };
                 // append newFileLink to fileLinks
                 this.canvasModules.fileLinks.push(newFileLink);
@@ -3051,7 +3386,7 @@ class c2m_Model {
 
         // loop through each fileLinks and call find API
         for (let i = 0; i < this.canvasModules.fileLinks.length; i++) {
-            this.canvasModules.findFile(i).then(() => {});
+            this.canvasModules.findFile(i,'w2c-file-found').then(() => {});
         }
     }
 
@@ -3180,6 +3515,86 @@ class c2m_Model {
         }
     }
 
+   /**
+     * For a given this.htmlConverter.items[index] replace any
+     *   <span class="canvasImage"> as appropriate
+     * - should contain a img tag with src being filename
+     * - replace that with the matching url from the response
+     * 
+     * Only called when creating a new page
+     * 
+     * @param {*} index 
+     */
+
+     replaceCanvasImageLinks( index ){
+        console.log("------------- replaceCanvasImageLinks");
+        // are there any this.canvasModules.fileLinks with itemIndex = index?
+        let imageLinks = this.canvasModules.imageLinks.filter(
+            imageLink => imageLink.itemIndex === index
+        );
+        // if there are no fileLinks, then there's nothing to do
+        if (imageLinks.length === 0) {
+            return;
+        }
+        console.log("------------- replaceCanvasImageLinks - starting");
+
+        // Parse the item content for span.fileLinks and replace
+        let item = this.htmlConverter.items[index];
+        let parser = new DOMParser();
+        let itemDoc = parser.parseFromString(item.content, "text/html");
+
+        // the number fileLinks found should match the number of links we find
+        // below
+        let htmlImageLinks = itemDoc.querySelectorAll('span.canvasImage');
+        // check length of htmlFileLinks and fileLinks
+        if (htmlImageLinks.length !== imageLinks.length) {
+            console.log(
+                `replaceCanvasFileLinks: number of imageLinks ${imageLinks.length} \
+                does not match number of htmlImageLinks ${htmlImageLinks.length}`);
+        }
+
+        // find and replace all the span.canvasFileLink
+        for (let i = 0; i < htmlImageLinks.length; i++) {
+            if ( imageLinks[i].status === "found" ) {
+                const response = imageLinks[i].response; 
+                const imageUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}/download`;
+                // remove "/download?download_frd=1" from the end of the url
+
+                // What we're going to replace <span class="canvasFileLink"> with
+/*                let template = `
+                <a id="${response.id}" class="instructure_file_link instructure_scribd_file inline_disabled" 
+                   href="${fileUrl}?wrap=1" target="_blank" rel="noopener" 
+                   data-canvas-previewable="true" 
+                   data-api-endpoint="${fileUrl}" data-api-returntype="File">
+                   ${fileLinks[i].descriptor}
+                </a>`; */
+
+                // find the html for the span
+                const originalHtml = htmlImageLinks[i].outerHTML;
+
+                // get the image tag within htmlImageLinks[i]
+                let imageTag = htmlImageLinks[i].querySelector('img');
+                const originalSrc = imageTag.src;
+                imageTag.src = imageUrl;
+
+                const newHtml = htmlImageLinks[i].outerHTML;
+    
+                // replace originalLink with template in item.content
+                console.log(`replaceCanvasImageLinks: replacing **${originalSrc}** with **${imageUrl}**`);
+                item.content = item.content.replace(originalHtml, newHtml);
+    //                let newLink = parser.parseFromString(template, "text/html");
+                    // TODO if fileLinks name and descriptor don't match, then we have
+                    // a htmlFileLinks with a anchor wrapper, replace the parent
+     //               htmlFileLinks[i].parentNode.replaceChild(newLink.body.firstElementChild, htmlFileLinks[i]);
+    //                console.log(htmlFileLinks[i]);
+ //               console.log(item.content);
+                //
+            } else {
+                // replace the span.canvasFileLink with an error
+            }
+        }
+    }
+
     /**
      * Depending on item type and contents, either find the matching
      * existing item or create a new item
@@ -3208,6 +3623,7 @@ class c2m_Model {
 
         switch (item.type) {
             case 'Page':
+                this.replaceCanvasImageLinks(index);
                 this.replaceCanvasFileLinks(index);
                 // TODO could do check of item to see if trying to find
                 // an existing page
