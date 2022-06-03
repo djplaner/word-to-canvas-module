@@ -16,6 +16,10 @@ The following illustrate how word-2-canvas converts the [sample w2c.docx file](h
 
 ## Summary: word-2-canvas styles and their purpose
 
+### Canvas specific styles
+
+The following Word styles direct `word-2-canvas` to perform Canvas specific actions. e.g. create a new Canvas module with a title matching text in the `Title` style.
+
 | word-2-canvas style | Purpose |
 | ------------------ | ------- |
 | `Title` <sup>*</sup> | The title of the new [Canvas module](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Modules/ta-p/6) |
@@ -29,8 +33,26 @@ The following illustrate how word-2-canvas converts the [sample w2c.docx file](h
 | `Canvas Quiz` | The name (or part of the name) of a quiz already in the Canvas course's [Quizzes](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Quizzes/ta-p/68)  |
 | `Canvas External Url` | Add an [external link as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967) |
 | `Canvas Extternal Tool` | Add an [external tool as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-tool-as-a-module-item/ta-p/1146) |
+| `Canvas Image` | Define some HTML that contains an `<img` tag where the `img.src` is the name of a file already in the Canvas course's [Files area](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7). Will attempt to identify a URL for the file and insert it into the `img.src` |
 
 
 <sup>*</sup> - Standard Word styles.
 
 > :warning: **Canvas Quiz** only works for _Classic Quizzes_, **not** _New Quizzes_ (classic vs. new quizzes](https://it.umn.edu/services-technologies/how-tos/canvas-understand-classic-quizzes-vs-new)) because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+
+### General web specific styles
+
+The following style(s) direct `word-2-canvas` to perform general web specific actions. e.g. embed into a Canvas item some specific HTML.
+
+| word-2-canvas style | Purpose |
+| ------------------ | ------- |
+| embed | Identifies text that will be inserted into a Canvas page as HTML. e.g. use it to embed a YouTube video | 
+
+### Blackboard migration specific styles
+
+The following style(s) directly `word-2-canvas` to perform actions designed to help migrate content from the Blackboard Learning Management System to Canvas.
+
+| word-2-canvas style | Purpose |
+| ------------------ | ------- |
+| `Blackboard image p` | Define HTML that includes an `<img` tag for an image residing in the content collection of a Blackboard course site. Assuming the image has been migrated to the Canvas course's files area, will create an `<img` tag in a Canvas page with a URL to the image in Canvas   |
+| `Hide` | Define text that should not be imported into the Canvas module. Typically used to provide Blackboard specific references to aid migration |

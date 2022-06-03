@@ -12,6 +12,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas Assignment'] => h1.canvasAssignment",
         "p[style-name='Canvas Quiz'] => h1.canvasQuiz",
         "p[style-name='Canvas File'] => h1.canvasFile",
+        "p[style-name='Canvas Image'] => span.canvasImage",
         "p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
         "p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
         "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
@@ -19,7 +20,7 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
         "r[style-name='Blackboard Image'] => span.blackboardImage",
-        "p[style-name='Blackboard Image p'] => span.blackboardImage",
+        "p[style-name='Blackboard Image p'] => p.blackboardImage",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
