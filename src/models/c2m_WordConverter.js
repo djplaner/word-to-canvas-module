@@ -24,6 +24,9 @@ const DEFAULT_OPTIONS = {
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
+        "p[style-name='FAQ Heading'] => div.faqHeading > p:fresh",
+        "p[style-name='FAQ Body'] => div.faqBody > p:fresh",
+
         // kludges to tidy up common messy word cruft
         "p[style-name='List Bullet'] => ul > li:fresh",
         "p[style-name='heading 6'] => h6:fresh",
@@ -526,6 +529,65 @@ export default class c2m_WordConverter {
     }
 
     /**
+     * Find all the div.faqHeading
+     * - get the content of div.faqHeading
+     * - get the next div.faqBody and get content
+     * - replace div.faqHeading and div.faqBody with a details/summary tag
+     * @param {DOMParser} doc 
+     */
+    handleFAQs(doc) {
+
+        // get the next div.faqHeading
+        let heading = doc.querySelector('div.faqHeading');
+        while (heading) {
+            // get the next sibling of heading
+            let nextSibling = heading.nextElementSibling;
+            // check that it is a div.faqBody
+            if (nextSibling.tagName === "DIV" && nextSibling.className === "faqBody") {
+                // get content of nextSibling
+                let bodyContent = nextSibling.innerHTML;
+                // remove nextSibling
+                nextSibling.parentNode.removeChild(nextSibling);
+                // get content of heading
+                let headingContent = heading.innerHTML;
+                // create a details/summary tag
+                let details = doc.createElement('details'); 
+                details.style.backgroundColor = '#f8f4ec';
+                details.style.color = '#7c2529';
+                details.style.borderBottom = '1px solid #e4d589';
+                // set details font-size to 1.2em
+                details.style.fontSize = '90%';
+
+                let summary = doc.createElement('summary');
+                summary.style.padding = '.5em';
+                //summary.style.backgroundColor = '#c8102e';
+                //summary.style.backgroundColor = 'var(--ic-brand-button--primary-bgd)';
+                summary.style.backgroundColor = '#f0f0f0';
+                summary.style.color = '#000000';
+                // set summary content
+                headingContent = headingContent.replace(/<p[^>]*>/g, '');
+                headingContent = headingContent.replace(/<\/p>/g, '');
+
+                summary.innerHTML = headingContent;
+                // wrap summary inner html in a h4 tag
+                summary.innerHTML = `<h4 style="display:inline">${summary.innerHTML}</h4>`;
+                // remove any <p> tag from summary.innerHTML
+//                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
+ //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
+
+                // add summary to details
+                details.appendChild(summary);
+                // add bodyContent at end of details
+                details.innerHTML += bodyContent;
+                // replace heading with details
+                heading.parentNode.replaceChild(details, heading);
+            }
+            heading = doc.querySelector('div.faqHeading');
+        }
+    }
+
+
+    /**
      * Do all post mammoth conversions
      * - span.embed decoded HTML
      * - span.talisCanvasLink to a link
@@ -578,6 +640,8 @@ export default class c2m_WordConverter {
             });
         });
 
+        // convert the div.faqHeading and div.faqBody
+        this.handleFAQs(doc);
 
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
