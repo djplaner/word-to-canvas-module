@@ -555,6 +555,8 @@ export default class c2m_WordConverter {
                 details.style.backgroundColor = '#f8f4ec';
                 details.style.color = '#7c2529';
                 details.style.borderBottom = '1px solid #e4d589';
+                details.style.marginLeft = '2em';
+                details.style.marginRight = '4em';
                 // set details font-size to 1.2em
                 details.style.fontSize = '90%';
 
@@ -570,7 +572,7 @@ export default class c2m_WordConverter {
 
                 summary.innerHTML = headingContent;
                 // wrap summary inner html in a h4 tag
-                summary.innerHTML = `<h4 style="display:inline">${summary.innerHTML}</h4>`;
+                summary.innerHTML = `<h4 style="display:inline;font-size:80%">${summary.innerHTML}</h4>`;
                 // remove any <p> tag from summary.innerHTML
 //                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
  //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
