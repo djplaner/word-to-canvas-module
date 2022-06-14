@@ -480,13 +480,15 @@ export default class c2m_WordConverter {
             let img = canvasImages[i];
             img.insertAdjacentHTML('beforebegin', error);
         }
-        this.mammothResult.messages.push({
-            "type": "error",
-            "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
+        if (canvasImages.length > 0) {
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
                        Broken images may be fixed in the final stage.<br /> 
                        <small><strong>
                          <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
-        });
+            });
+        }
     }
 
 
@@ -551,7 +553,7 @@ export default class c2m_WordConverter {
                 // get content of heading
                 let headingContent = heading.innerHTML;
                 // create a details/summary tag
-                let details = doc.createElement('details'); 
+                let details = doc.createElement('details');
                 details.style.backgroundColor = '#f8f4ec';
                 details.style.color = '#7c2529';
                 details.style.borderBottom = '1px solid #e4d589';
@@ -574,8 +576,8 @@ export default class c2m_WordConverter {
                 // wrap summary inner html in a h4 tag
                 summary.innerHTML = `<h4 style="display:inline;font-size:80%">${summary.innerHTML}</h4>`;
                 // remove any <p> tag from summary.innerHTML
-//                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
- //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
+                //                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
+                //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
 
                 // add summary to details
                 details.appendChild(summary);
