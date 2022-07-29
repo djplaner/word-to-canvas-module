@@ -22,6 +22,7 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Blackboard Image'] => span.blackboardImage",
         "p[style-name='Blackboard Image p'] => p.blackboardImage",
         "r[style-name='placeholder'] => mark",
+        "p[style-name='flashback'] => p.flashback",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
@@ -56,9 +57,9 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Red'] => span.red",
         "p[style-name='Example'] => div.example > p:fresh",
         "p[style-name='Example Centered'] => div.exampleCentered > p:fresh",
-        "p[style-name='Flashback']:ordered-list(1) => div.flashback > ol > li:fresh",
-        "p[style-name='Flashback']:unordered-list(1) => div.flashback > ul > li:fresh",
-        "p[style-name='Flashback'] => div.flashback > p:fresh",
+        /*        "p[style-name='Flashback']:ordered-list(1) => div.flashback > ol > li:fresh",
+                "p[style-name='Flashback']:unordered-list(1) => div.flashback > ul > li:fresh",
+                "p[style-name='Flashback'] => div.flashback > p:fresh", */
 
         "p[style-name='Weekly Workout']:ordered-list(1) => div.weeklyWorkout > ol > li:fresh",
         "p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
@@ -149,6 +150,8 @@ const CI_EMPTY_STYLE_PREPEND = {
     goDownload: `<div class="goDownloadImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/download.svg" /> </div>`,
     goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
 };
+
+const CI_CSS_URL = "https://s3.amazonaws.com/filebucketdave/banner.js/com14_study.css";
 
 const TABLE_CLASS = ["table", "stripe-row-odd"];
 
@@ -633,8 +636,6 @@ export default class c2m_WordConverter {
             hiddenElem.parentNode.removeChild(hiddenElem);
         }
 
-        // Content Interface pre-pends
-        this.contentInterfacePreprends(doc);
 
         // add class TABLE_CLASS to all of the tables
         doc.querySelectorAll('table').forEach((elem) => {
@@ -651,6 +652,18 @@ export default class c2m_WordConverter {
         // handle the content interface special styles
         this.handleFlashback(doc);
 
+        // Content Interface pre-pends - do this after previous tidy up
+        // - experimenting to see if this works in combination with juiceit #46
+        this.contentInterfacePreprends(doc);
+
+
+
+        // insert the content interface CSS - located at CI_CSS_URL - into the document
+        let css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = CI_CSS_URL;
+        document.head.appendChild(css);
+
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
@@ -663,40 +676,49 @@ export default class c2m_WordConverter {
      * @param {DomElement} doc - containing Mammoth html conversion
      */
 
-    handleFlashback(doc){
-        let anotherCheck = true;
+    handleFlashback(doc) {
         let firstDiv = null;
         let nextDiv = null;
 
+        // get all the html for doc
+        let html = doc.documentElement.outerHTML;
+        console.log(html);
+
         // keeping going until we run out of pairs of div.flashback
-        while (anotherCheck) {
+        // get all the p.flashback
+        let ps = doc.querySelectorAll('p.flashback');
+        let count = 0;
+        while ((ps.length > 1) && (count < ps.length)) {
             // check that we've got a pair of div.flashback
-            firstDiv = doc.querySelector('p.flashback');
-            nextDiv = null;
-            if (firstDiv === null || nextDiv === null) {
-                anotherCheck = false;
-                break;
-            } else {
-                nextDiv = firstDiv.querySelector('p.flashback');
-                if (nextDiv===null) {
-                    anotherCheck = false;
-                    break;
-                }
-            }
+            firstDiv = ps[count];
+            nextDiv = ps[count + 1];
+            count += 2;
             // put everything in between the two div.flashbacks
             // get everything until next div.flashback
-            let content = this.nextUntil(firstDiv, 'p.flashback'); 
-            content = content.map(elem => elem.outerHTML); 
+            let content = this.nextUntil(firstDiv, 'p.flashback');
+            content = content.map(elem => elem.outerHTML);
             // join content array strings into single string 
+            // - at this stage content includes the start/flashback
             content = content.join('');
 
-            // replace firstDiv with content
-            firstDiv.innerHTML = content;
-            // change firstDiv tag from p to div
-            firstDiv.tagName = 'div';
+            // remove all the elements between firstDiv and nextDiv
+            let start = firstDiv;
+            while (start.nextElementSibling && start.nextElementSibling !== nextDiv) {
+                start.nextElementSibling.remove();
+            }
+            // remove the nextDiv
+            nextDiv.remove();
+            //nextDiv.parentNode.removeChild(nextDiv);
 
-            // remove nextDiv
-            nextDiv.parentNode.removeChild(nextDiv);
+            // replace firstDiv with content
+            //firstDiv.innerHTML = content;
+            // change firstDiv tag from p to div
+            let newFirstDiv = document.createElement('div');
+            newFirstDiv.innerHTML = content;
+            // set class name to flashback
+            newFirstDiv.classList.add('flashback');
+            // replace firstDiv with newFirstDiv
+            firstDiv.parentNode.replaceChild(newFirstDiv, firstDiv);
         }
     }
 
@@ -792,6 +814,20 @@ export default class c2m_WordConverter {
         reader.readAsArrayBuffer(file);
     }
 
+    /**
+     * check if a string is a valid URL
+     * https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url 
+     */
+    isValidHttpUrl(string) {
+        let url;
+        try {
+            url = new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
 
     /** 
      * 
@@ -833,62 +869,5 @@ export default class c2m_WordConverter {
         return siblings;
 
     }
-
-
-    /**
-     * check if a string is a valid URL
-     * https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url 
-     */
-    isValidHttpUrl(string) {
-        let url;
-        try {
-            url = new URL(string);
-        } catch (_) {
-            return false;
-        }
-
-        return url.protocol === "http:" || url.protocol === "https:";
-    }
-
-    /** 
-	 * 
-	 * Get all following siblings of each element up to but not including the element matched by the selector
-	 * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
-	 * @param  {Node}   elem     The element
-	 * @param  {String} selector The selector to stop at
-	 * @param  {String} filter   The selector to match siblings against [optional]
-	 * @return {Array}           The siblings
-	 */
-	nextUntil(elem, selector, filter) {
-
-		// Setup siblings array
-		var siblings = [];
-
-		// Get the next sibling element
-		elem = elem.nextElementSibling;
-
-		// As long as a sibling exists
-		while (elem) {
-
-			// If we've reached our match, bail
-			if (elem.matches(selector)) break;
-
-			// If filtering by a selector, check if the sibling matches
-			if (filter && !elem.matches(filter)) {
-				elem = elem.nextElementSibling;
-				continue;
-			}
-
-			// Otherwise, push it to the siblings array
-			siblings.push(elem);
-
-			// Get the next sibling element
-			elem = elem.nextElementSibling;
-
-		}
-
-		return siblings;
-
-	}
 
 }

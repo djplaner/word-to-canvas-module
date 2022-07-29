@@ -875,3 +875,103 @@ button.faqQuestion {
   overflow: hidden;
   transition: max-height 0.2s ease-out;
 } 
+
+/****** Add the COM14 styles **************/
+
+.flashback { 
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right:auto;
+  width: 95%;
+  border-radius: 1em;
+  padding: 1em;
+  background: #ffd266;
+  overflow: hidden;
+}
+
+.flashbackImage {
+  width: 25%;
+  float: right;
+  background-image: url('https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png');
+  background-repeat: no-repeat;
+  background-size: contain; 
+}
+
+.flashbackImage img {
+ width: 95%;
+}
+
+.canaryImage {
+  width: 10%;
+  float: right;
+}
+
+.canaryImage img {
+  width: 95%;
+}
+
+.weeklyWorkoutImage {
+  width: 30%;
+  float: right;
+}
+
+.weeklyWorkoutImage img {
+  width: 95%;
+}
+
+
+.canaryExercise  {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%; 
+    border-radius: 1em;
+    padding: 1em;
+  background-color: #efd25c;
+  overflow: hidden;
+}
+
+.weeklyWorkout  {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%; 
+    border-radius: 1em;
+    padding: 1em;
+  background-color: #cafafe;
+  overflow: hidden;
+}
+
+.comingSoon  {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+  padding: 1em;
+  border-radius: 1em;
+    
+}
+
+.comingSoonImage {
+  width: 15%;
+  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg');
+  background-repeat: no-repeat;
+  background-size: contain; 
+}
+
+.printCourseName {
+  font-size: 80%;
+}
+.printPageTitle {
+  font-size: 160%;
+  font-weight:bolder;
+}
