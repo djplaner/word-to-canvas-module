@@ -1755,6 +1755,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
         "r[style-name='Blackboard Image'] => span.blackboardImage",
         "p[style-name='Blackboard Image p'] => p.blackboardImage",
+        "r[style-name='placeholder'] => mark",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
@@ -2214,13 +2215,15 @@ class c2m_WordConverter {
             let img = canvasImages[i];
             img.insertAdjacentHTML('beforebegin', error);
         }
-        this.mammothResult.messages.push({
-            "type": "error",
-            "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
+        if (canvasImages.length > 0) {
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
                        Broken images may be fixed in the final stage.<br /> 
                        <small><strong>
                          <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
-        });
+            });
+        }
     }
 
 
@@ -2285,7 +2288,7 @@ class c2m_WordConverter {
                 // get content of heading
                 let headingContent = heading.innerHTML;
                 // create a details/summary tag
-                let details = doc.createElement('details'); 
+                let details = doc.createElement('details');
                 details.style.backgroundColor = '#f8f4ec';
                 details.style.color = '#7c2529';
                 details.style.borderBottom = '1px solid #e4d589';
@@ -2308,8 +2311,8 @@ class c2m_WordConverter {
                 // wrap summary inner html in a h4 tag
                 summary.innerHTML = `<h4 style="display:inline;font-size:80%">${summary.innerHTML}</h4>`;
                 // remove any <p> tag from summary.innerHTML
-//                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
- //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
+                //                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
+                //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
 
                 // add summary to details
                 details.appendChild(summary);
@@ -2379,9 +2382,58 @@ class c2m_WordConverter {
         // convert the div.faqHeading and div.faqBody
         this.handleFAQs(doc);
 
+        // handle the content interface special styles
+        this.handleFlashback(doc);
+
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
+
+    /**
+     * Content Interface div.flashback has been converted into a start and end Flashback style
+     * in the Word document, in turn converted into two p.flashback earlier in the conversion.
+     * This function removes each pair of p.flashback and wraps what's between them into
+     * div.flashback.
+     * @param {DomElement} doc - containing Mammoth html conversion
+     */
+
+    handleFlashback(doc){
+        let anotherCheck = true;
+        let firstDiv = null;
+        let nextDiv = null;
+
+        // keeping going until we run out of pairs of div.flashback
+        while (anotherCheck) {
+            // check that we've got a pair of div.flashback
+            firstDiv = doc.querySelector('p.flashback');
+            nextDiv = null;
+            if (firstDiv === null || nextDiv === null) {
+                anotherCheck = false;
+                break;
+            } else {
+                nextDiv = firstDiv.querySelector('p.flashback');
+                if (nextDiv===null) {
+                    anotherCheck = false;
+                    break;
+                }
+            }
+            // put everything in between the two div.flashbacks
+            // get everything until next div.flashback
+            let content = this.nextUntil(firstDiv, 'p.flashback'); 
+            content = content.map(elem => elem.outerHTML); 
+            // join content array strings into single string 
+            content = content.join('');
+
+            // replace firstDiv with content
+            firstDiv.innerHTML = content;
+            // change firstDiv tag from p to div
+            firstDiv.tagName = 'div';
+
+            // remove nextDiv
+            nextDiv.parentNode.removeChild(nextDiv);
+        }
+    }
+
 
     /**
      * Add in the necessary Content Interface prepends 
@@ -2531,6 +2583,47 @@ class c2m_WordConverter {
 
         return url.protocol === "http:" || url.protocol === "https:";
     }
+
+    /** 
+	 * 
+	 * Get all following siblings of each element up to but not including the element matched by the selector
+	 * (c) 2017 Chris Ferdinandi, MIT License, https://gomakethings.com
+	 * @param  {Node}   elem     The element
+	 * @param  {String} selector The selector to stop at
+	 * @param  {String} filter   The selector to match siblings against [optional]
+	 * @return {Array}           The siblings
+	 */
+	nextUntil(elem, selector, filter) {
+
+		// Setup siblings array
+		var siblings = [];
+
+		// Get the next sibling element
+		elem = elem.nextElementSibling;
+
+		// As long as a sibling exists
+		while (elem) {
+
+			// If we've reached our match, bail
+			if (elem.matches(selector)) break;
+
+			// If filtering by a selector, check if the sibling matches
+			if (filter && !elem.matches(filter)) {
+				elem = elem.nextElementSibling;
+				continue;
+			}
+
+			// Otherwise, push it to the siblings array
+			siblings.push(elem);
+
+			// Get the next sibling element
+			elem = elem.nextElementSibling;
+
+		}
+
+		return siblings;
+
+	}
 
 }
 
