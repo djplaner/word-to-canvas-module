@@ -2722,7 +2722,7 @@ CI_CSS;
 
 
 
-const JUICE_IT=true;
+const JUICE_IT = true;
 
 const DEFAULT_OPTIONS = {
     styleMap: [
@@ -2742,6 +2742,9 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Blackboard Image p'] => p.blackboardImage",
         "r[style-name='placeholder'] => mark",
         "p[style-name='flashback'] => p.flashback",
+        "p[style-name='Weekly Workout'] => p.weeklyWorkout",
+        "p[style-name='Canary Exercise'] => p.canaryExercise",
+        "p[style-name='Note'] => p.ael-note",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
@@ -2780,16 +2783,16 @@ const DEFAULT_OPTIONS = {
                 "p[style-name='Flashback']:unordered-list(1) => div.flashback > ul > li:fresh",
                 "p[style-name='Flashback'] => div.flashback > p:fresh", */
 
-        "p[style-name='Weekly Workout']:ordered-list(1) => div.weeklyWorkout > ol > li:fresh",
-        "p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
-        "p[style-name='Weekly Workout'] => div.weeklyWorkout > p:fresh",
+        /*        "p[style-name='Weekly Workout']:ordered-list(1) => div.weeklyWorkout > ol > li:fresh",
+                "p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
+                "p[style-name='Weekly Workout'] => div.weeklyWorkout > p:fresh", */
 
         "p[style-name='Poem'] => div.poem > p:fresh",
         "r[style-name='Poem Right'] => div.poemRight > p:fresh",
 
-        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
-        "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
-        "p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh",
+        /*        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
+                "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
+                "p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh", */
         "p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
         "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
         "p[style-name='Activity Title'] => div.activity > h2:fresh",
@@ -2852,10 +2855,10 @@ const CI_STYLE_PREPEND = {
     flashback: `<div class="flashbackImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png" style="max-width:100%" /></div>`,
     //"canaryExercise" : `<div class="canaryImage"></div>`,
     // COM14
-    canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
+    canaryExercise: `<div class="canaryImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/Tweety.svg.png" style="max-width:100%" alt="Tweety bird" /></div>`,
     //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
-    "ael-note": `<div class="noteImage">&nbsp;</div>`,
-    weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
+    "ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-wdith:100%" alt="Warning! Exclamation mark in a circle" /></div>`,
+    weeklyWorkout: `<div class="weeklyWorkoutImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/weeklyWorkout.png" style="max-width:100%" alt="Female weight lifter" /></div>`,
     comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
     filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
     goReading: `<div class="goReadingImage">&nbsp;</div>`,
@@ -3369,7 +3372,7 @@ class c2m_WordConverter {
         this.handleFAQs(doc);
 
         // handle the content interface special styles
-        this.handleFlashback(doc);
+        this.handleContentInterfaceComplexStyles(doc);
 
         // Content Interface pre-pends - do this after previous tidy up
         // - experimenting to see if this works in combination with juiceit #46
@@ -3385,7 +3388,7 @@ class c2m_WordConverter {
         if (JUICE_IT) {
             // take the doc DomElement and make the changes
             this.juiceit(doc);
-        } 
+        }
 
 
         // convert the doc back to a string
@@ -3400,49 +3403,62 @@ class c2m_WordConverter {
      * @param {DomElement} doc - containing Mammoth html conversion
      */
 
-    handleFlashback(doc) {
+    handleContentInterfaceComplexStyles(doc) {
         let firstDiv = null;
         let nextDiv = null;
 
         // get all the html for doc
-//        let html = doc.documentElement.outerHTML;
-//        console.log(html);
+        //        let html = doc.documentElement.outerHTML;
+        //        console.log(html);
 
-        // keeping going until we run out of pairs of div.flashback
-        // get all the p.flashback
-        let ps = doc.querySelectorAll('p.flashback');
-        let count = 0;
-        while ((ps.length > 1) && (count < ps.length)) {
-            // check that we've got a pair of div.flashback
-            firstDiv = ps[count];
-            nextDiv = ps[count + 1];
-            count += 2;
-            // put everything in between the two div.flashbacks
-            // get everything until next div.flashback
-            let content = this.nextUntil(firstDiv, 'p.flashback');
-            content = content.map(elem => elem.outerHTML);
-            // join content array strings into single string 
-            // - at this stage content includes the start/flashback
-            content = content.join('');
+        // declar array styles with entries
 
-            // remove all the elements between firstDiv and nextDiv
-            let start = firstDiv;
-            while (start.nextElementSibling && start.nextElementSibling !== nextDiv) {
-                start.nextElementSibling.remove();
+        const ci_styles = [
+            'p.flashback', 'p.canaryExercise', 'p.weeklyWorkout',
+            'p.ael-note'
+        ];
+
+        // loop through styles array 
+        for ( const ci_style of ci_styles) {
+
+            // keeping going until we run out of pairs of div.flashback
+            // get all the p.flashback
+            let ps = doc.querySelectorAll(ci_style);
+            let count = 0;
+            while ((ps.length > 1) && (count < ps.length)) {
+                // check that we've got a pair of div.flashback
+                firstDiv = ps[count];
+                nextDiv = ps[count + 1];
+                count += 2;
+                // put everything in between the two div.flashbacks
+                // get everything until next div.flashback
+                let content = this.nextUntil(firstDiv, ci_style);
+                content = content.map(elem => elem.outerHTML);
+                // join content array strings into single string 
+                // - at this stage content includes the start/flashback
+                content = content.join('');
+
+                // remove all the elements between firstDiv and nextDiv
+                let start = firstDiv;
+                while (start.nextElementSibling && start.nextElementSibling !== nextDiv) {
+                    start.nextElementSibling.remove();
+                }
+                // remove the nextDiv
+                nextDiv.remove();
+                //nextDiv.parentNode.removeChild(nextDiv);
+
+                // replace firstDiv with content
+                //firstDiv.innerHTML = content;
+                // change firstDiv tag from p to div
+                let newFirstDiv = document.createElement('div');
+                newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
+                // set class name to flashback
+                // remove p. from from front of ci_style
+                let className = ci_style.substring(2);
+                newFirstDiv.classList.add(className);
+                // replace firstDiv with newFirstDiv
+                firstDiv.parentNode.replaceChild(newFirstDiv, firstDiv);
             }
-            // remove the nextDiv
-            nextDiv.remove();
-            //nextDiv.parentNode.removeChild(nextDiv);
-
-            // replace firstDiv with content
-            //firstDiv.innerHTML = content;
-            // change firstDiv tag from p to div
-            let newFirstDiv = document.createElement('div');
-            newFirstDiv.innerHTML = content;
-            // set class name to flashback
-            newFirstDiv.classList.add('flashback');
-            // replace firstDiv with newFirstDiv
-            firstDiv.parentNode.replaceChild(newFirstDiv, firstDiv);
         }
     }
 
@@ -3611,7 +3627,7 @@ class c2m_WordConverter {
         let juiceHTML = juice(html);
 
         //doc.documentElement.outerHTML = juiceHTML;
-    }  
+    }
 
 }
 
