@@ -29,6 +29,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Weekly Workout'] => p.weeklyWorkout",
         "p[style-name='Canary Exercise'] => p.canaryExercise",
         "p[style-name='Note'] => p.ael-note",
+        "p[style-name='Added Advice'] => p.guAddedAdvice",
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
@@ -97,9 +98,9 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Emphasis'] => em:fresh",
         "p[style-name='Timeout'] => span.timeout",
         "p[style-name='Embed'] => span.embed",
-        "p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
+/*        "p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
         "p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
-        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh",
+        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", */
         /* Adding cards */
         "p[style-name='Blackboard Card'] => div.bbCard:fresh",
         /* Blackboard item conversion */
@@ -401,6 +402,8 @@ export default class c2m_WordConverter {
         // get all the links from doc
         let links = doc.querySelectorAll('a');
 
+        const error = '<span class="w2c-error">Blackboard Link</span>';
+
         let blackboardLinks = {};
         // loop through the links and check for blackboard links
         for (let i = 0; i < links.length; i++) {
@@ -410,6 +413,7 @@ export default class c2m_WordConverter {
                 blackboardLinks[link.href].text.push(link.innerText);
             }
             else if (this.isBlackboardLink(link.href)) {
+                link.insertAdjacentHTML('beforebegin', error);
                 blackboardLinks[link.href] = {
                     "text": [link.innerText]
                 };
@@ -439,7 +443,7 @@ export default class c2m_WordConverter {
         return (
             link.includes('https://bblearn.griffith.edu.au') ||
             link.includes('https://bblearn-blaed.griffith.edu.au') ||
-            link.startsWith('/webapps/')
+            link.includes('/webapps/blackboard')
         );
     }
 
@@ -493,7 +497,7 @@ export default class c2m_WordConverter {
         if (canvasImages.length > 0) {
             this.mammothResult.messages.push({
                 "type": "error",
-                "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
+                "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small> ${error}. 
                        Broken images may be fixed in the final stage.<br /> 
                        <small><strong>
                          <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
@@ -699,7 +703,7 @@ export default class c2m_WordConverter {
 
         const ci_styles = [
             'p.flashback', 'p.canaryExercise', 'p.weeklyWorkout',
-            'p.ael-note'
+            'p.ael-note', 'p.guAddedAdvice'
         ];
 
         // loop through styles array 

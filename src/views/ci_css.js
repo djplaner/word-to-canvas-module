@@ -975,7 +975,7 @@ button.faqQuestion {
   font-weight:bolder;
 }
 
-.gu_addedAdvice {
+.guAddedAdvice {
 	font-size:80%;
 }
     `;
