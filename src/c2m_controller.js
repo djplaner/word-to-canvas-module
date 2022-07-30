@@ -24,6 +24,7 @@ const c2m_CheckModule = "c2m_CheckModule";
 const c2m_Completed = "c2m_Completed";
 //const c2m_Close = "close";
 
+const CI_CSS_URL = 'https://rawcdn.githack.com/djplaner/word-to-canvas-module/bc41f0c954b717b9693f516f2efcdd1ab3fdce23/css/content-interface.css';
 
 export default class c2m_Controller {
 	constructor() {
@@ -83,10 +84,10 @@ export default class c2m_Controller {
 		console.log(` -- token ${this.csrfToken}`);
 
 		// select li.section > a.syllabus
-/*		const syllabus = document.querySelector('li.section > a.syllabus');
-		if (syllabus) {
-			syllabus.style.display = 'none';
-		}*/
+		/*		const syllabus = document.querySelector('li.section > a.syllabus');
+				if (syllabus) {
+					syllabus.style.display = 'none';
+				}*/
 
 		// inject on module as well
 		this.injectCss();
@@ -104,8 +105,9 @@ export default class c2m_Controller {
 	 * Inject the CI CSS into a Canvas page 
 	 */
 	injectCss() {
-//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
-		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
+		//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
+		//		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
+		let css = `<link rel="stylesheet" href="${CI_CSS_URL}">`;
 
 		// inject css string element at end of head
 		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css);
@@ -121,7 +123,7 @@ export default class c2m_Controller {
 		console.log(`handle click switching to ...${newState}`);
 
 		// if c2m_completed moving to c2m_initialised, reload the page
-		if (this.currentState===c2m_Completed && newState===c2m_Initialised) {
+		if (this.currentState === c2m_Completed && newState === c2m_Initialised) {
 			window.location.reload();
 		}
 
@@ -148,3 +150,5 @@ export default class c2m_Controller {
 	}
 
 }
+
+
