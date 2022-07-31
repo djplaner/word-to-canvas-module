@@ -105,6 +105,7 @@ export default class c2m_Controller {
 	 * Inject the CI CSS into a Canvas page 
 	 */
 	injectCss() {
+		return;
 		//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
 		//		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
 		let css = `<link rel="stylesheet" href="${CI_CSS_URL}">`;

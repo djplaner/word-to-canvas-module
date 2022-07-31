@@ -142,8 +142,8 @@ const DEFAULT_OPTIONS = {
 // - key indicates <div style to be preprended
 // - value is what will be prepended
 const CI_STYLE_PREPEND = {
-    reading: `<div class="readingImage">&nbsp;</div>`,
-    activity: `<div class="activityImage">&nbsp;</div>`,
+    reading: `<div class="readingImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-reading-48.png" alt="Reading" style="max-width:100%" /></div>`,
+    activity: `<div class="activityImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-dancing-48.png" alt="Dancing Man - activity" style="max-width:100%" /></div>`,
     flashback: `<div class="flashbackImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png" style="max-width:100%" /></div>`,
     //"canaryExercise" : `<div class="canaryImage"></div>`,
     // COM14

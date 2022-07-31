@@ -1853,9 +1853,6 @@ border-collapse: collapse; }*/
 
 .activity {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   margin: 1em 0;
   margin-left: auto;
   margin-right: auto;
@@ -1894,16 +1891,17 @@ border-collapse: collapse; }*/
 
 .activityImage {
   width: 5%;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-dancing-48.png');
-background-repeat: no-repeat;
-background-size: contain; 
+  background-repeat: no-repeat;
+  background-size: contain; 
+  margin-right: 1em;
+  float: left;
 }
 
 .readingImage {
   width: 5%;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-reading-48.png');
-background-repeat: no-repeat;
-background-size: contain; 
+  background-repeat: no-repeat;
+  background-size: contain; 
+  margin-right: 1em;
 }
 
 .noteImage {
@@ -2681,32 +2679,21 @@ button.faqQuestion {
 }
 
 .comingSoon  {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
-/*  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) ;
   margin: 1em 0;
   margin-left: auto;
   margin-right: auto;
   width: 95%;
   padding: 1em;
   border-radius: 1em;
-    
-   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important; */
-  margin: 1em 0;
-  margin-left: auto;
-  margin-right:auto;
-  width: 95%;
-  border-radius: 1em;
-  padding: 1em;
-  background: #ffd266;
   overflow: hidden;
+  background-color: lightgrey;
 
 }
 
 .comingSoonImage {
+  float: left;
   width: 15%;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg');
   background-repeat: no-repeat;
   background-size: contain; 
 }
@@ -2872,8 +2859,8 @@ const DEFAULT_OPTIONS = {
 // - key indicates <div style to be preprended
 // - value is what will be prepended
 const CI_STYLE_PREPEND = {
-    reading: `<div class="readingImage">&nbsp;</div>`,
-    activity: `<div class="activityImage">&nbsp;</div>`,
+    reading: `<div class="readingImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-reading-48.png" alt="Reading" style="max-width:100%" /></div>`,
+    activity: `<div class="activityImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-dancing-48.png" alt="Dancing Man - activity" style="max-width:100%" /></div>`,
     flashback: `<div class="flashbackImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png" style="max-width:100%" /></div>`,
     //"canaryExercise" : `<div class="canaryImage"></div>`,
     // COM14
@@ -5149,6 +5136,7 @@ class c2m_Controller {
 	 * Inject the CI CSS into a Canvas page 
 	 */
 	injectCss() {
+		return;
 		//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
 		//		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
 		let css = `<link rel="stylesheet" href="${CI_CSS_URL}">`;

@@ -119,9 +119,6 @@ border-collapse: collapse; }*/
 
 .activity {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   margin: 1em 0;
   margin-left: auto;
   margin-right: auto;
@@ -160,16 +157,16 @@ border-collapse: collapse; }*/
 
 .activityImage {
   width: 5%;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-dancing-48.png');
-background-repeat: no-repeat;
-background-size: contain; 
+  background-repeat: no-repeat;
+  background-size: contain; 
+  margin-right: 1em;
 }
 
 .readingImage {
   width: 5%;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-reading-48.png');
-background-repeat: no-repeat;
-background-size: contain; 
+  background-repeat: no-repeat;
+  background-size: contain; 
+  margin-right: 1em;
 }
 
 .noteImage {
@@ -217,9 +214,6 @@ flex-wrap: wrap;*/
 
 .reading {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   margin: 1em 0;
   margin-left: auto;
   margin-right: auto;
@@ -947,7 +941,7 @@ button.faqQuestion {
 }
 
 .comingSoon  {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) ;
   margin: 1em 0;
   margin-left: auto;
   margin-right: auto;
@@ -955,12 +949,13 @@ button.faqQuestion {
   padding: 1em;
   border-radius: 1em;
   overflow: hidden;
+  background-color: lightgrey;
+
 }
 
 .comingSoonImage {
   float: left;
   width: 15%;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg');
   background-repeat: no-repeat;
   background-size: contain; 
 }
