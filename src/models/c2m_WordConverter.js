@@ -30,6 +30,12 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canary Exercise'] => p.canaryExercise",
         "p[style-name='Note'] => p.ael-note",
         "p[style-name='Added Advice'] => p.guAddedAdvice",
+        "p[style-name='activity'] => p.activity",
+        "p[style-name='Reading'] => p.reading",
+        "p[style-name='Coming Soon'] => p.comingSoon",
+        "p[style-name='Picture'] => p.picture",
+        "p[style-name='PictureRight'] => p.pictureRight",
+
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
@@ -38,6 +44,7 @@ const DEFAULT_OPTIONS = {
 
         // kludges to tidy up common messy word cruft
         "p[style-name='List Bullet'] => ul > li:fresh",
+        "p[style-name='List Number'] => ol > li:fresh",
         "p[style-name='heading 6'] => h6:fresh",
 
         "p[style-name='Section Title'] => h1:fresh",
@@ -51,9 +58,9 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Normal'] => p:fresh",
         "p[style-name='Text body'] => p:fresh",
         "p[style-name='Textbody1'] => p:fresh",
-        "p[style-name='Picture'] => div.ci_container > div.picture",
+/*        "p[style-name='Picture'] => div.ci_container > div.picture",
         "p[style-name='Picture Right'] => div.pictureRight",
-        "p[style-name='PictureRight'] => div.pictureRight",
+        "p[style-name='PictureRight'] => div.pictureRight", */
         "r[style-name='University Date'] => span.universityDate",
         "p[style-name='Video'] => div.video",
         "p[style-name='Aside'] => aside",
@@ -78,8 +85,8 @@ const DEFAULT_OPTIONS = {
         /*        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
                 "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
                 "p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh", */
-        "p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
-        "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
+//        "p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
+/*        "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
         "p[style-name='Activity Title'] => div.activity > h2:fresh",
         "p[style-name='ActivityText'] => div.activity > div.instructions > p:fresh",
         "p[style-name='Activity Text'] => div.activity > div.instructions > p:fresh",
@@ -87,12 +94,12 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
         "p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
         "p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
-        "p[style-name='activity'] => div.activity > div.instructions > p:fresh",
+        "p[style-name='activity'] => div.activity > div.instructions > p:fresh", */
         /*"p[style-name='Activity'] => span.activity",*/
         "p[style-name='Bibliography'] => div.apa > p:fresh",
-        "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
+/*        "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
         "p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
-        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh",
+        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh", */
         "p[style-name='Title'] => div.moduleTitle",
         "p[style-name='Card'] => div.gu_card",
         "r[style-name='Emphasis'] => em:fresh",
@@ -144,7 +151,7 @@ const CI_STYLE_PREPEND = {
     //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
     "ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-wdith:100%" alt="Warning! Exclamation mark in a circle" /></div>`,
     weeklyWorkout: `<div class="weeklyWorkoutImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/weeklyWorkout.png" style="max-width:100%" alt="Female weight lifter" /></div>`,
-    comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
+    comingSoon: `<div class="comingSoonImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg" alt="Coming Soon Road Sign - yellow diamond shape" /> </div>`,
     filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
     goReading: `<div class="goReadingImage">&nbsp;</div>`,
 };
@@ -675,7 +682,7 @@ export default class c2m_WordConverter {
         // "juiceit" is a way to convert external CSS into inline styles
         if (JUICE_IT) {
             // take the doc DomElement and make the changes
-            this.juiceit(doc);
+            doc = this.juiceit(doc);
         }
 
 
@@ -703,7 +710,8 @@ export default class c2m_WordConverter {
 
         const ci_styles = [
             'p.flashback', 'p.canaryExercise', 'p.weeklyWorkout',
-            'p.ael-note', 'p.guAddedAdvice'
+            'p.ael-note', 'p.guAddedAdvice', 'p.reading', 'p.activity',
+            'p.comingSoon', 'p.picture', 'p.pictureRight'
         ];
 
         // loop through styles array 
@@ -914,7 +922,9 @@ export default class c2m_WordConverter {
 
         let juiceHTML = juice(html);
 
-        //doc.documentElement.outerHTML = juiceHTML;
+        let parser = new DOMParser();
+        let doc2 = parser.parseFromString(juiceHTML, "text/html");
+        return doc2; 
     }
 
 }

@@ -948,19 +948,17 @@ button.faqQuestion {
 
 .comingSoon  {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   margin: 1em 0;
   margin-left: auto;
   margin-right: auto;
   width: 95%;
   padding: 1em;
   border-radius: 1em;
-    
+  overflow: hidden;
 }
 
 .comingSoonImage {
+  float: left;
   width: 15%;
   background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg');
   background-repeat: no-repeat;
