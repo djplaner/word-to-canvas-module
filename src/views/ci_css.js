@@ -124,6 +124,7 @@ border-collapse: collapse; }*/
   margin-right: auto;
   width: 95%;
   border-radius: 1em;
+  border-style: outset;
   padding: 1em;
 }
 
@@ -160,6 +161,7 @@ border-collapse: collapse; }*/
   background-repeat: no-repeat;
   background-size: contain; 
   margin-right: 1em;
+  float: left;
 }
 
 .readingImage {
@@ -167,6 +169,7 @@ border-collapse: collapse; }*/
   background-repeat: no-repeat;
   background-size: contain; 
   margin-right: 1em;
+  float: left;
 }
 
 .noteImage {
@@ -220,6 +223,7 @@ flex-wrap: wrap;*/
   width: 95%;
   padding: 1em;
   border-radius: 1em;
+  border-style: outset;
 }
 
 .icon {
@@ -648,6 +652,7 @@ figure._60 {
   padding: 5px;
   border: solid 2px #efefef;
   border-radius: 4px;
+  background-color: #dfdfdf;
   /*  display: inline-block; */
 }
 
@@ -665,6 +670,7 @@ figure._60 {
   border-radius: 4px;
   background-color: #dfdfdf;
   display: inline-block;
+  background-color: #dfdfdf;
 }
 
 .picture img {
@@ -949,8 +955,7 @@ button.faqQuestion {
   padding: 1em;
   border-radius: 1em;
   overflow: hidden;
-  background-color: lightgrey;
-
+  border-style: outset;
 }
 
 .comingSoonImage {
@@ -970,6 +975,13 @@ button.faqQuestion {
 
 .guAddedAdvice {
 	font-size:80%;
+}
+
+.quote {
+  border-left: 4px solid;
+  color: #757575;
+  margin: .5em 5vw !important;
+  padding: 1em;
 }
     `;
 

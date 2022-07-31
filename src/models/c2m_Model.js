@@ -589,12 +589,18 @@ export default class c2m_Model {
     }
 
     /**
-     * remove all the span.w2c-error elements from the document
+     * remove all the span.w2c-error (and related) elements from the document
      * @param {DOM} doc 
      */
     removeSpanErrors(doc) {
         // find all span.w2c-error elements
         doc.querySelectorAll('span.w2c-error').forEach( (elem) => {
+            elem.remove();
+        });
+        doc.querySelectorAll('span.w2c-warning').forEach( (elem) => {
+            elem.remove();
+        });
+        doc.querySelectorAll('span.w2c-ok').forEach( (elem) => {
             elem.remove();
         });
     }

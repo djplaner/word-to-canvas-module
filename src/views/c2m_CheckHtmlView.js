@@ -133,6 +133,32 @@ span.w2c-error {
     box-shadow: 5px 5px 5px black;
 }
 
+span.w2c-warning {
+    font-size: 50%;
+    margin: 1em;
+    background-color: yellow;
+    color: black;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
+
+span.w2c-ok {
+    font-size: 50%;
+    margin: 1em;
+    background-color: lightgreen;
+	color: black;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
+
+
+
 .w2c-content {
 	clear:both;
     }

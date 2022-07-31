@@ -35,6 +35,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Coming Soon'] => p.comingSoon",
         "p[style-name='Picture'] => p.picture",
         "p[style-name='PictureRight'] => p.pictureRight",
+        "p[style-name='Quote'] => p.quote",
 
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
@@ -48,7 +49,6 @@ const DEFAULT_OPTIONS = {
         "p[style-name='heading 6'] => h6:fresh",
 
         "p[style-name='Section Title'] => h1:fresh",
-        "p[style-name='Quote'] => blockquote:fresh",
         "p[style-name='Quotations'] => blockquote:fresh",
         "p[style-name='Quotation'] => blockquote:fresh",
         "p[style-name='Body Text'] => p:fresh",
@@ -495,7 +495,7 @@ export default class c2m_WordConverter {
         // search doc for any span.canvasImage
         let canvasImages = doc.querySelectorAll('span.canvasImage');
 
-        const error = '<span class="w2c-error">canvasImage</span>';
+        const error = '<span class="w2c-warning">canvasImage</span>';
         // insert a warning next to each canvasImage
         for (let i = 0; i < canvasImages.length; i++) {
             let img = canvasImages[i];

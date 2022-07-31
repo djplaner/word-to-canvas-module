@@ -422,6 +422,32 @@ span.w2c-error {
     box-shadow: 5px 5px 5px black;
 }
 
+span.w2c-warning {
+    font-size: 50%;
+    margin: 1em;
+    background-color: yellow;
+    color: black;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
+
+span.w2c-ok {
+    font-size: 50%;
+    margin: 1em;
+    background-color: lightgreen;
+	color: black;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
+
+
+
 .w2c-content {
 	clear:both;
     }
@@ -1858,6 +1884,7 @@ border-collapse: collapse; }*/
   margin-right: auto;
   width: 95%;
   border-radius: 1em;
+  border-style: outset;
   padding: 1em;
 }
 
@@ -1902,6 +1929,7 @@ border-collapse: collapse; }*/
   background-repeat: no-repeat;
   background-size: contain; 
   margin-right: 1em;
+  float: left;
 }
 
 .noteImage {
@@ -1949,15 +1977,13 @@ flex-wrap: wrap;*/
 
 .reading {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
   margin: 1em 0;
   margin-left: auto;
   margin-right: auto;
   width: 95%;
   padding: 1em;
   border-radius: 1em;
+  border-style: outset;
 }
 
 .icon {
@@ -2386,6 +2412,7 @@ figure._60 {
   padding: 5px;
   border: solid 2px #efefef;
   border-radius: 4px;
+  background-color: #dfdfdf;
   /*  display: inline-block; */
 }
 
@@ -2403,6 +2430,7 @@ figure._60 {
   border-radius: 4px;
   background-color: #dfdfdf;
   display: inline-block;
+  background-color: #dfdfdf;
 }
 
 .picture img {
@@ -2687,8 +2715,7 @@ button.faqQuestion {
   padding: 1em;
   border-radius: 1em;
   overflow: hidden;
-  background-color: lightgrey;
-
+  border-style: outset;
 }
 
 .comingSoonImage {
@@ -2708,6 +2735,13 @@ button.faqQuestion {
 
 .guAddedAdvice {
 	font-size:80%;
+}
+
+.quote {
+  border-left: 4px solid;
+  color: #757575;
+  margin: .5em 5vw !important;
+  padding: 1em;
 }
     `;
 
@@ -2752,6 +2786,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Coming Soon'] => p.comingSoon",
         "p[style-name='Picture'] => p.picture",
         "p[style-name='PictureRight'] => p.pictureRight",
+        "p[style-name='Quote'] => p.quote",
 
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
@@ -2765,7 +2800,6 @@ const DEFAULT_OPTIONS = {
         "p[style-name='heading 6'] => h6:fresh",
 
         "p[style-name='Section Title'] => h1:fresh",
-        "p[style-name='Quote'] => blockquote:fresh",
         "p[style-name='Quotations'] => blockquote:fresh",
         "p[style-name='Quotation'] => blockquote:fresh",
         "p[style-name='Body Text'] => p:fresh",
@@ -3212,7 +3246,7 @@ class c2m_WordConverter {
         // search doc for any span.canvasImage
         let canvasImages = doc.querySelectorAll('span.canvasImage');
 
-        const error = '<span class="w2c-error">canvasImage</span>';
+        const error = '<span class="w2c-warning">canvasImage</span>';
         // insert a warning next to each canvasImage
         for (let i = 0; i < canvasImages.length; i++) {
             let img = canvasImages[i];
@@ -4970,12 +5004,18 @@ class c2m_Model {
     }
 
     /**
-     * remove all the span.w2c-error elements from the document
+     * remove all the span.w2c-error (and related) elements from the document
      * @param {DOM} doc 
      */
     removeSpanErrors(doc) {
         // find all span.w2c-error elements
         doc.querySelectorAll('span.w2c-error').forEach( (elem) => {
+            elem.remove();
+        });
+        doc.querySelectorAll('span.w2c-warning').forEach( (elem) => {
+            elem.remove();
+        });
+        doc.querySelectorAll('span.w2c-ok').forEach( (elem) => {
             elem.remove();
         });
     }
