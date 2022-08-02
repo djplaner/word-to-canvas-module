@@ -356,7 +356,7 @@ const CHECK_HTML_HTML = `
   <div id="c2m_messages"></div>
 </div>
 
-<button class="w2c-accordion">HTML</button>
+<button class="w2c-accordion" id="c2m_html_button">HTML</button>
 <div class="w2c_panel" id="c2m_html"></div>
 </div>
 
@@ -2916,6 +2916,14 @@ const CI_EMPTY_STYLE_PREPEND = {
     goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
 };
 
+const CHECK_HTML_ONCLICK = `
+onclick='if((document.getElementById("c2m_html").style.display === "")||(document.getElementById("c2m_html").style.display ==="none")){ console.log("--- gong to click");document.getElementById("c2m_html_button").click(); } '`;
+
+/*function check(){
+    // is div#c2m_html style display:none
+
+}*/
+
 //const CI_CSS_URL = "https://s3.amazonaws.com/filebucketdave/banner.js/com14_study.css";
 
 const TABLE_CLASS = ["table", "stripe-row-odd"];
@@ -2982,7 +2990,7 @@ class c2m_WordConverter {
         // headings with no text/name can't be used
         this.checkEmptyHeadings(doc);
 
-        // Canvas culls the base64 images and they pose a size problem
+        // Canvas culls the base64 images, Canvas RCE doesn't use themm
         this.checkBase64Images(doc);
 
         // Canvas External URL module items can't have descriptive content
@@ -3103,6 +3111,7 @@ class c2m_WordConverter {
         let problems = [];
         // true for each externalUrl heading that has a valid URL (and nothing else)
         let validUrls = {};
+        let error = '<span {id} class="w2c-error">canvasExternalUrl</span>';
         for (let i = 0; i < extUrls.length; i++) {
             let extUrl = extUrls[i];
             let content = this.nextUntil(extUrl, 'h1');
@@ -3123,16 +3132,23 @@ class c2m_WordConverter {
                 }
                 // we have a problem, if there is no valid URL or there is invalid data
                 if (!valid || invalid) {
+                    // add the exUrl to the problems array
                     problems.push(extUrl.innerText);
+                    // insert the error span near the extUrl
+                    const numProbs = problems.length - 1;
+                    const errorString = error.replace('{id}', `id="canvas-external-url-${numProbs}"`);
+                    extUrl.insertAdjacentHTML('beforebegin', errorString);
                 }
             }
         }
 
+        error = `<a href="#canvas-external-url-{id}" ${CHECK_HTML_ONCLICK}><span class="w2c-error">canvasExternalUrl</span></a>`;
         for (let i = 0; i < problems.length; i++) {
             // only show error for external URL that has more than a URL, if it has a valid URL
+            const errorString = error.replace('{id}', `${i}`);
             this.mammothResult.messages.push({
                 "type": "error",
-                "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
+                "message": `${errorString} The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
                                 <small><strong><a target="_blank" 
                    href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
                    For more <i class="icon-question"></i></a></strong></small>`,
@@ -3160,7 +3176,7 @@ class c2m_WordConverter {
         // get all the links from doc
         let links = doc.querySelectorAll('a');
 
-        const error = '<span class="w2c-error">Blackboard Link</span>';
+        let error = '<span {id} class="w2c-error">Blackboard Link</span>';
 
         let blackboardLinks = {};
         // loop through the links and check for blackboard links
@@ -3169,21 +3185,27 @@ class c2m_WordConverter {
             // is link.href already a key for blackboardLinks
             if (blackboardLinks[link.href]) {
                 blackboardLinks[link.href].text.push(link.innerText);
+                const numProbs = blackboardLinks[link.href].text.length ;
+                const errorString = error.replace('{id}', `id="blackboard-link-${numProbs}"`);
+                link.insertAdjacentHTML('beforebegin', errorString);
             }
             else if (this.isBlackboardLink(link.href)) {
-                link.insertAdjacentHTML('beforebegin', error);
                 blackboardLinks[link.href] = {
                     "text": [link.innerText]
                 };
+                const errorString = error.replace('{id}', `id="blackboard-link-0"`);
+                link.insertAdjacentHTML('beforebegin', errorString);
             }
         }
 
         // loop through keys of blackboardLinks
         // - for each link show the number of times and texts it was used with
+        error = `<a href="#blackboard-link-{id}" ${CHECK_HTML_ONCLICK}><span class="w2c-error">Blackboard Link</span></a>`;
         for (let link in blackboardLinks) {
             let message = `Found Blackboard link - <em><small>${link}</small></em> - ${blackboardLinks[link].text.length} times, including:<ul>`;
             for (let i = 0; i < blackboardLinks[link].text.length; i++) {
-                message += ` <li>${blackboardLinks[link].text[i]}</li>`;
+                const errorString = error.replace('{id}', `${i}`);
+                message += ` <li>${errorString} ${blackboardLinks[link].text[i]}</li>`;
             }
             message += `</ul>`;
 
@@ -3246,19 +3268,27 @@ class c2m_WordConverter {
         // search doc for any span.canvasImage
         let canvasImages = doc.querySelectorAll('span.canvasImage');
 
-        const error = '<span class="w2c-warning">canvasImage</span>';
+        let message = `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
+                       Broken images may be fixed in the final stage.<br /> 
+                       <small><strong>
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>
+                         <ul>`;
+        let error = '<span {id} class="w2c-warning">canvasImage</span>';
         // insert a warning next to each canvasImage
         for (let i = 0; i < canvasImages.length; i++) {
             let img = canvasImages[i];
-            img.insertAdjacentHTML('beforebegin', error);
+            const errorString = error.replace('{id}', `id="canvas-image-${i}"`);
+            img.insertAdjacentHTML('beforebegin', errorString);
+            // need to append something for this image to message
+            let msgErrorString = `<a href="#canvas-image-${i}" ${CHECK_HTML_ONCLICK}><span class="w2c-warning">canvasImage</span></a>`;
+            message += `<li>${msgErrorString} some text</li>`;
         }
+
         if (canvasImages.length > 0) {
+            message += "</ul>";
             this.mammothResult.messages.push({
                 "type": "error",
-                "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small> ${error}. 
-                       Broken images may be fixed in the final stage.<br /> 
-                       <small><strong>
-                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
+                "message": message
             });
         }
     }

@@ -1,13 +1,30 @@
 # Problems with Canvas External URLs 
 
-```word2canvas``` supports the creation of an [external URL as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967) via the _Canvas External Url_ Word style (based on the _Heading 1_ Word style). The _Canvas External URL_ style defines the title of the item. The content of the section following the _Canvas External URL_ style is the URL it should link to. For example
+## Background
+
+```word2canvas``` supports the creation of an [external URL as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967). As the name suggests, the Canvas External URL item allows for an external web page to be displayed within the module item. The only information it accepts is the URL (aka link) for that external web page.
+
+## How ```word2canvas``` does it?
+
+There is a  _Canvas External Url_ Word style (based on the _Heading 1_ Word style). The _Canvas External URL_ style defines the title of the item. The content of the section following the "heading" should be just the URL.
+
+For example, the following image shows:
+
+- ```Cric Info``` as the content for the _Canvas External URL_ heading
+- ```https://www.espncricinfo.com/``` as the content of the section
+
+This will work.
 
 ![Excerpt from Word document of correct Canvas External URL usage](images/workingCanvasExternalUrlDoc.png)
+
+## Common Problems
 
 There are two common problems when using this style
 
 1. No valid URL is provided; and,
 2. More than a valid URL is provided.
+
+Problem #2 is common when using a Word document produced by the CAR process.
 
 ## No valid URL is provided
 

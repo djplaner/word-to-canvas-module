@@ -67,7 +67,7 @@ const CHECK_HTML_HTML = `
   <div id="c2m_messages"></div>
 </div>
 
-<button class="w2c-accordion">HTML</button>
+<button class="w2c-accordion" id="c2m_html_button">HTML</button>
 <div class="w2c_panel" id="c2m_html"></div>
 </div>
 
