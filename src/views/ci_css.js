@@ -176,7 +176,7 @@ border-collapse: collapse; }*/
   width: 5%;
   margin-top: 1em;
   margin-bottom: 1em;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png');
+  /*background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png'); */
   background-repeat: no-repeat;
   background-size: contain;
 /*  margin-top: 1em; */
