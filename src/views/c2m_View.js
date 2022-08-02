@@ -21,7 +21,7 @@ export default class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "1.7.4";
+		this.version = "2.0.1";
 	}
 
 
