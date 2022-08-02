@@ -540,12 +540,18 @@ export default class c2m_WordConverter {
         let error = '<span {id} class="w2c-warning">canvasImage</span>';
         // insert a warning next to each canvasImage
         for (let i = 0; i < canvasImages.length; i++) {
-            let img = canvasImages[i];
+            let imgSpan = canvasImages[i];
             const errorString = error.replace('{id}', `id="canvas-image-${i}"`);
-            img.insertAdjacentHTML('beforebegin', errorString);
+            imgSpan.insertAdjacentHTML('beforebegin', errorString);
+            // get the alt text of imgSpan > img
+            let alt = "<em>no alt text</em>";
+            let img = imgSpan.querySelector('img');
+            if (img) {
+                alt = img.getAttribute('alt');
+            }
             // need to append something for this image to message
             let msgErrorString = `<a href="#canvas-image-${i}" ${CHECK_HTML_ONCLICK}><span class="w2c-warning">canvasImage</span></a>`;
-            message += `<li>${msgErrorString} some text</li>`;
+            message += `<li>${msgErrorString} image with <em>alt</em> text ${alt}</li>`;
         }
 
         if (canvasImages.length > 0) {

@@ -157,8 +157,6 @@ export default class c2m_Controller {
 	 */
 
 	handleH2AsAccordionClick() {
-		console.log(`- trying to use h2s as accordions`);
-
 		// only works if currentState is c2m_checkHtml
 		if (this.currentState === c2m_CheckHtml) {
 			this.model.h2sAsAccordions();
@@ -166,7 +164,18 @@ export default class c2m_Controller {
 		}
 	}
 
+	/**
+	 * Event handler for when user wishes to retain error labels in the HTML
+	 * for adding into Canvas
+	 * if "input#w2c-leave-errors" is checked, then set the model's keepErrors flag to true
+	 * 
+	 */
 
+	handleLeaveErrorsClick() {
+		// get value of input#w2c-leave-errors
+		let keepErrors = document.getElementById('w2c-leave-errors').checked;
+		this.model.keepErrors = keepErrors;
+	}
 }
 
 

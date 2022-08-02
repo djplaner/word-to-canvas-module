@@ -353,9 +353,13 @@ const CHECK_HTML_HTML = `
 <small><strong>Customise:</strong></small>
 <ul style="list-style: none">
   <li><small> <input type="checkbox" id="w2c-accordion"> <label for="w2c-accordion">H2 as accordions</label>
-	<a href="https://github.com/djplaner/word-to-canvas-module/docs/customise/h2-as-accordions.md" target="_blank">
+	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/h2-as-accordions.html" target="_blank">
     <i class="icon-info"></i> for more</a></small>
   </li>
+  <li><small> <input type="checkbox" id="w2c-leave-errors"> <label for="w2c-leave-errors">Keep error labels in Canvas content</label>
+	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/keep-error-labels.md" target="_blank">
+    <i class="icon-info"></i> for more</a></small>
+	</li>
   </ul>
 </div>
 
@@ -612,6 +616,9 @@ class c2m_CheckHtmlView extends c2m_View {
 		// add the event handler for clicking on input#w2c-accordion
 		let accordionSet = document.querySelector("input#w2c-accordion");
 		accordionSet.onclick = () => this.controller.handleH2AsAccordionClick(); 
+		// - event handle for input#w2c-leave-errors
+		let leaveErrors = document.querySelector("input#w2c-leave-errors");
+		leaveErrors.onclick = () => this.controller.handleLeaveErrorsClick();
 
 		// add onClick event handlers TODO fix these
 		let closeButton = document.getElementById("w2c-btn-close");
@@ -2762,6 +2769,7 @@ button.faqQuestion {
   margin: .5em 5vw !important;
   padding: 1em;
 }
+
     `;
 
 
@@ -3310,12 +3318,18 @@ class c2m_WordConverter {
         let error = '<span {id} class="w2c-warning">canvasImage</span>';
         // insert a warning next to each canvasImage
         for (let i = 0; i < canvasImages.length; i++) {
-            let img = canvasImages[i];
+            let imgSpan = canvasImages[i];
             const errorString = error.replace('{id}', `id="canvas-image-${i}"`);
-            img.insertAdjacentHTML('beforebegin', errorString);
+            imgSpan.insertAdjacentHTML('beforebegin', errorString);
+            // get the alt text of imgSpan > img
+            let alt = "<em>no alt text</em>";
+            let img = imgSpan.querySelector('img');
+            if (img) {
+                alt = img.getAttribute('alt');
+            }
             // need to append something for this image to message
             let msgErrorString = `<a href="#canvas-image-${i}" ${CHECK_HTML_ONCLICK}><span class="w2c-warning">canvasImage</span></a>`;
-            message += `<li>${msgErrorString} some text</li>`;
+            message += `<li>${msgErrorString} image with <em>alt</em> text ${alt}</li>`;
         }
 
         if (canvasImages.length > 0) {
@@ -4619,6 +4633,9 @@ class c2m_Modules {
 class c2m_Model {
     constructor(controller) {
 
+        // flag to choose if error labels are removed
+        this.keepErrors = false;
+
         this.controller = controller;
         // indicate which of the four stages we're up to
         //		this.stage = c2m_initialise;
@@ -5197,9 +5214,26 @@ class c2m_Model {
      */
     removeSpanErrors(doc) {
         // find all span.w2c-error elements
-        doc.querySelectorAll('span.w2c-error').forEach( (elem) => {
-            elem.remove();
-        });
+        // - but if keepErrors is true then keep them
+        alert(`removeSpanErrors - keepErrors: ${this.keepErrors}`);
+        if ( ! this.keepErrors ) {
+            let errors = doc.querySelectorAll('span.w2c-error');
+            alert(`removeSpanErrors - found ${errors.length} errors`);
+            errors.forEach( (elem) => {
+                elem.remove();
+            });
+        } else {
+            // need to add style string to each span.w2c-error
+            const styleString = "font-size:50%;margin:1em;background-color:#ff0000;color:white;border-radius:0.5em;padding:0.5em;line-height:inherit;vertical-align:middle;";
+            let errors = doc.querySelectorAll('span.w2c-error');
+            alert(`removeSpanErrors - found ${errors.length} errors`);
+            errors.forEach( (elem) => {
+                elem.style = styleString;
+            });
+        }
+        // always clear keepErrors
+        this.keepErrors = false;
+        // warnings and oks are always removed
         doc.querySelectorAll('span.w2c-warning').forEach( (elem) => {
             elem.remove();
         });
@@ -5425,7 +5459,21 @@ class c2m_Controller {
 		}
 	}
 
+	/**
+	 * Event handler for when user wishes to retain error labels in the HTML
+	 * for adding into Canvas
+	 * if "input#w2c-leave-errors" is checked, then set the model's keepErrors flag to true
+	 * 
+	 */
 
+	handleLeaveErrorsClick() {
+		console.log('- leaving errors');
+
+		// get value of input#w2c-leave-errors
+		let keepErrors = document.getElementById('w2c-leave-errors').checked;
+		console.log(`-- keepErrors ${keepErrors}`);
+		this.model.keepErrors = keepErrors;
+	}
 }
 
 // src/index.js

@@ -22,6 +22,9 @@ import c2m_Modules from './canvas/c2m_Modules';
 export default class c2m_Model {
     constructor(controller) {
 
+        // flag to choose if error labels are removed
+        this.keepErrors = false;
+
         this.controller = controller;
         // indicate which of the four stages we're up to
         //		this.stage = c2m_initialise;
@@ -600,9 +603,23 @@ export default class c2m_Model {
      */
     removeSpanErrors(doc) {
         // find all span.w2c-error elements
-        doc.querySelectorAll('span.w2c-error').forEach( (elem) => {
-            elem.remove();
-        });
+        // - but if keepErrors is true then keep them
+        if ( ! this.keepErrors ) {
+            let errors = doc.querySelectorAll('span.w2c-error');
+            errors.forEach( (elem) => {
+                elem.remove();
+            });
+        } else {
+            // need to add style string to each span.w2c-error
+            const styleString = "font-size:50%;margin:1em;background-color:#ff0000;color:white;border-radius:0.5em;padding:0.5em;line-height:inherit;vertical-align:middle;";
+            let errors = doc.querySelectorAll('span.w2c-error');
+            errors.forEach( (elem) => {
+                elem.style = styleString;
+            });
+        }
+        // always clear keepErrors
+        this.keepErrors = false;
+        // warnings and oks are always removed
         doc.querySelectorAll('span.w2c-warning').forEach( (elem) => {
             elem.remove();
         });

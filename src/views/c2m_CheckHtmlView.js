@@ -64,9 +64,13 @@ const CHECK_HTML_HTML = `
 <small><strong>Customise:</strong></small>
 <ul style="list-style: none">
   <li><small> <input type="checkbox" id="w2c-accordion"> <label for="w2c-accordion">H2 as accordions</label>
-	<a href="https://github.com/djplaner/word-to-canvas-module/docs/customise/h2-as-accordions.md" target="_blank">
+	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/h2-as-accordions.html" target="_blank">
     <i class="icon-info"></i> for more</a></small>
   </li>
+  <li><small> <input type="checkbox" id="w2c-leave-errors"> <label for="w2c-leave-errors">Keep error labels in Canvas content</label>
+	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/keep-error-labels.md" target="_blank">
+    <i class="icon-info"></i> for more</a></small>
+	</li>
   </ul>
 </div>
 
@@ -323,6 +327,9 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		// add the event handler for clicking on input#w2c-accordion
 		let accordionSet = document.querySelector("input#w2c-accordion");
 		accordionSet.onclick = () => this.controller.handleH2AsAccordionClick(); 
+		// - event handle for input#w2c-leave-errors
+		let leaveErrors = document.querySelector("input#w2c-leave-errors");
+		leaveErrors.onclick = () => this.controller.handleLeaveErrorsClick();
 
 		// add onClick event handlers TODO fix these
 		let closeButton = document.getElementById("w2c-btn-close");
