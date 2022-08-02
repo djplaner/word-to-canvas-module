@@ -1940,7 +1940,7 @@ border-collapse: collapse; }*/
   width: 5%;
   margin-top: 1em;
   margin-bottom: 1em;
-  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png');
+  /*background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png'); */
   background-repeat: no-repeat;
   background-size: contain;
 /*  margin-top: 1em; */
@@ -3556,7 +3556,19 @@ class c2m_WordConverter {
                     const className = ci_style.substring(4);
                     newFirstDiv.classList.add(className);
                 } else {
-                    newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
+                    if ( 
+                        (ci_style==="p.flashback") || 
+                        (ci_style==="p.canaryExercise") || 
+                        (ci_style==="p.weeklyWorkout") ||
+                        (ci_style==="p.ael-note") ||
+                        (ci_style==="p.reading") ||
+                        (ci_style==="p.activity") ||
+                        (ci_style==="p.comingSoon") 
+                        ) { 
+                            newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
+                        } else {
+                            newFirstDiv.innerHTML = content;
+                        }
                     // remove p. from from front of ci_style
                     const className = ci_style.substring(2);
                     newFirstDiv.classList.add(className);
