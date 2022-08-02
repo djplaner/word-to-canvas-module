@@ -10,5 +10,5 @@
 // @license      MIT
 // @homepage     https://github.com/djplaner/word-to-canvas-module
 // @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/0.3.10/mammoth.browser.min.js
-// @require      https://raw.githack.com/djplaner/word-to-canvas-module/main/release/word2canvas.min.js
+// @require      https://rawcdn.githack.com/djplaner/word-to-canvas-module/4815c0436bb134932095ccfc3fccef4a2f300893/release/word2canvas.min.js
 // ==/UserScript==
