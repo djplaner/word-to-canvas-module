@@ -90,7 +90,7 @@ export default class c2m_Controller {
 				}*/
 
 		// inject on module as well
-		this.injectCss();
+		//this.injectCss();
 		// but if only on a pages page, finish up
 		let currentPageUrl = window.location.href;
 		if (currentPageUrl.match(/courses\/[0-9]*\/pages/)) {
@@ -104,15 +104,15 @@ export default class c2m_Controller {
 	/**
 	 * Inject the CI CSS into a Canvas page 
 	 */
-	injectCss() {
+/*	injectCss() {
 		return;
 		//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
 		//		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
 		let css = `<link rel="stylesheet" href="${CI_CSS_URL}">`;
 
 		// inject css string element at end of head
-		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css);
-	}
+		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css); 
+	} */
 
 	/**
 	 * Event handler for clicks on navigation buttons between app states.
@@ -149,6 +149,23 @@ export default class c2m_Controller {
 		this.currentState = c2m_CheckHtml;
 		this.render();
 	}
+
+	/**
+	 * Event handler for when user selects to convert h2s to accordions in
+	 * the CheckHTML state
+	 * We're basically going to call the appropriate model method
+	 */
+
+	handleH2AsAccordionClick() {
+		console.log(`- trying to use h2s as accordions`);
+
+		// only works if currentState is c2m_checkHtml
+		if (this.currentState === c2m_CheckHtml) {
+			this.model.h2sAsAccordions();
+
+		}
+	}
+
 
 }
 

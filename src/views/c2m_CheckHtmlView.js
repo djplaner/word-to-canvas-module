@@ -60,6 +60,15 @@ const CHECK_HTML_HTML = `
   <p>Open <em>Messages</em> accordion to show conversion messages</p>
   <p>Open <em>HTML</em> to the HTML conversion of the Word document content.</p>
   </div>
+<div class="pad-box-micro border border-trbl muted" id="w2c-customise">
+<small><strong>Customise:</strong></small>
+<ul style="list-style: none">
+  <li><small> <input type="checkbox" id="w2c-accordion"> <label for="w2c-accordion">H2 as accordions</label>
+	<a href="https://github.com/djplaner/word-to-canvas-module/docs/customise/h2-as-accordions.md" target="_blank">
+    <i class="icon-info"></i> for more</a></small>
+  </li>
+  </ul>
+</div>
 
 
 <button class="w2c-accordion" id="c2m_result">Messages</button>
@@ -80,9 +89,15 @@ const CHECK_HTML_HTML = `
   <h5>What next?</h5>
   <p class="text-warning">
   <i class="icon-Solid icon-warning" aria-hidden="true"></i>
-  Some <em>.docx</em> files format may be "off". A solution
-  for some has been to save the document again using the Word app (i.e. not in the browser)
-  ensuring it's saved as a Word 2007-365 .docx file.</p>
+  <ol>
+    <li> Corrupt Word doc?
+	<p> Some <em>.docx</em> files format may be "off". A solution for some has been to save the 
+	   document again using the Word app (i.e. not in the browser) ensuring it's saved as a Word 2007-365 .docx file.</p>
+	   </li>
+	<li> word2canvas is broken? - probable cause
+	<p>Report the error to your friendly word2canvas technician.</p>
+	</li>
+	</ol>
 </div>
 
     </div> <!-- end content -->
@@ -304,6 +319,10 @@ export default class c2m_CheckHtmlView extends c2m_View {
 
 		// configure accordions
 		this.configureAccordions();
+
+		// add the event handler for clicking on input#w2c-accordion
+		let accordionSet = document.querySelector("input#w2c-accordion");
+		accordionSet.onclick = () => this.controller.handleH2AsAccordionClick(); 
 
 		// add onClick event handlers TODO fix these
 		let closeButton = document.getElementById("w2c-btn-close");

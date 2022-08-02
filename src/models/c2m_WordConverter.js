@@ -177,6 +177,17 @@ onclick='if((document.getElementById("c2m_html").style.display === "")||(documen
 
 const TABLE_CLASS = ["table", "stripe-row-odd"];
 
+const ACCORDION_TEMPLATE = `
+<details style="margin-bottom: 0.5rem; padding: .5rem 1rem;">
+  <summary style="padding: 0.5rem; margin: -0.5rem; background: #efefef; border-radius: 5px; cursor: pointer; font-size: 1.2em;">
+    <strong>{TITLE}</strong>
+  </summary>
+  <div class="accordion-content" style="border-bottom-color: #efefef; border-bottom-style: solid; border-bottom-width: 2px; border-left-color: #efefef; border-left-style: solid; border-left-width: 2px; border-right-color: #efefef; border-right-style: solid; border-right-width: 2px;   padding: 1em; margin-left: -.5rem; margin-right: -0.5rem;">
+  {CONTENT}
+  </div>
+</details>
+`;
+
 export default class c2m_WordConverter {
 
     /**
@@ -429,20 +440,24 @@ export default class c2m_WordConverter {
 
         let blackboardLinks = {};
         // loop through the links and check for blackboard links
+        let numError = 0;
         for (let i = 0; i < links.length; i++) {
             let link = links[i];
             // is link.href already a key for blackboardLinks
             if (blackboardLinks[link.href]) {
-                blackboardLinks[link.href].text.push(link.innerText);
-                const numProbs = blackboardLinks[link.href].text.length ;
-                const errorString = error.replace('{id}', `id="blackboard-link-${numProbs}"`);
+                blackboardLinks[link.href].push( { "text" : link.innerText,
+                    "count": numError }
+                    );
+                const errorString = error.replace('{id}', `id="blackboard-link-${numError}"`);
+                numError+=1;
                 link.insertAdjacentHTML('beforebegin', errorString);
             }
             else if (this.isBlackboardLink(link.href)) {
-                blackboardLinks[link.href] = {
-                    "text": [link.innerText]
-                };
-                const errorString = error.replace('{id}', `id="blackboard-link-0"`);
+                blackboardLinks[link.href] = [
+                    { "text" : link.innerText, "count": numError},
+                ];
+                const errorString = error.replace('{id}', `id="blackboard-link-${numError}"`);
+                numError+=1;
                 link.insertAdjacentHTML('beforebegin', errorString);
             }
         }
@@ -451,10 +466,10 @@ export default class c2m_WordConverter {
         // - for each link show the number of times and texts it was used with
         error = `<a href="#blackboard-link-{id}" ${CHECK_HTML_ONCLICK}><span class="w2c-error">Blackboard Link</span></a>`;
         for (let link in blackboardLinks) {
-            let message = `Found Blackboard link - <em><small>${link}</small></em> - ${blackboardLinks[link].text.length} times, including:<ul>`;
-            for (let i = 0; i < blackboardLinks[link].text.length; i++) {
-                const errorString = error.replace('{id}', `${i}`);
-                message += ` <li>${errorString} ${blackboardLinks[link].text[i]}</li>`;
+            let message = `Found Blackboard link - <em><small>${link}</small></em> - ${blackboardLinks[link].length} times, including:<ul>`;
+            for (let i = 0; i < blackboardLinks[link].length; i++) {
+                const errorString = error.replace('{id}', `${blackboardLinks[link][i].count}`);
+                message += ` <li>${errorString} ${blackboardLinks[link][i].text}</li>`;
             }
             message += `</ul>`;
 
@@ -955,6 +970,116 @@ export default class c2m_WordConverter {
         let parser = new DOMParser();
         let doc2 = parser.parseFromString(juiceHTML, "text/html");
         return doc2; 
+    }
+
+    /**
+     * Called when the user has clicked on the h2 as accordion check box. Depending
+     * on the state input#w2c-accordion will modify the html in mammothResult and also
+     * in div#c2m_html
+     */
+
+    h2sAsAccordions() {
+        // does input#w2c-accordion exist?
+        let accordion = document.querySelector('input#w2c-accordion');
+        if (!accordion){
+            console.log('input#w2c-accordion not found');
+            return;
+        }
+        // what to do
+        if ( accordion.checked ) {
+            // accordion has been checked, time to convert h2s to accordions
+            this.h2ToAccordion();
+        } else {
+            // accordion has been unchecked, time to convert accordions to h2s
+            this.accordionToH2();
+        }
+    }
+
+    /**
+     * Get contents of div#c2m_html. Convert all the h2s to accordions
+     */
+
+    h2ToAccordion() {
+        console.log('h2ToAccordion');
+
+        // get the html from div#c2m_html
+        let html = document.querySelector('div#c2m_html').innerHTML;
+
+        // parse the html
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+
+        // get all h2s
+        let h2s = doc.querySelectorAll('h2');
+        // loop through all the h2s
+        for (let i = 0; i < h2s.length; i++) {
+            // get the innerText of the h2
+            let h2Text = h2s[i].innerText;
+            // get all content from the h2 until the next h1/h2
+            let h2Content = this.nextUntil(h2s[i], 'h1,h2');
+            let content = h2Content.map(elem => elem.outerHTML);
+            content = content.join('');
+
+            let accordionHtml = ACCORDION_TEMPLATE;
+            accordionHtml = accordionHtml.replace('{TITLE}', h2Text);
+            accordionHtml = accordionHtml.replace('{CONTENT}', content);
+
+            // insert the accordion html before the h2
+            h2s[i].insertAdjacentHTML('beforebegin', accordionHtml);
+            // remove the h2
+            h2s[i].remove();
+            // remove the content
+            for (let j = 0; j < h2Content.length; j++) {
+                h2Content[j].remove();
+            }
+        }
+        // get the html from the doc
+        let html2 = doc.documentElement.outerHTML;
+        // put the html in div#c2m_html
+        document.querySelector('div#c2m_html').innerHTML = html2;
+        this.mammothResult.value = html2;
+    }
+
+    /**
+     * Get contents of div#c2m_html. Convert all the accordions to h2s
+     */
+
+    accordionToH2() {
+        console.log('accordionToH2');
+
+        // get the html from div#c2m_html
+        let html = document.querySelector('div#c2m_html').innerHTML;
+
+        // parse the html
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+
+        // get all the <details> elements in doc
+        let details = doc.querySelectorAll('details');
+        // loop through all the <details> elements
+        for (let i = 0; i < details.length; i++) {
+            // get the innerHtml of details > summary 
+            let summary = details[i].querySelector('summary').innerHTML;
+            // remove the <strong> </strong> from summary
+            summary = summary.replace('<strong>', '');
+            summary = summary.replace('</strong>', '');
+            // get the innerHtml of the details > .accordion-content
+            let content = details[i].querySelector('.accordion-content').innerHTML;
+
+            // create a new div containing both summary and content
+            let newDiv = document.createElement('div');
+            newDiv.innerHTML = `<h2>${summary}</h2>${content}`;
+
+            // insert the new div before the details element
+            details[i].insertAdjacentElement('beforebegin', newDiv);
+            // remove the details element
+            details[i].remove();
+        }
+        // get the html from the doc
+        let html2 = doc.documentElement.outerHTML;
+        // put the html in div#c2m_html
+        document.querySelector('div#c2m_html').innerHTML = html2;
+        this.mammothResult.value = html2;
     }
 
 }
