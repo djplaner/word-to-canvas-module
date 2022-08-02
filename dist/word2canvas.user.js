@@ -2806,6 +2806,8 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Picture'] => p.picture",
         "p[style-name='PictureRight'] => p.pictureRight",
         "p[style-name='Quote'] => p.quote",
+        "p[style-name='Poem'] => div.poem",
+        "r[style-name='Poem Right'] => div.poemRight",
 
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
@@ -2849,8 +2851,6 @@ const DEFAULT_OPTIONS = {
                 "p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
                 "p[style-name='Weekly Workout'] => div.weeklyWorkout > p:fresh", */
 
-        "p[style-name='Poem'] => div.poem > p:fresh",
-        "r[style-name='Poem Right'] => div.poemRight > p:fresh",
 
         /*        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
                 "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
@@ -3526,7 +3526,8 @@ class c2m_WordConverter {
         const ci_styles = [
             'p.flashback', 'p.canaryExercise', 'p.weeklyWorkout',
             'p.ael-note', 'p.guAddedAdvice', 'p.reading', 'p.activity',
-            'p.comingSoon', 'p.picture', 'p.pictureRight'
+            'p.comingSoon', 'p.picture', 'p.pictureRight', 'div.poem',
+            'div.poemRight'
         ];
 
         // loop through styles array 
@@ -3562,11 +3563,18 @@ class c2m_WordConverter {
                 //firstDiv.innerHTML = content;
                 // change firstDiv tag from p to div
                 let newFirstDiv = document.createElement('div');
-                newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
-                // set class name to flashback
-                // remove p. from from front of ci_style
-                let className = ci_style.substring(2);
-                newFirstDiv.classList.add(className);
+
+                if (ci_style.includes('div.poem')) {
+                    // a poem style gets that class and straight content, no instructions
+                    newFirstDiv.innerHTML=content;
+                    const className = ci_style.substring(4);
+                    newFirstDiv.classList.add(className);
+                } else {
+                    newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
+                    // remove p. from from front of ci_style
+                    const className = ci_style.substring(2);
+                    newFirstDiv.classList.add(className);
+                }
                 // replace firstDiv with newFirstDiv
                 firstDiv.parentNode.replaceChild(newFirstDiv, firstDiv);
             }
