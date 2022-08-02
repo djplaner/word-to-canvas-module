@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      1.7.4
+// @version      2.0.0
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -10,6 +10,7 @@
 // @license      MIT
 // @homepage     https://github.com/djplaner/word-to-canvas-module
 // @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/0.3.10/mammoth.browser.min.js
+// @require      https://rawcdn.githack.com/djplaner/canvas-collections/62a4248058d13d32c574f0b620760891651587a7/src/juice/juice_client.js
 // ==/UserScript==
 
 /**
@@ -344,6 +345,19 @@ const CHECK_HTML_HTML = `
   <p>Open <em>Messages</em> accordion to show conversion messages</p>
   <p>Open <em>HTML</em> to the HTML conversion of the Word document content.</p>
   </div>
+<div class="pad-box-micro border border-trbl muted" id="w2c-customise">
+<small><strong>Customise:</strong></small>
+<ul style="list-style: none">
+  <li><small> <input type="checkbox" id="w2c-accordion"> <label for="w2c-accordion">H2 as accordions</label>
+	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/h2-as-accordions.html" target="_blank">
+    <i class="icon-info"></i> for more</a></small>
+  </li>
+  <li><small> <input type="checkbox" id="w2c-leave-errors"> <label for="w2c-leave-errors">Keep error labels in Canvas content</label>
+	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/keep-error-labels.md" target="_blank">
+    <i class="icon-info"></i> for more</a></small>
+	</li>
+  </ul>
+</div>
 
 
 <button class="w2c-accordion" id="c2m_result">Messages</button>
@@ -351,7 +365,7 @@ const CHECK_HTML_HTML = `
   <div id="c2m_messages"></div>
 </div>
 
-<button class="w2c-accordion">HTML</button>
+<button class="w2c-accordion" id="c2m_html_button">HTML</button>
 <div class="w2c_panel" id="c2m_html"></div>
 </div>
 
@@ -364,9 +378,15 @@ const CHECK_HTML_HTML = `
   <h5>What next?</h5>
   <p class="text-warning">
   <i class="icon-Solid icon-warning" aria-hidden="true"></i>
-  Some <em>.docx</em> files format may be "off". A solution
-  for some has been to save the document again using the Word app (i.e. not in the browser)
-  ensuring it's saved as a Word 2007-365 .docx file.</p>
+  <ol>
+    <li> Corrupt Word doc?
+	<p> Some <em>.docx</em> files format may be "off". A solution for some has been to save the 
+	   document again using the Word app (i.e. not in the browser) ensuring it's saved as a Word 2007-365 .docx file.</p>
+	   </li>
+	<li> word2canvas is broken? - probable cause
+	<p>Report the error to your friendly word2canvas technician.</p>
+	</li>
+	</ol>
 </div>
 
     </div> <!-- end content -->
@@ -416,6 +436,32 @@ span.w2c-error {
     vertical-align: middle;
     box-shadow: 5px 5px 5px black;
 }
+
+span.w2c-warning {
+    font-size: 50%;
+    margin: 1em;
+    background-color: yellow;
+    color: black;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
+
+span.w2c-ok {
+    font-size: 50%;
+    margin: 1em;
+    background-color: lightgreen;
+	color: black;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    line-height: inherit;
+    vertical-align: middle;
+    box-shadow: 5px 5px 5px black;
+}
+
+
 
 .w2c-content {
 	clear:both;
@@ -562,6 +608,13 @@ class c2m_CheckHtmlView extends c2m_View {
 
 		// configure accordions
 		this.configureAccordions();
+
+		// add the event handler for clicking on input#w2c-accordion
+		let accordionSet = document.querySelector("input#w2c-accordion");
+		accordionSet.onclick = () => this.controller.handleH2AsAccordionClick(); 
+		// - event handle for input#w2c-leave-errors
+		let leaveErrors = document.querySelector("input#w2c-leave-errors");
+		leaveErrors.onclick = () => this.controller.handleLeaveErrorsClick();
 
 		// add onClick event handlers TODO fix these
 		let closeButton = document.getElementById("w2c-btn-close");
@@ -1724,12 +1777,1005 @@ class c2m_CompletedView extends c2m_View {
 
 }
 
+const CI_CSS = `
+
+.apa,
+.apa ul,
+.apa ol,
+.apa dl {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  /*font-size: 80% !important;*/
+}
+
+.apa li {
+  list-style-type: none !important;
+}
+
+.apa p,
+.apa li,
+.apa dd,
+p.apa {
+  margin-bottom: 1em !important;
+  margin-left: 2em !important;
+  margin-top: 1em !important;
+  text-indent: -2em !important;
+}
+
+/*****************************************************/
+/* Main body elements */
+
+/** Base Styles **/
+code {
+  font-size: 95%;
+  color: #347ea4;
+  background: #f8f8f8;
+  padding: 0.4em;
+  margin: 0.5vw;
+}
+
+p code {
+  padding: 0.125em;
+  margin: 0;
+}
+
+.blackboardContentLink,
+.blackboardMenuLink {
+  text-decoration: underline;
+  color: #347ea4 !important;
+}
+
+cite {
+  font-size: 80%;
+}
+
+cite:before {
+  margin-left: 1em;
+}
+
+hr {
+  border-top: 2px solid;
+  width: 98%;
+}
+
+/** Tables **/
+.table {
+  /*width: 99%;*/
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.table th {
+  font-weight: bold;
+}
+
+.table td,
+.table th {
+  padding: 6px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.table tbody tr:nth-child(odd) {
+  border: 1px solid #757575;
+  border-width: 1px 0;
+}
+
+.table caption,
+.table .caption {
+  text-align: center;
+  font-style: italic;
+  color: #757575;
+  border-bottom: 1px solid #757575;
+  background: #f8f8f8;
+  padding: 0.5em 0;
+}
+
+/*.table .flex-row {
+width: 99%;
+margin: 0;
+border-collapse: collapse; }*/
+
+.table.stripe-row-odd tbody tr:nth-child(odd),
+.table.striped-odd .flex-row:nth-child(odd) {
+  background: #f0f0f0;
+  border: 1px solid #757575;
+  border-width: 1px 0;
+}
+
+/** Activity **/
+
+.action-box {
+  border-radius: 1em;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em auto;
+  width: 80%;
+}
+
+.activity {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+  border-radius: 1em;
+  border-style: outset;
+  padding: 1em;
+}
+
+.ael-note {
+  border-radius: 3px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em auto;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80%;
+  padding: 1em;
+  background-color: #ffdc0b !important;
+  color: #000000 !important;
+}
+
+.filmWatchingOptions {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+  border-radius: 1em;
+  padding: 1em;
+}
+
+.activityImage {
+  width: 5%;
+  background-repeat: no-repeat;
+  background-size: contain; 
+  margin-right: 1em;
+  float: left;
+}
+
+.readingImage {
+  width: 5%;
+  background-repeat: no-repeat;
+  background-size: contain; 
+  margin-right: 1em;
+  float: left;
+}
+
+.noteImage {
+  width: 5%;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png');
+  background-repeat: no-repeat;
+  background-size: contain;
+/*  margin-top: 1em; */
+}
+
+.noteImage img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.filmWatchingOptionsImage {
+  width: 5%;
+  background-image: url('https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-movie-beginning-64.png');
+background-repeat: no-repeat;
+background-size: contain; 
+}
+
+.filmWatchingOptionsImage img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.activityNarrow {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  flex: 1 1 auto;
+  display: flex;
+
+  /*  flex-direction: row;
+flex-wrap: wrap;*/
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.invisible {
+  display: none;
+}
+
+.reading {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+  padding: 1em;
+  border-radius: 1em;
+  border-style: outset;
+}
+
+.icon {
+  flex: 1 !important;
+  display: flex;
+  /*align-items: flex-start;*/
+  padding: 0.25em;
+  margin: 1em 0.5em;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.icon img {
+  max-width: 75%;
+  height: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+/*#GU_ContentInterface .icon svg {
+width: 100%; }*/
+
+.instructions {
+  flex: 6;
+  margin-left: 1em;
+}
+
+.audio-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.table.stripe-row-even tbody tr:nth-child(even),
+.table.striped-even .flex-row:nth-child(even) {
+  background: #f8f8f8;
+  border: 1px solid #757575;
+  border-width: 1px 0;
+}
+
+.table .header .flex-column {
+  font-weight: bold;
+}
+
+.table .flex-row .flex-column {
+  padding: 6px;
+  text-align: left;
+}
+
+.table .flex-row.boxes > * {
+  box-shadow: 1px 0 0 0 #888, 0 1px 0 0 #888, 1px 1px 0 0 #888,
+    1px 0 0 0 #888 inset, 0 1px 0 0 #888 inset;
+}
+
+.table.boxes td {
+  border: 1px solid #757575 !important;
+}
+
+.table.boxes th {
+  border: 1px solid #757575 !important;
+}
+
+.table.stripe-col-first th:nth-of-type(1) {
+  background: #f8f8f8;
+}
+
+.table.stripe-col-odd td:nth-child(odd),
+.table.col-odd th:nth-child(odd) {
+  background: #f8f8f8;
+}
+
+.table.stripe-col-even td:nth-child(even),
+.table.col-even th:nth-child(even) {
+  background: #f8f8f8;
+}
+
+.table .flex-row + .flex-row {
+  margin-top: 0em !important;
+}
+
+.table .flex-row {
+  padding: 0.3em;
+}
+
+.table.table-bg,
+.table tr.table-bg {
+  opacity: 0.2;
+  color: #000000;
+}
+
+.video iframe,
+.video object,
+.video embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /*width: 100%;
+height: 100%;*/
+}
+
+/** timeline **/
+
+.timeline {
+  list-style-type: none !important;
+  min-width: 75%;
+  max-width: 75%;
+}
+
+.timeline li {
+  padding: 0.5em 1em;
+  border-left: 4px solid #e0e0e0;
+}
+
+.timeline h2 {
+  text-transform: uppercase;
+  font-size: 100%;
+  font-weight: bold;
+  margin: -1.25em 0 0.2em !important;
+  padding: 0;
+}
+
+.timeline h3 {
+  text-transform: uppercase;
+  font-size: 70%;
+  font-weight: bold;
+  color: #757575;
+  margin: -1.5em 0 0.2em !important;
+  padding: 0;
+}
+
+.timeline p {
+  padding: 0;
+}
+
+.timeline p span {
+  font-style: italic;
+  color: #757575;
+}
+
+.timeline li:before {
+  content: "";
+  text-transform: uppercase;
+  font-size: 50%;
+  background: #757575;
+  color: #ffffff;
+  display: inline-block;
+  text-align: center;
+  margin-left: -2.9em;
+  margin-right: 1em;
+  line-height: 2em;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+}
+
+/** Profle **/
+.flex-row .profile {
+  justify-content: center;
+}
+
+.profile h6,
+.profile p {
+  padding: 0;
+}
+
+.profile {
+  margin: 0 0.25vw;
+  padding: 0 0.25em;
+}
+
+.profile:not(:first-child) {
+  border-left: 1px solid #e0e0e0;
+}
+
+.profile figure {
+  margin: 0;
+}
+
+/** Flex Grid **/
+/* Use flex row as the container */
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em auto;
+  width: 98%;
+}
+
+/** Colums set all items inside to stack on top of each other as the default **/
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-column,
+.flex-column-quarter,
+.flex-column-half,
+.flex-column-2,
+.flex-column-3,
+._2up,
+._3up,
+._4up,
+._5up {
+  flex: 1 0 100%;
+  flex-direction: column;
+}
+
+/** Sets the dsplay of columns on 600px + displays **/
+@media screen and (min-width: 600px) {
+  .flex-column {
+    flex: 1;
+  }
+
+  .flex-column-quarter {
+    flex: 0.25;
+  }
+
+  .flex-column-half {
+    flex: 0.5;
+  }
+
+  .flex-column-2 {
+    flex: 2;
+  }
+
+  .flex-column-3 {
+    flex: 3;
+  }
+
+  ._2up {
+    flex: 0.5 1 48%;
+  }
+
+  ._3up {
+    flex: 0.3 1 28%;
+  }
+
+  ._4up {
+    flex: 0.25 1 23%;
+  }
+
+  ._5up {
+    flex: 0.2 1 18%;
+  }
+}
+/* Helpers for internal items and spacing */
+.flex-row img {
+  max-width: 100% !important;
+}
+
+.flex-row:first-child,
+:not(.flex-row) + .flex-row {
+  margin-top: 1em !important;
+}
+
+.flex-row + .flex-row {
+  margin-top: -1em !important;
+}
+
+.flex-row:last-child {
+  margin-bottom: 1em !important;
+}
+
+/* Flex Alignment */
+.flex-start {
+  justify-content: flex-start;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.flex-center {
+  justify-content: center;
+}
+
+.flex-align-start {
+  align-items: flex-start;
+}
+
+.flex-align-end {
+  align-items: flex-end;
+}
+
+.flex-align-center {
+  align-items: center;
+}
+
+.center-items {
+  align-items: center;
+}
+
+.center-self {
+  align-self: center;
+}
+
+.center-text {
+  text-align: center;
+}
+
+/* Add Flex to container or change direction */
+.flex-container {
+  display: flex;
+}
+
+.flex-direction-row {
+  flex-direction: row;
+}
+
+.flex-direction-column {
+  flex-direction: column;
+}
+
+.featured {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Tile settings */
+.flex-tiles {
+  margin: 0;
+  align-items: stretch;
+  min-height: calc(100vh / 5);
+}
+
+.flex-tiles:first-child,
+:not(.flex-tiles) + .flex-tiles {
+  margin-top: 1em !important;
+}
+
+.flex-tiles:last-child {
+  margin-bottom: 1em !important;
+}
+
+.flex-tile-grout > * {
+  box-shadow: 2px 0 0 0 #fff, 0 2px 0 0 #ffffff, 2px 2px 0 0 #fff,
+    2px 0 0 0 #fff inset, 0 2px 0 0 #fff inset;
+}
+
+.flex-tile-fill {
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.flex-tile-fill img {
+  min-height: 100%;
+  min-width: 100%;
+  object-fit: cover;
+}
+
+/** Figure **/
+figure {
+  max-width: 98% !important;
+  display: flex;
+  flex-flow: column;
+  border-radius: 1em;
+  align-items: center;
+  background: #f8f8f8;
+  padding: 0.15em;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+}
+
+figure figcaption {
+  align-self: center;
+  text-align: center;
+  font-size: 60%;
+  color: #757575;
+  font-style: italic;
+  padding: 0.25em;
+}
+
+figure img {
+  max-width: 100%;
+  border-radius: 1em;
+}
+
+figure._30 {
+  width: 30%;
+  margin: 1vw 2.25vw !important;
+}
+
+figure._50 {
+  width: 50%;
+  margin: 1vw 2.25vw !important;
+}
+
+figure._60 {
+  width: 60%;
+  margin: 1vw 2.25vw !important;
+}
+
+.icon {
+  flex: 1 !important;
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+  padding: 0.25em;
+  margin: 1em 0.5em;
+}
+
+.icon img {
+  width: 100%;
+}
+
+.icon svg {
+  width: 100%;
+}
+
+/* DJ kludges */
+
+.gu-red {
+  background-color: #c02424 !important;
+  color: #ffffff !important;
+}
+
+/** picture **/
+
+.pictureRight {
+  float: right;
+  font-size: 75%;
+  text-align: center;
+  margin-left: 2em;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  padding: 5px;
+  border: solid 2px #efefef;
+  border-radius: 4px;
+  background-color: #dfdfdf;
+  /*  display: inline-block; */
+}
+
+.ci_container {
+  display: flex;
+  justify-content: center;
+}
+
+.picture {
+  margin: 2em;
+  font-size: 75%;
+  text-align: center;
+  padding: 5px;
+  border: solid 2px #cfcfcf;
+  border-radius: 4px;
+  background-color: #dfdfdf;
+  display: inline-block;
+  background-color: #dfdfdf;
+}
+
+.picture img {
+  width: 95%;
+  margin-bottom: 1em;
+}
+
+.example {
+  border-radius: 3px;
+  /*position: relative;  /*  <--- */
+  padding: 1rem 1.2rem;
+  max-width: 80%;
+  color: #4a4a4a;
+  margin: 1rem 1em 1em 2rem;
+  color: #4a4a4a;
+  background: #e8e8e8;
+  overflow: hidden;
+}
+
+aside {
+  margin: 2em;
+  background-color: lightgray;
+  padding: 0.5em;
+  font-style: italic;
+}
+
+.exampleCentered {
+  text-align: center;
+  border-radius: 3px;
+  /*position: relative;  /*  <--- */
+  padding: 1rem 1.2rem;
+  max-width: 80%;
+  color: #4a4a4a;
+  margin: 1rem 1em 1em 2rem;
+  color: #4a4a4a;
+  background: #e8e8e8;
+  overflow: hidden;
+}
+
+@media print {
+  .ui-accordion .ui-accordion-content {
+    display: block !important;
+  }
+}
+
+.poem {
+  border-radius: 3px;
+  padding: 1rem 1.2rem;
+  max-width: 80%;
+  margin: 1rem 1em 1em 2rem;
+  background: #daf7a6;
+  overflow: hidden;
+}
+
+.poemRight {
+  text-align: right;
+  border-radius: 3px;
+  padding: 1rem 1.2rem;
+  max-width: 80%;
+  margin: 1rem 1em 1em 2rem;
+  background: #daf7a6;
+  overflow: hidden;
+}
+
+.goStartHere {
+  float: left;
+  width: 10%;
+  margin-top: 0.5em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+.goStartHere img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.goReading {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+  padding: 1em;
+}
+.goReadingImage {
+  width: 5%;
+}
+
+.goActivity {
+  float: left;
+  width: 10%;
+  margin-top: 0.5em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+.goActivity img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.goReflect {
+  float: left;
+  width: 10%;
+  margin-top: 0.5em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+.goReflect img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.goWatch {
+  float: left;
+  width: 10%;
+  margin-top: 0.5em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+.goWatch img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.goDownload {
+  float: left;
+  width: 10%;
+  margin-top: 0.5em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+.goDownload img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.goNumberedList {
+  float: left;
+  width: 10%;
+  margin-top: 0.5em;
+  margin-right: 2em;
+  margin-bottom: 1em;
+}
+
+.goNumberedList img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.ael-indent {
+  margin-left: 5em;
+}
+
+
+/* FAQ style accordion */
+
+ /* Style the buttons that are used to open and close the accordion panel */
+/* .faqQuestion { */
+button.faqQuestion {
+   font-weight: bold;
+  background-color: #eee;
+  color: #444;
+  cursor: pointer;
+  padding: 1em;
+  width: 100%;
+  text-align: left;
+  border: none;
+  outline: none;
+  transition: 0.4s;
+}
+
+.faqQuestion:after {
+  content: '&#43;'; /* Unicode character for "plus" sign (+) */
+  font-size: 1em;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+}
+
+.faqActive:after { 
+  content: "&#8722;"; /* Unicode character for "minus" sign (-) */
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.faqActive, .faqQuestion:hover {
+  background-color: #ccc;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.faqAnswer {
+  padding: 0 2em;
+  background-color: white;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+} 
+
+/****** Add the COM14 styles **************/
+
+.flashback { 
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right:auto;
+  width: 95%;
+  border-radius: 1em;
+  padding: 1em;
+  background: #ffd266;
+  overflow: hidden;
+}
+
+.flashbackImage {
+  width: 25%;
+  float: right;
+  background-image: url('https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png');
+  background-repeat: no-repeat;
+  background-size: contain; 
+}
+
+.flashbackImage img {
+ width: 95%;
+}
+
+.canaryImage {
+  width: 10%;
+  float: right;
+}
+
+.canaryImage img {
+  width: 95%;
+}
+
+.weeklyWorkoutImage {
+  width: 30%;
+  float: right;
+}
+
+.weeklyWorkoutImage img {
+  width: 95%;
+}
+
+
+.canaryExercise  {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%; 
+    border-radius: 1em;
+    padding: 1em;
+  background-color: #efd25c;
+  overflow: hidden;
+}
+
+.weeklyWorkout  {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) !important;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%; 
+    border-radius: 1em;
+    padding: 1em;
+  background-color: #cafafe;
+  overflow: hidden;
+}
+
+.comingSoon  {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23) ;
+  margin: 1em 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 95%;
+  padding: 1em;
+  border-radius: 1em;
+  overflow: hidden;
+  border-style: outset;
+}
+
+.comingSoonImage {
+  float: left;
+  width: 15%;
+  background-repeat: no-repeat;
+  background-size: contain; 
+}
+
+.printCourseName {
+  font-size: 80%;
+}
+.printPageTitle {
+  font-size: 160%;
+  font-weight:bolder;
+}
+
+.guAddedAdvice {
+	font-size:80%;
+}
+
+.quote {
+  border-left: 4px solid;
+  color: #757575;
+  margin: .5em 5vw !important;
+  padding: 1em;
+}
+
+    `;
+
+
+CI_CSS;
+
 /**
  * WordConverter.js
  * Define c2m_Converter class which is responsible for converting a Word doc 2 html
  * using Mammoth.js
  */
 
+
+
+const JUICE_IT = true;
 
 const DEFAULT_OPTIONS = {
     styleMap: [
@@ -1738,6 +2784,7 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Canvas Assignment'] => h1.canvasAssignment",
         "p[style-name='Canvas Quiz'] => h1.canvasQuiz",
         "p[style-name='Canvas File'] => h1.canvasFile",
+        "p[style-name='Canvas Image'] => span.canvasImage",
         "p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
         "p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
         "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
@@ -1745,16 +2792,34 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
         "r[style-name='Blackboard Image'] => span.blackboardImage",
-        "p[style-name='Blackboard Image p'] => span.blackboardImage",
+        "p[style-name='Blackboard Image p'] => p.blackboardImage",
+        "r[style-name='placeholder'] => mark",
+        "p[style-name='flashback'] => p.flashback",
+        "p[style-name='Weekly Workout'] => p.weeklyWorkout",
+        "p[style-name='Canary Exercise'] => p.canaryExercise",
+        "p[style-name='Note'] => p.ael-note",
+        "p[style-name='Added Advice'] => p.guAddedAdvice",
+        "p[style-name='activity'] => p.activity",
+        "p[style-name='Reading'] => p.reading",
+        "p[style-name='Coming Soon'] => p.comingSoon",
+        "p[style-name='Picture'] => p.picture",
+        "p[style-name='PictureRight'] => p.pictureRight",
+        "p[style-name='Quote'] => p.quote",
+        "p[style-name='Poem'] => div.poem",
+        "r[style-name='Poem Right'] => div.poemRight",
+
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
+        "p[style-name='FAQ Heading 1'] => div.faqHeading > p:fresh",
+        "p[style-name='FAQ body 1'] => div.faqBody > p:fresh",
+
         // kludges to tidy up common messy word cruft
         "p[style-name='List Bullet'] => ul > li:fresh",
+        "p[style-name='List Number'] => ol > li:fresh",
         "p[style-name='heading 6'] => h6:fresh",
 
         "p[style-name='Section Title'] => h1:fresh",
-        "p[style-name='Quote'] => blockquote:fresh",
         "p[style-name='Quotations'] => blockquote:fresh",
         "p[style-name='Quotation'] => blockquote:fresh",
         "p[style-name='Body Text'] => p:fresh",
@@ -1764,9 +2829,9 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Normal'] => p:fresh",
         "p[style-name='Text body'] => p:fresh",
         "p[style-name='Textbody1'] => p:fresh",
-        "p[style-name='Picture'] => div.ci_container > div.picture",
+/*        "p[style-name='Picture'] => div.ci_container > div.picture",
         "p[style-name='Picture Right'] => div.pictureRight",
-        "p[style-name='PictureRight'] => div.pictureRight",
+        "p[style-name='PictureRight'] => div.pictureRight", */
         "r[style-name='University Date'] => span.universityDate",
         "p[style-name='Video'] => div.video",
         "p[style-name='Aside'] => aside",
@@ -1777,22 +2842,20 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Red'] => span.red",
         "p[style-name='Example'] => div.example > p:fresh",
         "p[style-name='Example Centered'] => div.exampleCentered > p:fresh",
-        "p[style-name='Flashback']:ordered-list(1) => div.flashback > ol > li:fresh",
-        "p[style-name='Flashback']:unordered-list(1) => div.flashback > ul > li:fresh",
-        "p[style-name='Flashback'] => div.flashback > p:fresh",
+        /*        "p[style-name='Flashback']:ordered-list(1) => div.flashback > ol > li:fresh",
+                "p[style-name='Flashback']:unordered-list(1) => div.flashback > ul > li:fresh",
+                "p[style-name='Flashback'] => div.flashback > p:fresh", */
 
-        "p[style-name='Weekly Workout']:ordered-list(1) => div.weeklyWorkout > ol > li:fresh",
-        "p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
-        "p[style-name='Weekly Workout'] => div.weeklyWorkout > p:fresh",
+        /*        "p[style-name='Weekly Workout']:ordered-list(1) => div.weeklyWorkout > ol > li:fresh",
+                "p[style-name='Weekly Workout']:unordered-list(1) => div.weeklyWorkout > ul > li:fresh",
+                "p[style-name='Weekly Workout'] => div.weeklyWorkout > p:fresh", */
 
-        "p[style-name='Poem'] => div.poem > p:fresh",
-        "r[style-name='Poem Right'] => div.poemRight > p:fresh",
 
-        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
-        "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
-        "p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh",
-        "p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
-        "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
+        /*        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
+                "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
+                "p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh", */
+//        "p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
+/*        "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
         "p[style-name='Activity Title'] => div.activity > h2:fresh",
         "p[style-name='ActivityText'] => div.activity > div.instructions > p:fresh",
         "p[style-name='Activity Text'] => div.activity > div.instructions > p:fresh",
@@ -1800,20 +2863,20 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
         "p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
         "p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
-        "p[style-name='activity'] => div.activity > div.instructions > p:fresh",
+        "p[style-name='activity'] => div.activity > div.instructions > p:fresh", */
         /*"p[style-name='Activity'] => span.activity",*/
         "p[style-name='Bibliography'] => div.apa > p:fresh",
-        "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
+/*        "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
         "p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
-        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh",
+        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh", */
         "p[style-name='Title'] => div.moduleTitle",
         "p[style-name='Card'] => div.gu_card",
         "r[style-name='Emphasis'] => em:fresh",
         "p[style-name='Timeout'] => span.timeout",
         "p[style-name='Embed'] => span.embed",
-        "p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
+/*        "p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
         "p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
-        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh",
+        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", */
         /* Adding cards */
         "p[style-name='Blackboard Card'] => div.bbCard:fresh",
         /* Blackboard item conversion */
@@ -1848,16 +2911,16 @@ const DEFAULT_OPTIONS = {
 // - key indicates <div style to be preprended
 // - value is what will be prepended
 const CI_STYLE_PREPEND = {
-    reading: `<div class="readingImage">&nbsp;</div>`,
-    activity: `<div class="activityImage">&nbsp;</div>`,
-    flashback: `<div class="flashbackImage">&nbsp;</div>`,
+    reading: `<div class="readingImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-reading-48.png" alt="Reading" style="max-width:100%" /></div>`,
+    activity: `<div class="activityImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/icons8-dancing-48.png" alt="Dancing Man - activity" style="max-width:100%" /></div>`,
+    flashback: `<div class="flashbackImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/flashback.png" style="max-width:100%" /></div>`,
     //"canaryExercise" : `<div class="canaryImage"></div>`,
     // COM14
-    canaryExercise: `<div class="canaryImage">&nbsp;</div>`,
+    canaryExercise: `<div class="canaryImage"><img src="https://s3.amazonaws.com/filebucketdave/banner.js/images/com14/Tweety.svg.png" style="max-width:100%" alt="Tweety bird" /></div>`,
     //"ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-width:100%"></div>`,
-    "ael-note": `<div class="noteImage">&nbsp;</div>`,
-    weeklyWorkout: `<div class="weeklyWorkoutImage">&nbsp;</div>`,
-    comingSoon: `<div class="comingSoonImage">&nbsp;</div>`,
+    "ael-note": `<div class="noteImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/Blk-Warning.png" style="max-wdith:100%" alt="Warning! Exclamation mark in a circle" /></div>`,
+    weeklyWorkout: `<div class="weeklyWorkoutImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/weeklyWorkout.png" style="max-width:100%" alt="Female weight lifter" /></div>`,
+    comingSoon: `<div class="comingSoonImage"><img src="https://filebucketdave.s3.amazonaws.com/banner.js/images/com14/comingSoon.jpg" alt="Coming Soon Road Sign - yellow diamond shape" /> </div>`,
     filmWatchingOptions: `<div class="filmWatchingOptionsImage">&nbsp;</div>`,
     goReading: `<div class="goReadingImage">&nbsp;</div>`,
 };
@@ -1871,7 +2934,28 @@ const CI_EMPTY_STYLE_PREPEND = {
     goNumberedList: `<div class="goNumberedListImage"> <img src="https://app.secure.griffith.edu.au/gois/ultra/icons-regular/number-1.svg" /> </div>`,
 };
 
+const CHECK_HTML_ONCLICK = `
+onclick='if((document.getElementById("c2m_html").style.display === "")||(document.getElementById("c2m_html").style.display ==="none")){ console.log("--- gong to click");document.getElementById("c2m_html_button").click(); } '`;
+
+/*function check(){
+    // is div#c2m_html style display:none
+
+}*/
+
+//const CI_CSS_URL = "https://s3.amazonaws.com/filebucketdave/banner.js/com14_study.css";
+
 const TABLE_CLASS = ["table", "stripe-row-odd"];
+
+const ACCORDION_TEMPLATE = `
+<details style="margin-bottom: 0.5rem; padding: .5rem 1rem;">
+  <summary style="padding: 0.5rem; margin: -0.5rem; background: #efefef; border-radius: 5px; cursor: pointer; font-size: 1.2em;">
+    <strong>{TITLE}</strong>
+  </summary>
+  <div class="accordion-content" style="border-bottom-color: #efefef; border-bottom-style: solid; border-bottom-width: 2px; border-left-color: #efefef; border-left-style: solid; border-left-width: 2px; border-right-color: #efefef; border-right-style: solid; border-right-width: 2px;   padding: 1em; margin-left: -.5rem; margin-right: -0.5rem;">
+  {CONTENT}
+  </div>
+</details>
+`;
 
 class c2m_WordConverter {
 
@@ -1935,7 +3019,7 @@ class c2m_WordConverter {
         // headings with no text/name can't be used
         this.checkEmptyHeadings(doc);
 
-        // Canvas culls the base64 images and they pose a size problem
+        // Canvas culls the base64 images, Canvas RCE doesn't use themm
         this.checkBase64Images(doc);
 
         // Canvas External URL module items can't have descriptive content
@@ -2056,6 +3140,7 @@ class c2m_WordConverter {
         let problems = [];
         // true for each externalUrl heading that has a valid URL (and nothing else)
         let validUrls = {};
+        let error = '<span {id} class="w2c-error">canvasExternalUrl</span>';
         for (let i = 0; i < extUrls.length; i++) {
             let extUrl = extUrls[i];
             let content = this.nextUntil(extUrl, 'h1');
@@ -2076,16 +3161,23 @@ class c2m_WordConverter {
                 }
                 // we have a problem, if there is no valid URL or there is invalid data
                 if (!valid || invalid) {
+                    // add the exUrl to the problems array
                     problems.push(extUrl.innerText);
+                    // insert the error span near the extUrl
+                    const numProbs = problems.length - 1;
+                    const errorString = error.replace('{id}', `id="canvas-external-url-${numProbs}"`);
+                    extUrl.insertAdjacentHTML('beforebegin', errorString);
                 }
             }
         }
 
+        error = `<a href="#canvas-external-url-{id}" ${CHECK_HTML_ONCLICK}><span class="w2c-error">canvasExternalUrl</span></a>`;
         for (let i = 0; i < problems.length; i++) {
             // only show error for external URL that has more than a URL, if it has a valid URL
+            const errorString = error.replace('{id}', `${i}`);
             this.mammothResult.messages.push({
                 "type": "error",
-                "message": `The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
+                "message": `${errorString} The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
                                 <small><strong><a target="_blank" 
                    href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
                    For more <i class="icon-question"></i></a></strong></small>`,
@@ -2113,27 +3205,40 @@ class c2m_WordConverter {
         // get all the links from doc
         let links = doc.querySelectorAll('a');
 
+        let error = '<span {id} class="w2c-error">Blackboard Link</span>';
+
         let blackboardLinks = {};
         // loop through the links and check for blackboard links
+        let numError = 0;
         for (let i = 0; i < links.length; i++) {
             let link = links[i];
             // is link.href already a key for blackboardLinks
             if (blackboardLinks[link.href]) {
-                blackboardLinks[link.href].text.push(link.innerText);
+                blackboardLinks[link.href].push( { "text" : link.innerText,
+                    "count": numError }
+                    );
+                const errorString = error.replace('{id}', `id="blackboard-link-${numError}"`);
+                numError+=1;
+                link.insertAdjacentHTML('beforebegin', errorString);
             }
             else if (this.isBlackboardLink(link.href)) {
-                blackboardLinks[link.href] = {
-                    "text": [link.innerText]
-                };
+                blackboardLinks[link.href] = [
+                    { "text" : link.innerText, "count": numError},
+                ];
+                const errorString = error.replace('{id}', `id="blackboard-link-${numError}"`);
+                numError+=1;
+                link.insertAdjacentHTML('beforebegin', errorString);
             }
         }
 
         // loop through keys of blackboardLinks
         // - for each link show the number of times and texts it was used with
+        error = `<a href="#blackboard-link-{id}" ${CHECK_HTML_ONCLICK}><span class="w2c-error">Blackboard Link</span></a>`;
         for (let link in blackboardLinks) {
-            let message = `Found Blackboard link - <em><small>${link}</small></em> - ${blackboardLinks[link].text.length} times, including:<ul>`;
-            for (let i = 0; i < blackboardLinks[link].text.length; i++) {
-                message += ` <li>${blackboardLinks[link].text[i]}</li>`;
+            let message = `Found Blackboard link - <em><small>${link}</small></em> - ${blackboardLinks[link].length} times, including:<ul>`;
+            for (let i = 0; i < blackboardLinks[link].length; i++) {
+                const errorString = error.replace('{id}', `${blackboardLinks[link][i].count}`);
+                message += ` <li>${errorString} ${blackboardLinks[link][i].text}</li>`;
             }
             message += `</ul>`;
 
@@ -2151,7 +3256,7 @@ class c2m_WordConverter {
         return (
             link.includes('https://bblearn.griffith.edu.au') ||
             link.includes('https://bblearn-blaed.griffith.edu.au') ||
-            link.startsWith('/webapps/')
+            link.includes('/webapps/blackboard')
         );
     }
 
@@ -2196,19 +3301,35 @@ class c2m_WordConverter {
         // search doc for any span.canvasImage
         let canvasImages = doc.querySelectorAll('span.canvasImage');
 
-        const error = '<span class="w2c-error">canvasImage</span>';
-        // insert a warning next to each canvasImage
-        for (let i = 0; i < canvasImages.length; i++) {
-            let img = canvasImages[i];
-            img.insertAdjacentHTML('beforebegin', error);
-        }
-        this.mammothResult.messages.push({
-            "type": "error",
-            "message": `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
+        let message = `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
                        Broken images may be fixed in the final stage.<br /> 
                        <small><strong>
-                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>`,
-        });
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>
+                         <ul>`;
+        let error = '<span {id} class="w2c-warning">canvasImage</span>';
+        // insert a warning next to each canvasImage
+        for (let i = 0; i < canvasImages.length; i++) {
+            let imgSpan = canvasImages[i];
+            const errorString = error.replace('{id}', `id="canvas-image-${i}"`);
+            imgSpan.insertAdjacentHTML('beforebegin', errorString);
+            // get the alt text of imgSpan > img
+            let alt = "<em>no alt text</em>";
+            let img = imgSpan.querySelector('img');
+            if (img) {
+                alt = img.getAttribute('alt');
+            }
+            // need to append something for this image to message
+            let msgErrorString = `<a href="#canvas-image-${i}" ${CHECK_HTML_ONCLICK}><span class="w2c-warning">canvasImage</span></a>`;
+            message += `<li>${msgErrorString} image with <em>alt</em> text ${alt}</li>`;
+        }
+
+        if (canvasImages.length > 0) {
+            message += "</ul>";
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": message
+            });
+        }
     }
 
 
@@ -2251,6 +3372,67 @@ class c2m_WordConverter {
     }
 
     /**
+     * Find all the div.faqHeading
+     * - get the content of div.faqHeading
+     * - get the next div.faqBody and get content
+     * - replace div.faqHeading and div.faqBody with a details/summary tag
+     * @param {DOMParser} doc 
+     */
+    handleFAQs(doc) {
+
+        // get the next div.faqHeading
+        let heading = doc.querySelector('div.faqHeading');
+        while (heading) {
+            // get the next sibling of heading
+            let nextSibling = heading.nextElementSibling;
+            // check that it is a div.faqBody
+            if (nextSibling.tagName === "DIV" && nextSibling.className === "faqBody") {
+                // get content of nextSibling
+                let bodyContent = nextSibling.innerHTML;
+                // remove nextSibling
+                nextSibling.parentNode.removeChild(nextSibling);
+                // get content of heading
+                let headingContent = heading.innerHTML;
+                // create a details/summary tag
+                let details = doc.createElement('details');
+                details.style.backgroundColor = '#f8f4ec';
+                details.style.color = '#7c2529';
+                details.style.borderBottom = '1px solid #e4d589';
+                details.style.marginLeft = '2em';
+                details.style.marginRight = '4em';
+                // set details font-size to 1.2em
+                details.style.fontSize = '90%';
+
+                let summary = doc.createElement('summary');
+                summary.style.padding = '.5em';
+                //summary.style.backgroundColor = '#c8102e';
+                //summary.style.backgroundColor = 'var(--ic-brand-button--primary-bgd)';
+                summary.style.backgroundColor = '#f0f0f0';
+                summary.style.color = '#000000';
+                // set summary content
+                headingContent = headingContent.replace(/<p[^>]*>/g, '');
+                headingContent = headingContent.replace(/<\/p>/g, '');
+
+                summary.innerHTML = headingContent;
+                // wrap summary inner html in a h4 tag
+                summary.innerHTML = `<h4 style="display:inline;font-size:80%">${summary.innerHTML}</h4>`;
+                // remove any <p> tag from summary.innerHTML
+                //                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
+                //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
+
+                // add summary to details
+                details.appendChild(summary);
+                // add bodyContent at end of details
+                details.innerHTML += bodyContent;
+                // replace heading with details
+                heading.parentNode.replaceChild(details, heading);
+            }
+            heading = doc.querySelector('div.faqHeading');
+        }
+    }
+
+
+    /**
      * Do all post mammoth conversions
      * - span.embed decoded HTML
      * - span.talisCanvasLink to a link
@@ -2291,8 +3473,6 @@ class c2m_WordConverter {
             hiddenElem.parentNode.removeChild(hiddenElem);
         }
 
-        // Content Interface pre-pends
-        this.contentInterfacePreprends(doc);
 
         // add class TABLE_CLASS to all of the tables
         doc.querySelectorAll('table').forEach((elem) => {
@@ -2303,10 +3483,109 @@ class c2m_WordConverter {
             });
         });
 
+        // convert the div.faqHeading and div.faqBody
+        this.handleFAQs(doc);
+
+        // handle the content interface special styles
+        this.handleContentInterfaceComplexStyles(doc);
+
+        // Content Interface pre-pends - do this after previous tidy up
+        // - experimenting to see if this works in combination with juiceit #46
+        this.contentInterfacePreprends(doc);
+
+        // insert the content interface CSS - located at CI_CSS_URL - into the document
+        /*let css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = CI_CSS_URL;
+        document.head.appendChild(css); */
+
+        // "juiceit" is a way to convert external CSS into inline styles
+        if (JUICE_IT) {
+            // take the doc DomElement and make the changes
+            doc = this.juiceit(doc);
+        }
+
 
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
+
+    /**
+     * Content Interface div.flashback has been converted into a start and end Flashback style
+     * in the Word document, in turn converted into two p.flashback earlier in the conversion.
+     * This function removes each pair of p.flashback and wraps what's between them into
+     * div.flashback.
+     * @param {DomElement} doc - containing Mammoth html conversion
+     */
+
+    handleContentInterfaceComplexStyles(doc) {
+        let firstDiv = null;
+        let nextDiv = null;
+
+        // get all the html for doc
+        //        let html = doc.documentElement.outerHTML;
+        //        console.log(html);
+
+        // declar array styles with entries
+
+        const ci_styles = [
+            'p.flashback', 'p.canaryExercise', 'p.weeklyWorkout',
+            'p.ael-note', 'p.guAddedAdvice', 'p.reading', 'p.activity',
+            'p.comingSoon', 'p.picture', 'p.pictureRight', 'div.poem',
+            'div.poemRight'
+        ];
+
+        // loop through styles array 
+        for ( const ci_style of ci_styles) {
+
+            // keeping going until we run out of pairs of div.flashback
+            // get all the p.flashback
+            let ps = doc.querySelectorAll(ci_style);
+            let count = 0;
+            while ((ps.length > 1) && (count < ps.length)) {
+                // check that we've got a pair of div.flashback
+                firstDiv = ps[count];
+                nextDiv = ps[count + 1];
+                count += 2;
+                // put everything in between the two div.flashbacks
+                // get everything until next div.flashback
+                let content = this.nextUntil(firstDiv, ci_style);
+                content = content.map(elem => elem.outerHTML);
+                // join content array strings into single string 
+                // - at this stage content includes the start/flashback
+                content = content.join('');
+
+                // remove all the elements between firstDiv and nextDiv
+                let start = firstDiv;
+                while (start.nextElementSibling && start.nextElementSibling !== nextDiv) {
+                    start.nextElementSibling.remove();
+                }
+                // remove the nextDiv
+                nextDiv.remove();
+                //nextDiv.parentNode.removeChild(nextDiv);
+
+                // replace firstDiv with content
+                //firstDiv.innerHTML = content;
+                // change firstDiv tag from p to div
+                let newFirstDiv = document.createElement('div');
+
+                if (ci_style.includes('div.poem')) {
+                    // a poem style gets that class and straight content, no instructions
+                    newFirstDiv.innerHTML=content;
+                    const className = ci_style.substring(4);
+                    newFirstDiv.classList.add(className);
+                } else {
+                    newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
+                    // remove p. from from front of ci_style
+                    const className = ci_style.substring(2);
+                    newFirstDiv.classList.add(className);
+                }
+                // replace firstDiv with newFirstDiv
+                firstDiv.parentNode.replaceChild(newFirstDiv, firstDiv);
+            }
+        }
+    }
+
 
     /**
      * Add in the necessary Content Interface prepends 
@@ -2399,6 +3678,20 @@ class c2m_WordConverter {
         reader.readAsArrayBuffer(file);
     }
 
+    /**
+     * check if a string is a valid URL
+     * https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url 
+     */
+    isValidHttpUrl(string) {
+        let url;
+        try {
+            url = new URL(string);
+        } catch (_) {
+            return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
 
     /** 
      * 
@@ -2443,18 +3736,133 @@ class c2m_WordConverter {
 
 
     /**
-     * check if a string is a valid URL
-     * https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url 
+     * Use the Juice CSS liner on the HTML generated by Mammoth
+     * https://automattic.github.io/juice/ Make changes to the html in the dom element
+     * @param {*} doc  DomElement containing the html generated by Mammoth
      */
-    isValidHttpUrl(string) {
-        let url;
-        try {
-            url = new URL(string);
-        } catch (_) {
-            return false;
-        }
 
-        return url.protocol === "http:" || url.protocol === "https:";
+    juiceit(doc) {
+
+        // add <style> to doc.body
+        doc.body.insertAdjacentHTML("afterbegin", `<style>${CI_CSS}</style>`);
+
+        let html = doc.documentElement.outerHTML;
+
+        let juiceHTML = juice(html);
+
+        let parser = new DOMParser();
+        let doc2 = parser.parseFromString(juiceHTML, "text/html");
+        return doc2; 
+    }
+
+    /**
+     * Called when the user has clicked on the h2 as accordion check box. Depending
+     * on the state input#w2c-accordion will modify the html in mammothResult and also
+     * in div#c2m_html
+     */
+
+    h2sAsAccordions() {
+        // does input#w2c-accordion exist?
+        let accordion = document.querySelector('input#w2c-accordion');
+        if (!accordion){
+            console.log('input#w2c-accordion not found');
+            return;
+        }
+        // what to do
+        if ( accordion.checked ) {
+            // accordion has been checked, time to convert h2s to accordions
+            this.h2ToAccordion();
+        } else {
+            // accordion has been unchecked, time to convert accordions to h2s
+            this.accordionToH2();
+        }
+    }
+
+    /**
+     * Get contents of div#c2m_html. Convert all the h2s to accordions
+     */
+
+    h2ToAccordion() {
+        console.log('h2ToAccordion');
+
+        // get the html from div#c2m_html
+        let html = document.querySelector('div#c2m_html').innerHTML;
+
+        // parse the html
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+
+        // get all h2s
+        let h2s = doc.querySelectorAll('h2');
+        // loop through all the h2s
+        for (let i = 0; i < h2s.length; i++) {
+            // get the innerText of the h2
+            let h2Text = h2s[i].innerText;
+            // get all content from the h2 until the next h1/h2
+            let h2Content = this.nextUntil(h2s[i], 'h1,h2');
+            let content = h2Content.map(elem => elem.outerHTML);
+            content = content.join('');
+
+            let accordionHtml = ACCORDION_TEMPLATE;
+            accordionHtml = accordionHtml.replace('{TITLE}', h2Text);
+            accordionHtml = accordionHtml.replace('{CONTENT}', content);
+
+            // insert the accordion html before the h2
+            h2s[i].insertAdjacentHTML('beforebegin', accordionHtml);
+            // remove the h2
+            h2s[i].remove();
+            // remove the content
+            for (let j = 0; j < h2Content.length; j++) {
+                h2Content[j].remove();
+            }
+        }
+        // get the html from the doc
+        let html2 = doc.documentElement.outerHTML;
+        // put the html in div#c2m_html
+        document.querySelector('div#c2m_html').innerHTML = html2;
+        this.mammothResult.value = html2;
+    }
+
+    /**
+     * Get contents of div#c2m_html. Convert all the accordions to h2s
+     */
+
+    accordionToH2() {
+        console.log('accordionToH2');
+
+        // get the html from div#c2m_html
+        let html = document.querySelector('div#c2m_html').innerHTML;
+
+        // parse the html
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+
+        // get all the <details> elements in doc
+        let details = doc.querySelectorAll('details');
+        // loop through all the <details> elements
+        for (let i = 0; i < details.length; i++) {
+            // get the innerHtml of details > summary 
+            let summary = details[i].querySelector('summary').innerHTML;
+            // remove the <strong> </strong> from summary
+            summary = summary.replace('<strong>', '');
+            summary = summary.replace('</strong>', '');
+            // get the innerHtml of the details > .accordion-content
+            let content = details[i].querySelector('.accordion-content').innerHTML;
+
+            // create a new div containing both summary and content
+            let newDiv = document.createElement('div');
+            newDiv.innerHTML = `<h2>${summary}</h2>${content}`;
+
+            // insert the new div before the details element
+            details[i].insertAdjacentElement('beforebegin', newDiv);
+            // remove the details element
+            details[i].remove();
+        }
+        // get the html from the doc
+        let html2 = doc.documentElement.outerHTML;
+        // put the html in div#c2m_html
+        document.querySelector('div#c2m_html').innerHTML = html2;
+        this.mammothResult.value = html2;
     }
 
 }
@@ -3213,6 +4621,9 @@ class c2m_Modules {
 class c2m_Model {
     constructor(controller) {
 
+        // flag to choose if error labels are removed
+        this.keepErrors = false;
+
         this.controller = controller;
         // indicate which of the four stages we're up to
         //		this.stage = c2m_initialise;
@@ -3761,6 +5172,12 @@ class c2m_Model {
         }
     }
 
+    h2sAsAccordions(){
+        console.log('c2m_Model -> h2sAsAccordions');
+
+        this.wordConverter.h2sAsAccordions();
+    }
+
     
     /**
      * Perform any necessary cleanup of the HTML generated by Mammoth
@@ -3780,12 +5197,32 @@ class c2m_Model {
     }
 
     /**
-     * remove all the span.w2c-error elements from the document
+     * remove all the span.w2c-error (and related) elements from the document
      * @param {DOM} doc 
      */
     removeSpanErrors(doc) {
         // find all span.w2c-error elements
-        doc.querySelectorAll('span.w2c-error').forEach( (elem) => {
+        // - but if keepErrors is true then keep them
+        if ( ! this.keepErrors ) {
+            let errors = doc.querySelectorAll('span.w2c-error');
+            errors.forEach( (elem) => {
+                elem.remove();
+            });
+        } else {
+            // need to add style string to each span.w2c-error
+            const styleString = "font-size:50%;margin:1em;background-color:#ff0000;color:white;border-radius:0.5em;padding:0.5em;line-height:inherit;vertical-align:middle;";
+            let errors = doc.querySelectorAll('span.w2c-error');
+            errors.forEach( (elem) => {
+                elem.style = styleString;
+            });
+        }
+        // always clear keepErrors
+        this.keepErrors = false;
+        // warnings and oks are always removed
+        doc.querySelectorAll('span.w2c-warning').forEach( (elem) => {
+            elem.remove();
+        });
+        doc.querySelectorAll('span.w2c-ok').forEach( (elem) => {
             elem.remove();
         });
     }
@@ -3864,6 +5301,7 @@ const c2m_CheckModule = "c2m_CheckModule";
 const c2m_Completed = "c2m_Completed";
 //const c2m_Close = "close";
 
+const CI_CSS_URL = 'https://rawcdn.githack.com/djplaner/word-to-canvas-module/bc41f0c954b717b9693f516f2efcdd1ab3fdce23/css/content-interface.css';
 
 class c2m_Controller {
 	constructor() {
@@ -3923,13 +5361,13 @@ class c2m_Controller {
 		console.log(` -- token ${this.csrfToken}`);
 
 		// select li.section > a.syllabus
-/*		const syllabus = document.querySelector('li.section > a.syllabus');
-		if (syllabus) {
-			syllabus.style.display = 'none';
-		}*/
+		/*		const syllabus = document.querySelector('li.section > a.syllabus');
+				if (syllabus) {
+					syllabus.style.display = 'none';
+				}*/
 
 		// inject on module as well
-		this.injectCss();
+		//this.injectCss();
 		// but if only on a pages page, finish up
 		let currentPageUrl = window.location.href;
 		if (currentPageUrl.match(/courses\/[0-9]*\/pages/)) {
@@ -3943,13 +5381,15 @@ class c2m_Controller {
 	/**
 	 * Inject the CI CSS into a Canvas page 
 	 */
-	injectCss() {
-//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
-		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
+/*	injectCss() {
+		return;
+		//		let css = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module@master/css/content-interface.css">';
+		//		let css = '<link rel="stylesheet" href="https://raw.githack.com/djplaner/word-to-canvas-module/main/css/content-interface.css">';
+		let css = `<link rel="stylesheet" href="${CI_CSS_URL}">`;
 
 		// inject css string element at end of head
-		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css);
-	}
+		document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', css); 
+	} */
 
 	/**
 	 * Event handler for clicks on navigation buttons between app states.
@@ -3961,7 +5401,7 @@ class c2m_Controller {
 		console.log(`handle click switching to ...${newState}`);
 
 		// if c2m_completed moving to c2m_initialised, reload the page
-		if (this.currentState===c2m_Completed && newState===c2m_Initialised) {
+		if (this.currentState === c2m_Completed && newState === c2m_Initialised) {
 			window.location.reload();
 		}
 
@@ -3987,6 +5427,32 @@ class c2m_Controller {
 		this.render();
 	}
 
+	/**
+	 * Event handler for when user selects to convert h2s to accordions in
+	 * the CheckHTML state
+	 * We're basically going to call the appropriate model method
+	 */
+
+	handleH2AsAccordionClick() {
+		// only works if currentState is c2m_checkHtml
+		if (this.currentState === c2m_CheckHtml) {
+			this.model.h2sAsAccordions();
+
+		}
+	}
+
+	/**
+	 * Event handler for when user wishes to retain error labels in the HTML
+	 * for adding into Canvas
+	 * if "input#w2c-leave-errors" is checked, then set the model's keepErrors flag to true
+	 * 
+	 */
+
+	handleLeaveErrorsClick() {
+		// get value of input#w2c-leave-errors
+		let keepErrors = document.getElementById('w2c-leave-errors').checked;
+		this.model.keepErrors = keepErrors;
+	}
 }
 
 /**

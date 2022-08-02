@@ -5215,10 +5215,8 @@ class c2m_Model {
     removeSpanErrors(doc) {
         // find all span.w2c-error elements
         // - but if keepErrors is true then keep them
-        alert(`removeSpanErrors - keepErrors: ${this.keepErrors}`);
         if ( ! this.keepErrors ) {
             let errors = doc.querySelectorAll('span.w2c-error');
-            alert(`removeSpanErrors - found ${errors.length} errors`);
             errors.forEach( (elem) => {
                 elem.remove();
             });
@@ -5226,7 +5224,6 @@ class c2m_Model {
             // need to add style string to each span.w2c-error
             const styleString = "font-size:50%;margin:1em;background-color:#ff0000;color:white;border-radius:0.5em;padding:0.5em;line-height:inherit;vertical-align:middle;";
             let errors = doc.querySelectorAll('span.w2c-error');
-            alert(`removeSpanErrors - found ${errors.length} errors`);
             errors.forEach( (elem) => {
                 elem.style = styleString;
             });
@@ -5450,8 +5447,6 @@ class c2m_Controller {
 	 */
 
 	handleH2AsAccordionClick() {
-		console.log(`- trying to use h2s as accordions`);
-
 		// only works if currentState is c2m_checkHtml
 		if (this.currentState === c2m_CheckHtml) {
 			this.model.h2sAsAccordions();
@@ -5467,11 +5462,8 @@ class c2m_Controller {
 	 */
 
 	handleLeaveErrorsClick() {
-		console.log('- leaving errors');
-
 		// get value of input#w2c-leave-errors
 		let keepErrors = document.getElementById('w2c-leave-errors').checked;
-		console.log(`-- keepErrors ${keepErrors}`);
 		this.model.keepErrors = keepErrors;
 	}
 }
