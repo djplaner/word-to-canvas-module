@@ -34,6 +34,7 @@ The following Word styles direct `word-2-canvas` to perform Canvas specific acti
 | `Canvas External Url` | Add an [external link as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967) |
 | `Canvas Extternal Tool` | Add an [external tool as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-tool-as-a-module-item/ta-p/1146) |
 | `Canvas Image` | Define some HTML that contains an `<img` tag where the `img.src` is the name of a file already in the Canvas course's [Files area](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7). Will attempt to identify a URL for the file and insert it into the `img.src` |
+| `Canvas Menu Link` | Create a link where the "address" is the name of an item in the Canvas left hand menu. Will get replaced with the correct URL for the course site |
 
 
 <sup>*</sup> - Standard Word styles.
