@@ -10,6 +10,6 @@
 // @license      MIT
 // @homepage     https://github.com/djplaner/word-to-canvas-module
 // @require      https://cdnjs.cloudflare.com/ajax/libs/mammoth/0.3.10/mammoth.browser.min.js
-// @require      https://rawcdn.githack.com/djplaner/canvas-collections/62a4248058d13d32c574f0b620760891651587a7/src/juice/juice_client.js
-// @require      https://rawcdn.githack.com/djplaner/word-to-canvas-module/f2a58abb2aad794dea96a3a07be666989152e17c/release/word2canvas.min.js
+// @require      https://cdn.jsdelivr.net/djplaner/canvas-collections/src/juice/juice_client.js
+// @require 	 https://cdn.jsdelivr.net/gh/djplaner/word-to-canvas-module/release/word2canvas.min.js
 // ==/UserScript==
