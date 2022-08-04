@@ -22,7 +22,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.4";
+		this.version = "2.0.6";
 	}
 
 
@@ -2777,6 +2777,8 @@ const DEFAULT_OPTIONS = {
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
+        "r[style-name='Canvas Menu Link'] => span.canvasMenuLink",
+        "p[style-name='Canvas Menu Link'] => span.canvasMenuLink",
         "r[style-name='Blackboard Image'] => span.blackboardImage",
         "p[style-name='Blackboard Image p'] => p.blackboardImage",
         "r[style-name='placeholder'] => mark",
@@ -3434,6 +3436,8 @@ class c2m_WordConverter {
 
         this.handleBlackboardImage(doc);
 
+        this.handleCanvasMenuLinks(doc);
+
         // convert span.talisCanvasLink innerHTML to a link
         let links = doc.querySelectorAll('span.talisCanvasLink');
         for (let i = 0; i < links.length; i++) {
@@ -3489,6 +3493,74 @@ class c2m_WordConverter {
 
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
+    }
+
+    /**
+     * Look for any span.canvasMenuLink and attempt to convert the href for the link
+     * to point to the URL contained in the canvas menu ul#section-tabs
+     * @param {DomElement} doc - containing Mammoth HTML conversion
+     */
+
+    handleCanvasMenuLinks(doc) {
+        let canvasMenuLinks = doc.querySelectorAll('span.canvasMenuLink');
+
+        if ( canvasMenuLinks.length == 0 ) {
+            return;
+        }
+
+        // Problem here is that Mammoth/Word lead to strange
+        // combinations of spans and links
+        // - one link can be spread across multiple sequential words
+        //   Join these into one
+        // - the link for the canvasMenuLink can actually be the parent
+        //   TODO need to move it inside
+
+        let i=0;
+        while (i < canvasMenuLinks.length) {
+            // get the parent link
+            let link = canvasMenuLinks[i].parentNode;
+
+            // join the contents of all the span.canvasMenuLink within the link
+            let canvasMenuLinkContents = [];
+            let internalLinks = link.querySelectorAll('span.canvasMenuLink');
+            for (let j = 0; j < internalLinks.length; j++) {
+                canvasMenuLinkContents.push(internalLinks[j].innerHTML);
+            }
+            // make copy of link 
+            let newLink = link.cloneNode(true);
+            // replace link.innerHTML with all the contents of canvasMenuLinkConents
+            newLink.innerHTML = canvasMenuLinkContents.join('');
+            // create new span.canvasMenuLink and add the link into it
+            let canvasMenuLink = document.createElement('span');
+            canvasMenuLink.classList.add('canvasMenuLink');
+            canvasMenuLink.appendChild(newLink);
+            // replace link with canvasMenuLink
+            link.parentNode.replaceChild(canvasMenuLink, link);
+            // skip over all the internal links found
+            i+=internalLinks.length;
+        }
+
+        let canvasMenu = document.querySelector('ul#section-tabs');
+        // create a hash of the canvas menu links li.section > a
+        let canvasMenuLinksHash = {};
+        canvasMenu.querySelectorAll('li.section > a').forEach((elem) => {
+            canvasMenuLinksHash[elem.innerText] = elem.href;
+        });
+
+        // iterate over the modified list of canvasMenuLinks
+        // replace the href with the hash value
+        canvasMenuLinks = doc.querySelectorAll('span.canvasMenuLink');
+        // TODO add in error checks when can't find a courseMenuLink
+        canvasMenuLinks.forEach((elem) => {
+            let link = elem.querySelector('a');
+            // get the href of link
+            let href = link.href;
+            // get the last part of href i.e. the name of the menu
+            let menuName = href.split('/').pop();
+            if ( canvasMenuLinksHash[menuName] ) {
+                link.href = canvasMenuLinksHash[menuName];
+            }
+        } );
     }
 
     /**
