@@ -4706,7 +4706,6 @@ class c2m_Model {
             }
         }
 
-
         // if there are no fileLinks
         if (this.canvasModules.imageLinks.length === 0) {
             // ignore this step and start finding/creating other items
@@ -4730,8 +4729,24 @@ class c2m_Model {
         // find the img within imageSpan
         let img = imageSpan.querySelector('img');
         if (img) {
+            // Aim here is to check if the img.src is a filename
+            // - browser will have auto prefixed the modules URL, need to
+            //   remove all that to get to a filename
+            // - if we still have http something at the end, then it was
+            //   a URL to some image elsewhere
+
             // remove the documentbaseURI from the src
-            let src = img.src.replace(document.baseURI.replace(/modules$/,''), '');
+            let base = document.baseURI;
+            // remove the last # and id from the base
+            if (base.includes('#')) {
+                base = base.substring(0, base.lastIndexOf('#'));
+            }
+            // remove the modules tag
+            base = base.replace(/modules$/, '');
+
+            let src = img.src.replace(base, '');
+            // replace all html entities with their equivalent characters
+            src = decodeURIComponent(src);
             // return the src if it's not a url
             if (! src.startsWith('http')) {
                 return src;
