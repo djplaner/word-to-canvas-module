@@ -22,7 +22,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.6";
+		this.version = "2.0.7";
 	}
 
 
@@ -2817,9 +2817,9 @@ const DEFAULT_OPTIONS = {
         "p[style-name='Normal'] => p:fresh",
         "p[style-name='Text body'] => p:fresh",
         "p[style-name='Textbody1'] => p:fresh",
-/*        "p[style-name='Picture'] => div.ci_container > div.picture",
-        "p[style-name='Picture Right'] => div.pictureRight",
-        "p[style-name='PictureRight'] => div.pictureRight", */
+        /*        "p[style-name='Picture'] => div.ci_container > div.picture",
+                "p[style-name='Picture Right'] => div.pictureRight",
+                "p[style-name='PictureRight'] => div.pictureRight", */
         "r[style-name='University Date'] => span.universityDate",
         "p[style-name='Video'] => div.video",
         "p[style-name='Aside'] => aside",
@@ -2842,28 +2842,29 @@ const DEFAULT_OPTIONS = {
         /*        "p[style-name='Canary Exercise']:ordered-list(1) => div.canaryExercise > div.instructions > ol > li:fresh",
                 "p[style-name='Canary Exercise']:unordered-list(1) => div.canaryExercise > div.instructions > ul > li:fresh",
                 "p[style-name='Canary Exercise'] => div.canaryExercise > div.instructions > p:fresh", */
-/*        "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
-        "p[style-name='Activity Title'] => div.activity > h2:fresh",
-        "p[style-name='ActivityText'] => div.activity > div.instructions > p:fresh",
-        "p[style-name='Activity Text'] => div.activity > div.instructions > p:fresh",
-        //"r[style-name='Activity'] => div.activity > div.instructions > p:fresh",
-        "p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
-        "p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
-        "p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
-        "p[style-name='activity'] => div.activity > div.instructions > p:fresh", */
+        //        "p[style-name='Coming Soon'] => div.comingSoon > div.instructions > p:fresh",
+        /*        "p[style-name='ActivityTitle'] => div.activity > h2:fresh",
+                "p[style-name='Activity Title'] => div.activity > h2:fresh",
+                "p[style-name='ActivityText'] => div.activity > div.instructions > p:fresh",
+                "p[style-name='Activity Text'] => div.activity > div.instructions > p:fresh",
+                //"r[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+                "p[style-name='Activity']:ordered-list(1) => div.activity > div.instructions > ol > li:fresh",
+                "p[style-name='Activity']:unordered-list(1) => div.activity > div.instructions > ul > li:fresh",
+                "p[style-name='Activity'] => div.activity > div.instructions > p:fresh",
+                "p[style-name='activity'] => div.activity > div.instructions > p:fresh", */
         /*"p[style-name='Activity'] => span.activity",*/
         "p[style-name='Bibliography'] => div.apa > p:fresh",
-/*        "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
-        "p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
-        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh", */
+        /*        "p[style-name='Reading']:ordered-list(1) => div.reading > div.instructions > ol > li:fresh",
+                "p[style-name='Reading']:unordered-list(1) => div.reading > div.instructions > ul > li:fresh",
+                "p[style-name='Reading'] => div.reading > div.instructions > p:fresh", */
         "p[style-name='Title'] => div.moduleTitle",
         "p[style-name='Card'] => div.gu_card",
         "r[style-name='Emphasis'] => em:fresh",
         "p[style-name='Timeout'] => span.timeout",
         "p[style-name='Embed'] => span.embed",
-/*        "p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
-        "p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
-        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", */
+        /*        "p[style-name='Note']:ordered-list(1) => div.ael-note > div.instructions > ol > li:fresh",
+                "p[style-name='Note']:unordered-list(1) => div.ael-note > div.instructions > ul > li:fresh",
+                "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", */
         /* Adding cards */
         "p[style-name='Blackboard Card'] => div.bbCard:fresh",
         /* Blackboard item conversion */
@@ -2930,7 +2931,7 @@ onclick='if((document.getElementById("c2m_html").style.display === "")||(documen
 const TABLE_CLASS = ["table", "stripe-row-odd"];
 
 const ACCORDION_TEMPLATE = `
-<details style="margin-bottom: 0.5rem; padding: .5rem 1rem;">
+<details style="margin-bottom: 0.5rem; padding: .5rem 1rem;" class="w2c-h2">
   <summary style="padding: 0.5rem; margin: -0.5rem; background: #efefef; border-radius: 5px; cursor: pointer; font-size: 1.2em;">
     <strong>{TITLE}</strong>
   </summary>
@@ -2958,7 +2959,7 @@ class c2m_WordConverter {
     decodeEntities(encodedString) {
         let textArea = document.createElement('textarea');
         textArea.innerHTML = encodedString;
-        return textArea.value;
+        return textArea.value; 
     }
 
     /**
@@ -3197,19 +3198,21 @@ class c2m_WordConverter {
             let link = links[i];
             // is link.href already a key for blackboardLinks
             if (blackboardLinks[link.href]) {
-                blackboardLinks[link.href].push( { "text" : link.innerText,
-                    "count": numError }
-                    );
+                blackboardLinks[link.href].push({
+                    "text": link.innerText,
+                    "count": numError
+                }
+                );
                 const errorString = error.replace('{id}', `id="blackboard-link-${numError}"`);
-                numError+=1;
+                numError += 1;
                 link.insertAdjacentHTML('beforebegin', errorString);
             }
             else if (this.isBlackboardLink(link.href)) {
                 blackboardLinks[link.href] = [
-                    { "text" : link.innerText, "count": numError},
+                    { "text": link.innerText, "count": numError },
                 ];
                 const errorString = error.replace('{id}', `id="blackboard-link-${numError}"`);
-                numError+=1;
+                numError += 1;
                 link.insertAdjacentHTML('beforebegin', errorString);
             }
         }
@@ -3398,7 +3401,7 @@ class c2m_WordConverter {
 
                 summary.innerHTML = headingContent;
                 // wrap summary inner html in a h4 tag
-                summary.innerHTML = `<h4 style="display:inline;font-size:80%">${summary.innerHTML}</h4>`;
+                summary.innerHTML = `<span style="font-size:80%"><strong>${summary.innerHTML}</strong></span>`;
                 // remove any <p> tag from summary.innerHTML
                 //                summary.innerHTML = summary.innerHTML.replace(/<p[^>]*>/g, '');
                 //               summary.innerHTML = summary.innerHTML.replace(/<\/p>/g, '');
@@ -3503,8 +3506,11 @@ class c2m_WordConverter {
 
     handleCanvasMenuLinks(doc) {
         let canvasMenuLinks = doc.querySelectorAll('span.canvasMenuLink');
+        let message = "";
+        let problems = 0;
 
-        if ( canvasMenuLinks.length == 0 ) {
+
+        if (canvasMenuLinks.length == 0) {
             return;
         }
 
@@ -3515,7 +3521,7 @@ class c2m_WordConverter {
         // - the link for the canvasMenuLink can actually be the parent
         //   TODO need to move it inside
 
-        let i=0;
+        let i = 0;
         while (i < canvasMenuLinks.length) {
             // get the parent link
             let link = canvasMenuLinks[i].parentNode;
@@ -3537,30 +3543,61 @@ class c2m_WordConverter {
             // replace link with canvasMenuLink
             link.parentNode.replaceChild(canvasMenuLink, link);
             // skip over all the internal links found
-            i+=internalLinks.length;
+            i += internalLinks.length;
         }
 
         let canvasMenu = document.querySelector('ul#section-tabs');
         // create a hash of the canvas menu links li.section > a
         let canvasMenuLinksHash = {};
         canvasMenu.querySelectorAll('li.section > a').forEach((elem) => {
-            canvasMenuLinksHash[elem.innerText] = elem.href;
+            // if there is elem.href && elem.innerText
+            if (elem.href && elem.innerText) {
+                canvasMenuLinksHash[elem.innerText] = elem.href;
+            }
         });
 
         // iterate over the modified list of canvasMenuLinks
         // replace the href with the hash value
         canvasMenuLinks = doc.querySelectorAll('span.canvasMenuLink');
+        if (canvasMenuLinks.length == 0) {
+            return;
+        }
         // TODO add in error checks when can't find a courseMenuLink
         canvasMenuLinks.forEach((elem) => {
             let link = elem.querySelector('a');
-            // get the href of link
-            let href = link.href;
-            // get the last part of href i.e. the name of the menu
-            let menuName = href.split('/').pop();
-            if ( canvasMenuLinksHash[menuName] ) {
-                link.href = canvasMenuLinksHash[menuName];
+            if (link && link.href) {
+                // get the href of link
+                let href = link.href;
+                // get the last part of href i.e. the name of the menu
+                let menuName = href.split('/').pop();
+                if (canvasMenuLinksHash[menuName]) {
+                    link.href = canvasMenuLinksHash[menuName];
+                }
+            } else {
+                // we have a canvasMenuLink that doesn't actually have a link
+                let msgErrorString = `
+                <a href="#canvas-menulink-${problems}" ${CHECK_HTML_ONCLICK}>
+                <span class="w2c-warning">MissingMenuLink</span></a>`;
+                message += `<li>${msgErrorString} missing link </li>`;
+                // insert msgErrorString before elem
+                msgErrorString = `<span class="w2c-warning" id="#canvas-menulink-${problems}>MissingMenuLink</span></a>`;
+                elem.insertAdjacentHTML('beforebegin', msgErrorString);
+                problems += 1;
             }
-        } );
+        });
+
+        if (problems > 1) {
+            message = `Found ${problems} problems with Canvas Menu Links <small>(labeled in HTML)</small>. 
+                       <small><strong>
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">
+                         For more <i class="icon-question"></i></a></strong></small>
+                         <ul> ${message} </ul>`;
+
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": message
+            });
+        }
     }
 
     /**
@@ -3574,6 +3611,9 @@ class c2m_WordConverter {
     handleContentInterfaceComplexStyles(doc) {
         let firstDiv = null;
         let nextDiv = null;
+
+        let message = "";
+        let problems = 0;
 
         // get all the html for doc
         //        let html = doc.documentElement.outerHTML;
@@ -3589,7 +3629,7 @@ class c2m_WordConverter {
         ];
 
         // loop through styles array 
-        for ( const ci_style of ci_styles) {
+        for (const ci_style of ci_styles) {
 
             // keeping going until we run out of pairs of div.flashback
             // get all the p.flashback
@@ -3599,6 +3639,22 @@ class c2m_WordConverter {
                 // check that we've got a pair of div.flashback
                 firstDiv = ps[count];
                 nextDiv = ps[count + 1];
+
+                // TODO need to check if nextDiv is defined, if not, we're
+                // if ! nextDiv generate errors and break out of loop
+                if (!nextDiv) {
+                    let msgErrorString = `
+                    <a href="#ci-complex-${problems}" ${CHECK_HTML_ONCLICK}>
+                    <span class="w2c-error">MissingComplexStyleEndStyle</span></a>`;
+                    message += `<li>${msgErrorString} missing end style </li>`;
+                    // insert msgErrorString before elem
+                    msgErrorString = `<span class="w2c-error" id="#ci-complex-${problems}>MissingComplexStyleEndStyle</span></a>`;
+                    firstDiv.insertAdjacentHTML('beforebegin', msgErrorString);
+                    problems += 1;
+                    break;
+                }
+
+                // missing a pair and need to insert an error
                 count += 2;
                 // put everything in between the two div.flashbacks
                 // get everything until next div.flashback
@@ -3624,23 +3680,23 @@ class c2m_WordConverter {
 
                 if (ci_style.includes('div.poem')) {
                     // a poem style gets that class and straight content, no instructions
-                    newFirstDiv.innerHTML=content;
+                    newFirstDiv.innerHTML = content;
                     const className = ci_style.substring(4);
                     newFirstDiv.classList.add(className);
                 } else {
-                    if ( 
-                        (ci_style==="p.flashback") || 
-                        (ci_style==="p.canaryExercise") || 
-                        (ci_style==="p.weeklyWorkout") ||
-                        (ci_style==="p.ael-note") ||
-                        (ci_style==="p.reading") ||
-                        (ci_style==="p.activity") ||
-                        (ci_style==="p.comingSoon") 
-                        ) { 
-                            newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
-                        } else {
-                            newFirstDiv.innerHTML = content;
-                        }
+                    if (
+                        (ci_style === "p.flashback") ||
+                        (ci_style === "p.canaryExercise") ||
+                        (ci_style === "p.weeklyWorkout") ||
+                        (ci_style === "p.ael-note") ||
+                        (ci_style === "p.reading") ||
+                        (ci_style === "p.activity") ||
+                        (ci_style === "p.comingSoon")
+                    ) {
+                        newFirstDiv.innerHTML = `<div class="instructions">${content}</div>`;
+                    } else {
+                        newFirstDiv.innerHTML = content;
+                    }
                     // remove p. from from front of ci_style
                     const className = ci_style.substring(2);
                     newFirstDiv.classList.add(className);
@@ -3648,6 +3704,19 @@ class c2m_WordConverter {
                 // replace firstDiv with newFirstDiv
                 firstDiv.parentNode.replaceChild(newFirstDiv, firstDiv);
             }
+        }
+
+        if (problems > 0) {
+            message = `Found ${problems} problems with Content Interface Styles <small>(labeled in HTML)</small>. 
+                       <small><strong>
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">
+                         For more <i class="icon-question"></i></a></strong></small>
+                         <ul> ${message} </ul>`;
+
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": message
+            });
         }
     }
 
@@ -3685,6 +3754,14 @@ class c2m_WordConverter {
     displayError(error) {
         this.mammothError = error;
         this.mammothResult = undefined;
+
+        // console log details of line number etc for error
+        let stack = error.stack.split('\n');
+        let line = stack[1].split(':');
+        let lineNumber = line[1];
+        let file = line[0];
+        console.log(`Error converting file ${file} at line ${lineNumber}`);
+        console.log(stack);
 
         // generate mammoth-results event
         const event = new Event('mammoth-error');
@@ -3817,7 +3894,7 @@ class c2m_WordConverter {
 
         let parser = new DOMParser();
         let doc2 = parser.parseFromString(juiceHTML, "text/html");
-        return doc2; 
+        return doc2;
     }
 
     /**
@@ -3829,12 +3906,12 @@ class c2m_WordConverter {
     h2sAsAccordions() {
         // does input#w2c-accordion exist?
         let accordion = document.querySelector('input#w2c-accordion');
-        if (!accordion){
+        if (!accordion) {
             console.log('input#w2c-accordion not found');
             return;
         }
         // what to do
-        if ( accordion.checked ) {
+        if (accordion.checked) {
             // accordion has been checked, time to convert h2s to accordions
             this.h2ToAccordion();
         } else {
@@ -3903,7 +3980,7 @@ class c2m_WordConverter {
         let doc = parser.parseFromString(html, "text/html");
 
         // get all the <details> elements in doc
-        let details = doc.querySelectorAll('details');
+        let details = doc.querySelectorAll('details.w2c-h2');
         // loop through all the <details> elements
         for (let i = 0; i < details.length; i++) {
             // get the innerHtml of details > summary 
@@ -4827,8 +4904,6 @@ class c2m_Model {
         return undefined;
     }
     
-
-
     /**
      * Generate events and appropriate infrastrcutre to find all the 
      * necessary canvasFileLink spans

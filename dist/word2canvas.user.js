@@ -2958,7 +2958,7 @@ onclick='if((document.getElementById("c2m_html").style.display === "")||(documen
 const TABLE_CLASS = ["table", "stripe-row-odd"];
 
 const ACCORDION_TEMPLATE = `
-<details style="margin-bottom: 0.5rem; padding: .5rem 1rem;">
+<details style="margin-bottom: 0.5rem; padding: .5rem 1rem;" class="w2c-h2">
   <summary style="padding: 0.5rem; margin: -0.5rem; background: #efefef; border-radius: 5px; cursor: pointer; font-size: 1.2em;">
     <strong>{TITLE}</strong>
   </summary>
@@ -4007,7 +4007,7 @@ class c2m_WordConverter {
         let doc = parser.parseFromString(html, "text/html");
 
         // get all the <details> elements in doc
-        let details = doc.querySelectorAll('details');
+        let details = doc.querySelectorAll('details.w2c-h2');
         // loop through all the <details> elements
         for (let i = 0; i < details.length; i++) {
             // get the innerHtml of details > summary 

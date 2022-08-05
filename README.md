@@ -29,7 +29,7 @@ Manually creating a complex module using the Canvas web interface can be a touch
 
 1. [Install the userscript](./docs/install.md) 
 
-   Install a userscript manager (e.g. [TamperMonkey](https://www.tampermonkey.net/)) on your browser of choice and then install the [word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.live.user.js).
+   Install a userscript manager (e.g. [TamperMonkey](https://www.tampermonkey.net/)) on your browser of choice and then install the [word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.user.js).
 
 2. [Test the userscript](./docs/test.md)
 
