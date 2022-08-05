@@ -176,8 +176,6 @@ export default class c2m_Model {
         return undefined;
     }
     
-
-
     /**
      * Generate events and appropriate infrastrcutre to find all the 
      * necessary canvasFileLink spans
