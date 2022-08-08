@@ -24,14 +24,14 @@ Demonstration of migrating content from a traditional Blackboard course to a Can
 
 ### "Chapter" list
 
-- [Collections/objects/items](#19.59)
+- [Collections/objects/items](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=19)
     
 	A course that has a clear structure of 
 	- collections - the left hand menu collects together multiple common objects
 	- objects - the page for a menu item combines objects of the same type (e.g. assignments, weeks, lectures, modules) that contain multiple items
 	- items - each object consists of different content and other items (e.g. lecture slides, tutorial sheets, links, resources etc.)
 
-- [Here's one I prepared earlier](#40)
+- [Here's one I prepared earlier](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=40)
 
     Comparing the Blackboard content with an already completed migration to Canvas. Become familiar with what we'll produce.
 
