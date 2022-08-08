@@ -88,7 +88,7 @@ Demonstration of migrating content from a traditional Blackboard course to a Can
 	
 	Explanation of the process of creating version 2 of the module.
 
-- [Examining version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=980)
+- [Examining version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=980){:target="\_blank"}
 	
 	Tour and explanation of the module that was created.
 
