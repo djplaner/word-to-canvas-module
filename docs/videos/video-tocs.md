@@ -7,8 +7,8 @@ Provide a central list pointing to videos demonstrating the use of word2canvas. 
 
 <!-- no toc -->
 1. [Using the sample Word document](#w2c-using-the-sample-document---available-via-youtube)
-2. [Using the CAR for traditional Blackboard content](#w2c-using-the-car-for-traditional-blackboard-content---Access-limited)
-3. [Using the CAR for Content Interface content](#w2c-using-the-car-for-content-interface-content---Access-limited)
+2. [Using the CAR for traditional Blackboard content](#w2c-using-the-car-on-traditional-blackboard-content---access-limited)
+3. [Using the CAR for Content Interface content](#w2c-using-the-car-on-content-interface-content---access-limited)
 
 ## w2c using the Sample Document - available via YouTube
 
@@ -48,4 +48,4 @@ Includes a demonstration of how the word2canvas error labels and _placeholder_ s
 
 <iframe width="640" height="360" src="https://web.microsoftstream.com/embed/video/8325fc64-d87b-47c5-b41d-0f628b58681b?autoplay=false&showinfo=true" allowfullscreen style="border:none;"></iframe>
 
-
+### "Chapter" list to come
