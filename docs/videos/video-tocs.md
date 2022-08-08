@@ -35,9 +35,15 @@ Demonstration of migrating content from a traditional Blackboard course to a Can
 
     Comparing the Blackboard content with an already completed migration to Canvas. Become familiar with what we'll produce.
 
+- [Looking at the CAR Word doc](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=95)
+	
+	Examing the CAR Word doc, compare with the Blackboard content.
+
 ## w2c using the CAR on Content Interface content - Access limited
 
 Demonstration of migrating Content Interface content from Blackboard to Canvas. Starting with a Word document created by the CAR process, some modification, and then imported using word2canvas.
+
+Includes a demonstration of how the word2canvas error labels and _placeholder_ style can be used in conjunction with the CAR Quality Assurance process.
 
 
 <iframe width="640" height="360" src="https://web.microsoftstream.com/embed/video/8325fc64-d87b-47c5-b41d-0f628b58681b?autoplay=false&showinfo=true" allowfullscreen style="border:none;"></iframe>
