@@ -10,6 +10,7 @@ Provide a central list pointing to videos demonstrating the use of word2canvas. 
 2. [Using the CAR for traditional Blackboard content](#w2c-using-the-car-on-traditional-blackboard-content---access-limited)
 3. [Using the CAR for Content Interface content](#w2c-using-the-car-on-content-interface-content---access-limited)
 
+
 ## w2c using the Sample Document - available via YouTube
 
 Example of using word2canvas to create a Canvas Module using the [sample w2c Word document](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx).
