@@ -27,10 +27,7 @@ Demonstration of migrating content from a traditional Blackboard course to a Can
 
 | # | Title | Description |
 | :------ | :-----------| :---------- |
-| 1 | [Collections/objects/items](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=19){:target="\_blank"} | A course that has a clear structure of 
-	- collections - the left hand menu collects together multiple common objects
-	- objects - the page for a menu item combines objects of the same type (e.g. assignments, weeks, lectures, modules) that contain multiple items
-	- items - each object consists of different content and other items (e.g. lecture slides, tutorial sheets, links, resources etc.) |
+| 1 | [Collections/objects/items](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=19){:target="\_blank"} | Brief explanation of the model underpinning the CARs and migration  ([see also](#collections-/-/objects-/-items---brief-explanation)) |
 | 2 | [Here's one I prepared earlier](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=40){:target="\_blank"} | Comparing the Blackboard content with an already completed migration to Canvas. Become familiar with what we'll produce |
 | 3 | [Looking at the CAR Word doc](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=95){:target="\_blank"} | Examing the CAR Word doc, compare with the Blackboard content |
 | 4 | [Explaining _Blackboard_ (aka _Canvas_) _Images_](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=145){:target="\_blank"} | Explain how the CAR and w2c are able to move images from Blackboard (and the Content Interface) to Canvas.|
@@ -46,6 +43,14 @@ Demonstration of migrating content from a traditional Blackboard course to a Can
 | 14 | [Check module structure - version 2](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=962){:target="\_blank"} | Briefly observing the module structure of version 2 of the Word doc. |
 | 15 | [Creating version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=968){:target="\_blank"} | Explanation of the process of creating version 2 of the module. |
 | 16 | [Examining version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=980){:target="\_blank"} | Tour and explanation of the module that was created. |
+
+### Collections / objects / items - brief explanation
+
+A Blackboard course that has a clear structure of 
+
+- collections - where each left hand menu item (e.g. _Course Content_ or _Assessment__ collects together multiple common "objects" 
+- objects - a menu item page clearly "collects" together muliple objects of the same type (e.g. assignments, weeks, lectures, modules) 
+- items - each object consists of different components (e.g. lecture slides, tutorial sheets, links, resources etc.) 
 
 ## w2c using the CAR on Content Interface content - Access limited
 
