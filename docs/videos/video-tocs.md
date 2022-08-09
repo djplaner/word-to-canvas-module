@@ -101,4 +101,13 @@ Includes a demonstration of how the word2canvas error labels and _placeholder_ s
 
 <iframe width="640" height="360" src="https://web.microsoftstream.com/embed/video/8325fc64-d87b-47c5-b41d-0f628b58681b?autoplay=false&showinfo=true" allowfullscreen style="border:none;"></iframe>
 
-### "Chapter" list to come
+### "Chapter" list 
+
+| # | Title | Description |
+| :------ | :-----------| :---------- |
+| 1 | [Introducing the Content Interface](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b){:target="\_blank"} | Showing the Content Interface in Blackboard |
+| 2 | [What might it look like in Canvas?](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=35){:target="\_blank"} | Showing a matching Canvas module |
+| 3 | [What it looks like in the CAR folder](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=97){:target="\_blank"} | Explaining the folder and Word document created by the CAR from the Content Interface in Blackboard |
+| 4 | [Comparing CAR Word doc and Blackboard](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=145){:target="\_blank"} | Showing the relationship between the Content Interface in Blackboard and the CAR Word document |
+| 5 | [Editing the Word doc](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=179){:target="\_blank"} | Figuring what doesn't need to be migrated and removing it from the Word doc - pre word2canvas conversion |
+
