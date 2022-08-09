@@ -27,7 +27,7 @@ Demonstration of migrating content from a traditional Blackboard course to a Can
 
 | # | Title | Description |
 | :------ | :-----------| :---------- |
-| 1 | [Collections/objects/items](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=19){:target="\_blank"} | Brief explanation of the model underpinning the CARs and migration  ([see also](#collections-/-/objects-/-items---brief-explanation)) |
+| 1 | [Collections/objects/items](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=19){:target="\_blank"} | Brief explanation of the model underpinning the CARs and migration  ([see also](#collections----objects---items---brief-explanation)) |
 | 2 | [Here's one I prepared earlier](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=40){:target="\_blank"} | Comparing the Blackboard content with an already completed migration to Canvas. Become familiar with what we'll produce |
 | 3 | [Looking at the CAR Word doc](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=95){:target="\_blank"} | Examing the CAR Word doc, compare with the Blackboard content |
 | 4 | [Explaining _Blackboard_ (aka _Canvas_) _Images_](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=145){:target="\_blank"} | Explain how the CAR and w2c are able to move images from Blackboard (and the Content Interface) to Canvas.|
