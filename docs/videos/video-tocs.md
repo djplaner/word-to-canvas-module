@@ -25,72 +25,27 @@ Demonstration of migrating content from a traditional Blackboard course to a Can
 
 ### "Chapter" list
 
-- [Collections/objects/items](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=19){:target="\_blank"}
-    
-	A course that has a clear structure of 
+| # | Title | Description |
+| :------ | :-----------| :---------- |
+| 1 | [Collections/objects/items](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=19){:target="\_blank"} | A course that has a clear structure of 
 	- collections - the left hand menu collects together multiple common objects
 	- objects - the page for a menu item combines objects of the same type (e.g. assignments, weeks, lectures, modules) that contain multiple items
-	- items - each object consists of different content and other items (e.g. lecture slides, tutorial sheets, links, resources etc.)
-
-- [Here's one I prepared earlier](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=40){:target="\_blank"}
-
-    Comparing the Blackboard content with an already completed migration to Canvas. Become familiar with what we'll produce.
-
-- [Looking at the CAR Word doc](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=95){:target="\_blank"}
-	
-	Examing the CAR Word doc, compare with the Blackboard content.
-
-- [Explaining _Blackboard_ (aka _Canvas_) _Images_](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=145){:target="\_blank"}
-	
-	Explain how the CAR and w2c are able to move images from Blackboard (and the Content Interface) to Canvas.
-
-- [Starting with word2canvas](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=278){:target="\_blank"}
-	
-	Is it installed? What does it look like? How to start using it?
-
-- [Four stages of word2canvas](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=292){:target="\_blank"}
-	
-	Overview of the four steps/stages of using word2canvas.
-
-- [Starting the conversion and "check html"](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=332){:target="\_blank"}
-	
-	Choose a Word document and start the conversion. Description of what is shown at the _Check HTML_ stage of word2canvas.
-
-- [Check the module structure](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=392){:target="\_blank"}
-	
-	Explanation of what is seen at the _Check Module_ stage of word2canvas.
-
-- [Creating the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=404){:target="\_blank"}
-	
-	Explanation of what happend and what you see during the _Create Module_ stage of word2canvas.
-
-- [Examining the created module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=428){:target="\_blank"}
-	
-	Tour and explanation of the module that was created. Description of the limitations of the initial conversion and demonstration of removing the module from Canvas.
-
-- [Starting again - tidying up the Word document to fix limitations](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=527){:target="\_blank"}
-	
-	Example of editing the Word document to remove the issues and limitations from the first conversion.
-
-- [Using word2canvas to create a Canvas Module with the revised document](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=879){:target="\_blank"}
-	
-	Demonstration of using word2canvas to create a Canvas Module with the revised Word document.
-
-- [Explaining the "H2s as accordions" option](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=928){:target="\_blank"}
-	
-	Explanation of the "H2s as accordions" option.
-
-- [Check module structure - version 2](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=962){:target="\_blank"}
-	
-	Briefly observing the module structure of version 2 of the Word doc.
-
-- [Creating version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=968){:target="\_blank"}
-	
-	Explanation of the process of creating version 2 of the module.
-
-- [Examining version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=980){:target="\_blank"}
-	
-	Tour and explanation of the module that was created.
+	- items - each object consists of different content and other items (e.g. lecture slides, tutorial sheets, links, resources etc.) |
+| 2 | [Here's one I prepared earlier](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=40){:target="\_blank"} | Comparing the Blackboard content with an already completed migration to Canvas. Become familiar with what we'll produce |
+| 3 | [Looking at the CAR Word doc](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=95){:target="\_blank"} | Examing the CAR Word doc, compare with the Blackboard content |
+| 4 | [Explaining _Blackboard_ (aka _Canvas_) _Images_](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=145){:target="\_blank"} | Explain how the CAR and w2c are able to move images from Blackboard (and the Content Interface) to Canvas.|
+| 5 | [Starting with word2canvas](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=278){:target="\_blank"} | Is it installed? What does it look like? How to start using it? |
+| 6 | [Four stages of word2canvas](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=292){:target="\_blank"} | Overview of the four steps/stages of using word2canvas. |
+| 7 | [Starting the conversion and "check html"](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=332){:target="\_blank"} | Choose a Word document and start the conversion. Description of what is shown at the _Check HTML_ stage of word2canvas. |
+| 8 | [Check the module structure](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=392){:target="\_blank"} | Explanation of what is seen at the _Check Module_ stage of word2canvas. |
+| 9 | [Creating the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=404){:target="\_blank"} | Explanation of what happend and what you see during the _Create Module_ stage of word2canvas. |
+| 10 | [Examining the created module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=428){:target="\_blank"} | Tour and explanation of the module that was created. Description of the limitations of the initial conversion and demonstration of removing the module from Canvas. |
+| 11 | [Starting again - tidying up the Word document to fix limitations](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=527){:target="\_blank"} | Example of editing the Word document to remove the issues and limitations from the first conversion. |
+| 12 | [Using word2canvas to create a Canvas Module with the revised document](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=879){:target="\_blank"} | Demonstration of using word2canvas to create a Canvas Module with the revised Word document. |
+| 13 | [Explaining the "H2s as accordions" option](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=928){:target="\_blank"} | Explanation of the "H2s as accordions" option. |
+| 14 | [Check module structure - version 2](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=962){:target="\_blank"} | Briefly observing the module structure of version 2 of the Word doc. |
+| 15 | [Creating version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=968){:target="\_blank"} | Explanation of the process of creating version 2 of the module. |
+| 16 | [Examining version 2 of the module](https://web.microsoftstream.com/video/42b2286d-6548-4f7d-a429-a537a0832f87?st=980){:target="\_blank"} | Tour and explanation of the module that was created. |
 
 ## w2c using the CAR on Content Interface content - Access limited
 
@@ -110,4 +65,18 @@ Includes a demonstration of how the word2canvas error labels and _placeholder_ s
 | 3 | [What it looks like in the CAR folder](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=97){:target="\_blank"} | Explaining the folder and Word document created by the CAR from the Content Interface in Blackboard |
 | 4 | [Comparing CAR Word doc and Blackboard](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=145){:target="\_blank"} | Showing the relationship between the Content Interface in Blackboard and the CAR Word document |
 | 5 | [Editing the Word doc](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=179){:target="\_blank"} | Figuring what doesn't need to be migrated and removing it from the Word doc - pre word2canvas conversion |
-
+| 6 | [Content Interface images as Canvas/Blackboard images](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=323){:target="\_blank"} | Explanation of how the CAR handles images in the Content Interface and what works with word2canvas |
+| 7 | [Starting the word2canvas conversion](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=505){:target="\_blank"} | Using word2canvas to check our changes |
+| 8 | [Unexpected problem with HTML - how to fix it](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=568){:target="\_blank"} | Fixing a problem with the original HTML (which wasn't evident in Blackboard) |
+| 9 | [Adding in the accordions](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=670){:target="\_blank"} | Turning on the H2s as accordions option |
+| 10 | [Understanding word2canvas messages about Content Interface images](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=687){:target="\_blank"} | Explain the messages word2canvas shows re: Canvas images |
+| 11 | [How to deal with Blackboard links?](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=734){:target="\_blank"} | One way to handle Blackboard links that are left in the Word doc |
+| 12 | [Keeping the w2c errors as placeholders](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=787){:target="\_blank"} | How and why to leave the w2c errors in Canvas |
+| 13 | [Adding additional _placeholder_ messages](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=834){:target="\_blank"} | Use of the _placeholder_ style in Word to link with the QA process |
+| 14 | [Adding in a Canvas discussion forum](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=867){:target="\_blank"} | How to modify the Word document to add a (existing) Canvas discussion to the module |
+| 15 | [Restarting word2canvas with modified Word doc](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=1011){:target="\_blank"} | Second use of word2canvas to check the Word doc |
+| 16 | [Setting the word2canvas options and checking the module structure](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=1050){:target="\_blank"} | Set the check html options and proceed |
+| 17 | [Create the module](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=1099){:target="\_blank"} | Quick check |
+| 18 | [Examining the new module ](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=1165){:target="\_blank"} | Stepping through the newly created module |
+| 19 | [Placeholders and the Quality Assurance page](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=1182){:target="\_blank"} | Show the connection between placeholders in Canvas and the quality assurance page |
+| 20 | [Checking the rest of the module](https://web.microsoftstream.com/video/8325fc64-d87b-47c5-b41d-0f628b58681b?st=1288){:target="\_blank"} | Examining the rest of the module |
