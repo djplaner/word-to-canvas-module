@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.7
+// @version      2.0.8
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -36,7 +36,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.7";
+		this.version = "2.0.8";
 	}
 
 
@@ -5034,6 +5034,11 @@ class c2m_Model {
                 descriptor = decodeURI(parent.innerText);
             } 
         }
+
+        // replace smart quotes and em dashes in name with normal ones
+        name = name.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
+        name = name.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"');
+        name = name.replace(/[\u2013\u2014]/g, '-');
 
         return { name, descriptor };
     }
