@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.7
+// @version      2.0.8
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -37,7 +37,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.7";
+		this.version = "2.0.9";
 	}
 
 
@@ -2958,7 +2958,7 @@ onclick='if((document.getElementById("c2m_html").style.display === "")||(documen
 const TABLE_CLASS = ["table", "stripe-row-odd"];
 
 const ACCORDION_TEMPLATE = `
-<details style="margin-bottom: 0.5rem; padding: .5rem 1rem;" class="w2c-h2">
+<details style="margin-bottom: 0.5rem; padding: .5rem 1rem; clear:both" class="w2c-h2">
   <summary style="padding: 0.5rem; margin: -0.5rem; background: #efefef; border-radius: 5px; cursor: pointer; font-size: 1.2em;">
     <strong>{TITLE}</strong>
   </summary>
