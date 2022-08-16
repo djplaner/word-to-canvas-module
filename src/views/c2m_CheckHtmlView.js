@@ -68,11 +68,11 @@ const CHECK_HTML_HTML = `
     <i class="icon-info"></i> for more</a></small>
   </li>
   <li><small> <input type="checkbox" id="w2c-leave-errors"> <label for="w2c-leave-errors">Keep error labels in Canvas content</label>
-	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/keep-error-labels.md" target="_blank">
+	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/keep-error-labels.html" target="_blank">
     <i class="icon-info"></i> for more</a></small>
 	</li>
 	<li><small> <input type="checkbox" id="w2c-disable-inline-youtube"> <label for="w2c-disable-inline-youtube">Disable inline embedded previews </label>
-	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/disable-inline-youtube-previews.md" target="_blank">
+	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/disable-inline-youtube-previews.html" target="_blank">
     <i class="icon-info"></i> for more</a></small>
 	</li>
   </ul>
