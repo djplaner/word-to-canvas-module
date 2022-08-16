@@ -74,10 +74,12 @@ export default class c2m_Model {
     findImageLinks() {
 /*        console.log("-----------------------------");
         console.log("-----------------------------");
-        console.log("FIND IMAGE LINKS");
-        console.log("-----------------------------");
-*/
+        console.log("FIND IMAGE LINKS"); */
+
         let items = this.htmlConverter.items;
+        
+/*        console.log(`c2m_Model -> findImageLinks: ${items.length} items`);
+        console.log("-----------------------------"); */
 
         // set up infrastructure
         // - this.imageLinks array of objects for required fileLinks
@@ -102,7 +104,7 @@ export default class c2m_Model {
             // find all the canvasFileLinks
             let imageLinks = bodyDoc.querySelectorAll('span.canvasImage');
 
-            console.log(`found ${imageLinks.length} file links in item ${i}`);
+            console.log(`found ${imageLinks.length} image links in item ${i}`);
 
             // loop thru the imageLinks
             for (let j = 0; j < imageLinks.length; j++) {
@@ -121,12 +123,15 @@ export default class c2m_Model {
                         event: 'w2c-imageLink-found'
                     };
                     // append newFileLink to fileLinks
+                    console.log(`c2m_Model -> findImageLinks: adding image link ${name} from item ${i}`);
+                    console.log(newImageLink);
+                    console.log('--------done');
                     this.canvasModules.imageLinks.push(newImageLink);
                 }
             }
         }
 
-        // if there are no fileLinks
+        // if there are no image links, we can go onto fileLinks
         if (this.canvasModules.imageLinks.length === 0) {
             // ignore this step and start finding/creating other items
             this.findFileLinks();
@@ -156,16 +161,10 @@ export default class c2m_Model {
             // - if we still have http something at the end, then it was
             //   a URL to some image elsewhere
 
-            // remove the documentbaseURI from the src
-            let base = document.baseURI;
-            // remove the last # and id from the base
-            if (base.includes('#')) {
-                base = base.substring(0, base.lastIndexOf('#'));
-            }
-            // remove the modules tag
-            base = base.replace(/modules$/, '');
+            // get everything after the last / from img.src
+            let src = img.src;
+            src = src.substring(src.lastIndexOf('/') + 1);
 
-            let src = img.src.replace(base, '');
             // replace all html entities with their equivalent characters
             src = decodeURIComponent(src);
             // return the src if it's not a url
@@ -393,13 +392,14 @@ export default class c2m_Model {
      */
 
      replaceCanvasImageLinks( index ){
-        console.log("------------- replaceCanvasImageLinks");
+        console.log(`------------- replaceCanvasImageLinks {index: ${index}}`);
         // are there any this.canvasModules.fileLinks with itemIndex = index?
         let imageLinks = this.canvasModules.imageLinks.filter(
             imageLink => imageLink.itemIndex === index
         );
         // if there are no fileLinks, then there's nothing to do
         if (imageLinks.length === 0) {
+            console.log(`------------- replaceCanvasImageLinks: no imageLinks for index ${index}`);
             return;
         }
         console.log("------------- replaceCanvasImageLinks - starting");
@@ -423,7 +423,7 @@ export default class c2m_Model {
         for (let i = 0; i < htmlImageLinks.length; i++) {
             if ( imageLinks[i].status === "found" ) {
                 const response = imageLinks[i].response; 
-                const imageUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}/download`;
+                const imageUrl = `https://${location.host}/courses/${this.canvasModules.courseId}/files/${response.id}/download`;
                 // remove "/download?download_frd=1" from the end of the url
 
                 // What we're going to replace <span class="canvasFileLink"> with

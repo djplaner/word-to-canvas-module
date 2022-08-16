@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.9
+// @version      2.0.10
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -36,7 +36,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.9";
+		this.version = "2.0.10";
 	}
 
 
@@ -353,7 +353,11 @@ const CHECK_HTML_HTML = `
     <i class="icon-info"></i> for more</a></small>
   </li>
   <li><small> <input type="checkbox" id="w2c-leave-errors"> <label for="w2c-leave-errors">Keep error labels in Canvas content</label>
-	<a href="https://djplaner.github.io/djplaner/word-to-canvas-module/docs/options/keep-error-labels.md" target="_blank">
+	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/keep-error-labels.html" target="_blank">
+    <i class="icon-info"></i> for more</a></small>
+	</li>
+	<li><small> <input type="checkbox" id="w2c-disable-inline-youtube"> <label for="w2c-disable-inline-youtube">Disable inline embedded previews </label>
+	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/disable-inline-youtube-previews.html" target="_blank">
     <i class="icon-info"></i> for more</a></small>
 	</li>
   </ul>
@@ -611,10 +615,19 @@ class c2m_CheckHtmlView extends c2m_View {
 
 		// add the event handler for clicking on input#w2c-accordion
 		let accordionSet = document.querySelector("input#w2c-accordion");
-		accordionSet.onclick = () => this.controller.handleH2AsAccordionClick(); 
+		if (accordionSet) {
+			accordionSet.onclick = () => this.controller.handleH2AsAccordionClick(); 
+		}
 		// - event handle for input#w2c-leave-errors
 		let leaveErrors = document.querySelector("input#w2c-leave-errors");
-		leaveErrors.onclick = () => this.controller.handleLeaveErrorsClick();
+		if (leaveErrors) {
+			leaveErrors.onclick = () => this.controller.handleLeaveErrorsClick();
+		}
+		// - event handler for select of input#w2c-disable-inline-youtube
+		let disableInlineYoutube = document.querySelector("input#w2c-disable-inline-youtube");
+		if (disableInlineYoutube) {
+			disableInlineYoutube.onchange = (event) => this.controller.handleDisableInlineYoutubeChange(event);
+		}
 
 		// add onClick event handlers TODO fix these
 		let closeButton = document.getElementById("w2c-btn-close");
@@ -3445,6 +3458,17 @@ class c2m_WordConverter {
         let parser = new DOMParser();
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
+        // remove any links with empty innerText
+        let links2 = doc.querySelectorAll('a');
+        for (let i = 0; i < links2.length; i++) {
+            let link = links2[i];
+            // remove all whitespace from innerText
+            let innerText = link.innerText.replace(/\s/g, '');
+            if (innerText === "") {
+                link.parentNode.removeChild(link);
+            }
+        }
+
         // span.embed
         let embeds = doc.querySelectorAll('span.embed');
         // iterate over the embeds and use this.decodeEntities to decode the innerHTML
@@ -3913,6 +3937,71 @@ class c2m_WordConverter {
         let parser = new DOMParser();
         let doc2 = parser.parseFromString(juiceHTML, "text/html");
         return doc2;
+    }
+
+    /** 
+     * User wants to add/remove class="inline_disabled" on all links for
+     * youtube videos
+     * TODO Challenge is that these links will likely be in span embeds
+     * as well as other places
+     * @param {Boolean} status - true to add class, false to remove class
+     */
+
+    disableInlineYoutube(status) {
+        let html = document.querySelector('div#c2m_html').innerHTML;
+
+        // parse the html
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+
+        // get all anchors - normal html
+        let anchors = doc.querySelectorAll('a');
+        // loop through all the h2s
+        for (let i = 0; i < anchors.length; i++) {
+            // if the anchor has a youtube url
+            if (anchors[i].href.includes('youtube.com')) {
+                // if status is true, add class
+                if (status) {
+                    anchors[i].classList.add('inline_disabled');
+                } else {
+                    anchors[i].classList.remove('inline_disabled');
+                }
+            }
+        }
+        // handle the span.embeds which can include links
+        // - find all span.embeds
+        // - encode innerHTML to html
+        // - modify the class list 
+        // - re-encode html to entities and replace innerHTML
+/*        let spanEmbeds = doc.querySelectorAll('span.embed');
+        for (let i = 0; i < spanEmbeds.length; i++) {
+            let html = spanEmbeds[i].innerHTML;
+            // decode the entities in html to html
+            html = this.decodeHtml(html);
+            let parser = new DOMParser();
+            let doc2 = parser.parseFromString(html, "text/html");
+            let anchors = doc2.querySelectorAll('a');
+            for (let j = 0; j < anchors.length; j++) {
+                if (anchors[j].href.includes('youtube.com')) {
+                    if (status) {
+                        anchors[j].classList.add('inline_disabled');
+                    } else {
+                        anchors[j].classList.remove('inline_disabled');
+                    }
+                }
+            }
+            // re-encode the html to entities
+            html = this.encodeHtml(doc2.documentElement.outerHTML);
+            spanEmbeds[i].innerHTML = html;
+        } */
+
+        // get the html from the doc
+        let html2 = doc.documentElement.outerHTML;
+        // put the html in div#c2m_html
+        document.querySelector('div#c2m_html').innerHTML = html2;
+        this.mammothResult.value = html2;
+
+
     }
 
     /**
@@ -4833,10 +4922,12 @@ class c2m_Model {
     findImageLinks() {
 /*        console.log("-----------------------------");
         console.log("-----------------------------");
-        console.log("FIND IMAGE LINKS");
-        console.log("-----------------------------");
-*/
+        console.log("FIND IMAGE LINKS"); */
+
         let items = this.htmlConverter.items;
+        
+/*        console.log(`c2m_Model -> findImageLinks: ${items.length} items`);
+        console.log("-----------------------------"); */
 
         // set up infrastructure
         // - this.imageLinks array of objects for required fileLinks
@@ -4861,7 +4952,7 @@ class c2m_Model {
             // find all the canvasFileLinks
             let imageLinks = bodyDoc.querySelectorAll('span.canvasImage');
 
-            console.log(`found ${imageLinks.length} file links in item ${i}`);
+            console.log(`found ${imageLinks.length} image links in item ${i}`);
 
             // loop thru the imageLinks
             for (let j = 0; j < imageLinks.length; j++) {
@@ -4880,12 +4971,15 @@ class c2m_Model {
                         event: 'w2c-imageLink-found'
                     };
                     // append newFileLink to fileLinks
+                    console.log(`c2m_Model -> findImageLinks: adding image link ${name} from item ${i}`);
+                    console.log(newImageLink);
+                    console.log('--------done');
                     this.canvasModules.imageLinks.push(newImageLink);
                 }
             }
         }
 
-        // if there are no fileLinks
+        // if there are no image links, we can go onto fileLinks
         if (this.canvasModules.imageLinks.length === 0) {
             // ignore this step and start finding/creating other items
             this.findFileLinks();
@@ -4915,16 +5009,10 @@ class c2m_Model {
             // - if we still have http something at the end, then it was
             //   a URL to some image elsewhere
 
-            // remove the documentbaseURI from the src
-            let base = document.baseURI;
-            // remove the last # and id from the base
-            if (base.includes('#')) {
-                base = base.substring(0, base.lastIndexOf('#'));
-            }
-            // remove the modules tag
-            base = base.replace(/modules$/, '');
+            // get everything after the last / from img.src
+            let src = img.src;
+            src = src.substring(src.lastIndexOf('/') + 1);
 
-            let src = img.src.replace(base, '');
             // replace all html entities with their equivalent characters
             src = decodeURIComponent(src);
             // return the src if it's not a url
@@ -5152,13 +5240,14 @@ class c2m_Model {
      */
 
      replaceCanvasImageLinks( index ){
-        console.log("------------- replaceCanvasImageLinks");
+        console.log(`------------- replaceCanvasImageLinks {index: ${index}}`);
         // are there any this.canvasModules.fileLinks with itemIndex = index?
         let imageLinks = this.canvasModules.imageLinks.filter(
             imageLink => imageLink.itemIndex === index
         );
         // if there are no fileLinks, then there's nothing to do
         if (imageLinks.length === 0) {
+            console.log(`------------- replaceCanvasImageLinks: no imageLinks for index ${index}`);
             return;
         }
         console.log("------------- replaceCanvasImageLinks - starting");
@@ -5182,7 +5271,7 @@ class c2m_Model {
         for (let i = 0; i < htmlImageLinks.length; i++) {
             if ( imageLinks[i].status === "found" ) {
                 const response = imageLinks[i].response; 
-                const imageUrl = `https://${document.host}/courses/${this.canvasModules.courseId}/files/${response.id}/download`;
+                const imageUrl = `https://${location.host}/courses/${this.canvasModules.courseId}/files/${response.id}/download`;
                 // remove "/download?download_frd=1" from the end of the url
 
                 // What we're going to replace <span class="canvasFileLink"> with
@@ -5352,6 +5441,12 @@ class c2m_Model {
         console.log('c2m_Model -> h2sAsAccordions');
 
         this.wordConverter.h2sAsAccordions();
+    }
+
+    disableInlineYoutube(event) {
+        console.log('c2m_Model -> disableInlineYoutube');
+
+        this.wordConverter.disableInlineYoutube(event);
     }
 
     
@@ -5601,6 +5696,17 @@ class c2m_Controller {
 		// move the state on and render, ready for the results
 		this.currentState = c2m_CheckHtml;
 		this.render();
+	}
+
+	/**
+	 * Event handler for when the user wants to add/remove the
+	 * class="inline_disabled" to all YouTube links
+	 */
+	handleDisableInlineYoutubeChange(event) {
+		if (this.currentState === c2m_CheckHtml) {
+			const status = event.target.checked;
+			this.model.disableInlineYoutube(status);
+		}
 	}
 
 	/**
