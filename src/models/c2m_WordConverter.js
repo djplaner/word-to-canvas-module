@@ -676,6 +676,17 @@ export default class c2m_WordConverter {
         let parser = new DOMParser();
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
+        // remove any links with empty innerText
+        let links2 = doc.querySelectorAll('a');
+        for (let i = 0; i < links2.length; i++) {
+            let link = links2[i];
+            // remove all whitespace from innerText
+            let innerText = link.innerText.replace(/\s/g, '');
+            if (innerText === "") {
+                link.parentNode.removeChild(link);
+            }
+        }
+
         // span.embed
         let embeds = doc.querySelectorAll('span.embed');
         // iterate over the embeds and use this.decodeEntities to decode the innerHTML
@@ -1144,6 +1155,71 @@ export default class c2m_WordConverter {
         let parser = new DOMParser();
         let doc2 = parser.parseFromString(juiceHTML, "text/html");
         return doc2;
+    }
+
+    /** 
+     * User wants to add/remove class="inline_disabled" on all links for
+     * youtube videos
+     * TODO Challenge is that these links will likely be in span embeds
+     * as well as other places
+     * @param {Boolean} status - true to add class, false to remove class
+     */
+
+    disableInlineYoutube(status) {
+        let html = document.querySelector('div#c2m_html').innerHTML;
+
+        // parse the html
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(html, "text/html");
+
+        // get all anchors - normal html
+        let anchors = doc.querySelectorAll('a');
+        // loop through all the h2s
+        for (let i = 0; i < anchors.length; i++) {
+            // if the anchor has a youtube url
+            if (anchors[i].href.includes('youtube.com')) {
+                // if status is true, add class
+                if (status) {
+                    anchors[i].classList.add('inline_disabled');
+                } else {
+                    anchors[i].classList.remove('inline_disabled');
+                }
+            }
+        }
+        // handle the span.embeds which can include links
+        // - find all span.embeds
+        // - encode innerHTML to html
+        // - modify the class list 
+        // - re-encode html to entities and replace innerHTML
+/*        let spanEmbeds = doc.querySelectorAll('span.embed');
+        for (let i = 0; i < spanEmbeds.length; i++) {
+            let html = spanEmbeds[i].innerHTML;
+            // decode the entities in html to html
+            html = this.decodeHtml(html);
+            let parser = new DOMParser();
+            let doc2 = parser.parseFromString(html, "text/html");
+            let anchors = doc2.querySelectorAll('a');
+            for (let j = 0; j < anchors.length; j++) {
+                if (anchors[j].href.includes('youtube.com')) {
+                    if (status) {
+                        anchors[j].classList.add('inline_disabled');
+                    } else {
+                        anchors[j].classList.remove('inline_disabled');
+                    }
+                }
+            }
+            // re-encode the html to entities
+            html = this.encodeHtml(doc2.documentElement.outerHTML);
+            spanEmbeds[i].innerHTML = html;
+        } */
+
+        // get the html from the doc
+        let html2 = doc.documentElement.outerHTML;
+        // put the html in div#c2m_html
+        document.querySelector('div#c2m_html').innerHTML = html2;
+        this.mammothResult.value = html2;
+
+
     }
 
     /**

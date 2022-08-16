@@ -151,6 +151,17 @@ export default class c2m_Controller {
 	}
 
 	/**
+	 * Event handler for when the user wants to add/remove the
+	 * class="inline_disabled" to all YouTube links
+	 */
+	handleDisableInlineYoutubeChange(event) {
+		if (this.currentState === c2m_CheckHtml) {
+			const status = event.target.checked;
+			this.model.disableInlineYoutube(status);
+		}
+	}
+
+	/**
 	 * Event handler for when user selects to convert h2s to accordions in
 	 * the CheckHTML state
 	 * We're basically going to call the appropriate model method
