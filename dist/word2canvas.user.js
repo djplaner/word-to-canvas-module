@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.10
+// @version      2.0.11
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -37,7 +37,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.10";
+		this.version = "2.0.11";
 	}
 
 
@@ -2999,7 +2999,7 @@ class c2m_WordConverter {
     decodeEntities(encodedString) {
         let textArea = document.createElement('textarea');
         textArea.innerHTML = encodedString;
-        return textArea.value; 
+        return textArea.value;
     }
 
     /**
@@ -3057,8 +3057,85 @@ class c2m_WordConverter {
         // offer an explanation
         this.checkCanvasImages(doc);
 
+        // check for failed application of Word styles by CAR
+        this.checkFailedStyles(doc);
+
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
+
+    /**
+     * CAR word generation can sometimes not successfully apply styles.
+     * For some styles they leave tell tell content that is unstyled
+     * (e.g. Picture - (Start of picture)) Detect these and warn
+     * @param {Object} doc 
+     */
+    checkFailedStyles(doc) {
+        const possibleFailedStyles = {
+            "activity": {
+                "start": "(Start of Activity)",
+                "end": "(End of Activity)"
+            },
+            "Note": {
+                "start": "(Start of AEL Note)",
+                "end": "(End of AEL Note)"
+            },
+            "Picture": {
+                "start": "(Start of Picture)",
+                "end": "(End of Picture)"
+            }
+        };
+
+
+        let error = '<span {id} class="w2c-error">failedWordStyle</span>';
+        let numErrors = 0;
+
+        let failedStyles = [];
+
+        // loop through all the <p> elements and check for the failed styles
+        let pElements = doc.querySelectorAll("p");
+        for (let i = 0; i < pElements.length; i++) {
+            let p = pElements[i];
+            let pText = p.innerHTML;
+            // loop through all properties ofr possibleFailedStyles object
+
+            for (const style in possibleFailedStyles) {
+                // use regex to test that pText only contains start
+                const checks = possibleFailedStyles[style];
+                let regex = new RegExp(checks.start);
+                if (pText.match(regex)) {
+                    failedStyles.push(style);
+                    const errorString = error.replace('{id}', `id="failed-style-${numErrors}"`);
+                    p.insertAdjacentHTML('beforebegin', errorString);
+                    numErrors++;
+                } else {
+                    // if didn't find start, check for end
+                    regex = new RegExp(checks.end);
+                    if (pText.match(regex)) {
+                        failedStyles.push(style);
+                        const errorString = error.replace('{id}', `id="failed-style-${numErrors}"`);
+                        p.insertAdjacentHTML('beforebegin', errorString);
+                        numErrors++;
+                    }
+                }
+            }
+        }
+
+        error = `<a href="#failed-style-{id}" ${CHECK_HTML_ONCLICK}><span class="w2c-error">failedWordStyle</span></a>`;
+        for (let i = 0; i < failedStyles.length; i++) {
+            // only show error for external URL that has more than a URL, if it has a valid URL
+            const errorString = error.replace('{id}', `${i}`);
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": `${errorString} Appears Word style <em>${failedStyles[i]}</em> not successfully applied 
+                                <small><strong><a target="_blank" 
+                   href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/failedWordStyles.html">
+                   For more <i class="icon-question"></i></a></strong></small>`,
+            });
+        }
+
+
+    }
+
 
     /**
      * Identify all the Content Interface Blackboard specific styles and generate warnings
@@ -3075,6 +3152,7 @@ class c2m_WordConverter {
         // TODO add in heading
         // foundStyles[h1.blackboard] = [ { text: "", heading: ""}]
         let foundStyles = {};
+
 
         // for each of the ciBlackboardStyles check if any of the elements exist
         ciBlackboardStyles.forEach(style => {
@@ -3982,27 +4060,27 @@ class c2m_WordConverter {
         // - encode innerHTML to html
         // - modify the class list 
         // - re-encode html to entities and replace innerHTML
-/*        let spanEmbeds = doc.querySelectorAll('span.embed');
-        for (let i = 0; i < spanEmbeds.length; i++) {
-            let html = spanEmbeds[i].innerHTML;
-            // decode the entities in html to html
-            html = this.decodeHtml(html);
-            let parser = new DOMParser();
-            let doc2 = parser.parseFromString(html, "text/html");
-            let anchors = doc2.querySelectorAll('a');
-            for (let j = 0; j < anchors.length; j++) {
-                if (anchors[j].href.includes('youtube.com')) {
-                    if (status) {
-                        anchors[j].classList.add('inline_disabled');
-                    } else {
-                        anchors[j].classList.remove('inline_disabled');
+        /*        let spanEmbeds = doc.querySelectorAll('span.embed');
+                for (let i = 0; i < spanEmbeds.length; i++) {
+                    let html = spanEmbeds[i].innerHTML;
+                    // decode the entities in html to html
+                    html = this.decodeHtml(html);
+                    let parser = new DOMParser();
+                    let doc2 = parser.parseFromString(html, "text/html");
+                    let anchors = doc2.querySelectorAll('a');
+                    for (let j = 0; j < anchors.length; j++) {
+                        if (anchors[j].href.includes('youtube.com')) {
+                            if (status) {
+                                anchors[j].classList.add('inline_disabled');
+                            } else {
+                                anchors[j].classList.remove('inline_disabled');
+                            }
+                        }
                     }
-                }
-            }
-            // re-encode the html to entities
-            html = this.encodeHtml(doc2.documentElement.outerHTML);
-            spanEmbeds[i].innerHTML = html;
-        } */
+                    // re-encode the html to entities
+                    html = this.encodeHtml(doc2.documentElement.outerHTML);
+                    spanEmbeds[i].innerHTML = html;
+                } */
 
         // get the html from the doc
         let html2 = doc.documentElement.outerHTML;
