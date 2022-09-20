@@ -12,14 +12,14 @@
         <meta name="author" content="David Jones">
       
       
-        <link rel="canonical" href="https://djplaner.github.io/word-to-canvas-module/walk-throughs/walk-throughs/">
+        <link rel="canonical" href="https://djplaner.github.io/word-to-canvas-module/walk-throughs/html-check/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.0">
     
     
       
-        <title>Walk-throughs - Word to Canvas</title>
+        <title>Checking and fixing HTML conversion outcomes - Word to Canvas</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#walk-throughs" class="md-skip">
+        <a href="#checking-and-fixing-html-conversion-outcomes" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Walk-throughs
+              Checking and fixing HTML conversion outcomes
             
           </span>
         </div>
@@ -222,15 +222,13 @@
         
   
   
-    
-  
 
 
   
   
   
     <li class="md-tabs__item">
-      <a href="./" class="md-tabs__link md-tabs__link--active">
+      <a href="../walk-throughs/" class="md-tabs__link">
         Walk-throughs
       </a>
     </li>
@@ -429,14 +427,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
       
       
@@ -457,21 +453,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../walk-throughs/" class="md-nav__link">
         Walk-throughs
       </a>
-      
     </li>
   
 
@@ -669,6 +655,55 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#background" class="md-nav__link">
+    Background
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checking-the-conversion-outcomes" class="md-nav__link">
+    Checking the conversion outcomes
+  </a>
+  
+    <nav class="md-nav" aria-label="Checking the conversion outcomes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-the-messages" class="md-nav__link">
+    Check the Messages
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-unrecognised-word-styles" class="md-nav__link">
+    Handling unrecognised Word styles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#handling-problems-with-the-generated-html" class="md-nav__link">
+    Handling problems with the generated HTML
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -681,27 +716,40 @@
                 
                   
 
-  <a href="https://github.com/djplaner/word-to-canvas-module/edit/master/docs/walk-throughs/walk-throughs.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/djplaner/word-to-canvas-module/edit/master/docs/walk-throughs/html-check.md" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
-<h1 id="walk-throughs">Walk-throughs</h1>
-<p>A collection of (video) walk-throughs of various tasks using <code>word2canvas</code>, including</p>
+<h1 id="checking-and-fixing-html-conversion-outcomes">Checking and fixing HTML conversion outcomes</h1>
+<h2 id="background">Background</h2>
+<p>The first step in <code>word2canvas</code> is converting your Word document to HTML. To achieve this, <code>word2canvas</code> uses </p>
 <ol>
-<li><a href="../using-the-sample/">Using the sample Word document</a></li>
-<li><a href="../blackboard-car/">Using the CAR for traditional Blackboard content</a></li>
-<li><a href="../ci-car/">Using the CAR for Content Interface content</a></li>
+<li>the <a href="https://github.com/mwilliamson/mammoth.js#mammoth-docx-to-html-converter">Mammoth .docx to HTML converter</a>; and,</li>
+<li>a <a href="https://github.com/mwilliamson/mammoth.js#custom-style-map">custom style map</a>.</li>
 </ol>
-<p>Other walk-throughs include:</p>
-<ul>
-<li><a href="../html-check/">Checking and fixing HTML conversion outcomes</a></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The last two walk-throughs are only relevant to people working at Griffith University.</p>
-</div>
+<p>After attempting to convert your Word document, <code>word2canvas</code> will display both the <strong>Messages</strong> and the <strong>HTML</strong> generated by Mammoth. These are displayed in accordions which can be opened/closed to check the outcomes of the conversion and inform how to fix any issues.</p>
+<h2 id="checking-the-conversion-outcomes">Checking the conversion outcomes</h2>
+<p>The following image shows the conversion outcomes of <a href="https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx">the sample w2c.docx file</a>. The two most common types of checks are</p>
+<ol>
+<li>Do the <strong>Messages</strong> include anything of concern?</li>
+<li>Are there any problems with the generated <strong>HTML</strong>?</li>
+</ol>
+<p><img alt="" src="../../images/sample-html-conversion-results.png" /></p>
+<h3 id="check-the-messages">Check the <strong>Messages</strong></h3>
+<p>Mammoth messages follow a <a href="https://github.com/mwilliamson/mammoth.js#messages">common format</a>, typically including a <strong>type</strong> and a <strong>message</strong>.</p>
+<p>The <strong>type</strong> with be either a <em>warning</em> or a <em>error</em>. Warnings tend to mean the conversion happened, but perhaps with unexpected results. </p>
+<p>As illustrated above the most common <em>warning</em> indicates that the document includes a Word style that is not recognised by Mammoth.</p>
+<h3 id="handling-unrecognised-word-styles">Handling unrecognised Word styles</h3>
+<p>There are three ways you can handle a Word style unrecognised by Mammoth</p>
+<ol>
+<li>Ignore it - generally the text will still appear in the HTML. However, it may have lost some of the intended styling.</li>
+<li>Remove the style from the Word document - you can <a href="https://wordribbon.tips.net/T011741_Searching_for_Styles.html">search Word documents for specific styles</a> and then choose to apply a different style or to <a href="https://support.microsoft.com/en-us/office/add-and-remove-styles-from-the-quick-styles-gallery-21c5b9de-b19e-4575-bc87-cb2b55ece224">remove the style entirely</a></li>
+<li>Add the style to the <code>word2canvas</code> custom map - the custom map is in the <a href="https://github.com/djplaner/word-to-canvas-module/blob/main/src/models/c2m_WordConverter.js">word converter model</a>. If you're not comfortable coding, you can request an update of the custom style map <a href="https://github.com/djplaner/word-to-canvas-module/issues">via the <code>word2canvas</code> <em>Issues</em></a>.</li>
+</ol>
+<h3 id="handling-problems-with-the-generated-html">Handling problems with the generated HTML</h3>
+<p>If the generated HTML does not meet your expectations, the only real solution is to modify the Word document (e.g. change the style used, modify an image etc) and test the conversion again.</p>
 
 
 
@@ -717,42 +765,6 @@
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../../getting-started/use/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 3. Use" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              3. Use
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../using-the-sample/" class="md-footer__link md-footer__link--next" aria-label="Next: 1. Sample document" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              1. Sample document
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
