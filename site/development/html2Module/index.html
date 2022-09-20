@@ -1,0 +1,1186 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Convert Word documents into Canvas modules.">
+      
+      
+        <meta name="author" content="David Jones">
+      
+      
+        <link rel="canonical" href="https://djplaner.github.io/word-to-canvas-module/development/html2Module/">
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.5.0">
+    
+    
+      
+        <title>How to convert HTML to a Canvas module - Word to Canvas</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2e8b5541.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Arial:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Arial";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-convert-html-to-a-canvas-module" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Word to Canvas" class="md-header__button md-logo" aria-label="Word to Canvas" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Word to Canvas
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              How to convert HTML to a Canvas module
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      <form class="md-header__option" data-md-component="palette">
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+          
+            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+          
+          
+          <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+          
+            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+            </label>
+          
+        
+      </form>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/djplaner/word-to-canvas-module" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../getting-started/overview/" class="md-tabs__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../walk-throughs/walk-throughs/" class="md-tabs__link">
+        Walk-throughs
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../limitations/limitations/" class="md-tabs__link">
+        Limitations and Issues
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../reference/overview/" class="md-tabs__link">
+        Reference
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../development/" class="md-tabs__link">
+      Development
+    </a>
+  </li>
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Word to Canvas" class="md-nav__button md-logo" aria-label="Word to Canvas" data-md-component="logo">
+      
+  <img src="../../assets/logo.png" alt="logo">
+
+    </a>
+    Word to Canvas
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/djplaner/word-to-canvas-module" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/install/" class="md-nav__link">
+        1. Install
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/test/" class="md-nav__link">
+        2. Test
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/use/" class="md-nav__link">
+        3. Use
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Walk-throughs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Walk-throughs" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Walk-throughs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walk-throughs/walk-throughs/" class="md-nav__link">
+        Walk-throughs
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walk-throughs/using-the-sample/" class="md-nav__link">
+        1. Sample document
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walk-throughs/blackboard-car/" class="md-nav__link">
+        2. CAR & Blackboard
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../walk-throughs/ci-car/" class="md-nav__link">
+        3. CAR & Content Interface
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Limitations and Issues
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Limitations and Issues" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Limitations and Issues
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../limitations/limitations/" class="md-nav__link">
+        Limitations and Issues
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../limitations/diagnosis/" class="md-nav__link">
+        Diagnosis
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Reference
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Reference" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Reference
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/word-styles/" class="md-nav__link">
+        Word Styles
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/" class="md-nav__link">
+        Development
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basic-premise" class="md-nav__link">
+    Basic Premise
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-instantation" class="md-nav__link">
+    Current instantation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rough-design" class="md-nav__link">
+    Rough design
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process" class="md-nav__link">
+    Process
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#canvas-api" class="md-nav__link">
+    Canvas API
+  </a>
+  
+    <nav class="md-nav" aria-label="Canvas API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modules" class="md-nav__link">
+    Modules
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-structures" class="md-nav__link">
+    Data structures
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  <a href="https://github.com/djplaner/word-to-canvas-module/edit/master/docs/development/html2Module.md" title="Edit this page" class="md-content__button md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+<h1 id="how-to-convert-html-to-a-canvas-module">How to convert HTML to a Canvas module</h1>
+<p>The task here is design how HTML would be converted into a Canvas module. The requirement is that there be two modes:</p>
+<ol>
+<li>Test conversion - which is able to describe what the resulting module would look like, without creating it.</li>
+<li>Creation - actually creating the converted module.</li>
+</ol>
+<h2 id="basic-premise">Basic Premise</h2>
+<p>Initial conversion</p>
+<ul>
+<li>a module consists of multiple items</li>
+<li>h1 elements break HTML into matching items</li>
+<li>the class associated with the h1 element suggests the type of item in Canvas</li>
+<li>the content of the h1 element becomes the title of the item</li>
+<li>all the HTML until the next h1 becomes the content for the item</li>
+</ul>
+<p>Questions</p>
+<ul>
+<li>If and how to do anything about indented items</li>
+</ul>
+<h2 id="current-instantation">Current instantation</h2>
+<p><code>CompletedView::render</code>
+- setup interface
+- add event listeners for module-created <code>renderCreationResults</code> and module-error <code>renderCreationError</code>
+- As last step calls <code>this.model.createModule</code></p>
+<p><code>Model::createModule</code> 
+- Create the new module
+  - async <code>this.canvasModules.createModule(this.htmlConverter)</code>
+- Create the items for the module
+  - then <code>this.createModuleItems</code></p>
+<p>Events to be handled
+- w2c-empty-module-created
+- w2c-item-found-created
+- w2c-module-item-added
+- w2c-module-created <em>not needed as item added check will do this in view</em></p>
+<p>Workflow
+- CompletedView::render &gt; this.model.createModule
+- createModule &gt; w2c-empty-module-created &gt; view.checkEmptyModuleCreated
+- checkEmptyModuleCreate - does checks &gt; model.findOrCreateModuleItems OR error
+- findOrCreateModuleItems &gt; many model.findOrCreateItem &gt; w2c-item-found-created &gt; view.checkItemFoundCreated
+- checkItemFoundCreate - does checks &gt; updates view about num created items &gt; if all created model.addItemsToModule</p>
+<ul id="w2c-progress-list">
+  <li> <span class="w2c-progress-step">1</span> <span class="w2c-progress-label">Module creationg started</span> </li>
+</ul>
+
+<p>Should be
+  createModule.then(<br />
+    signal module created
+  )</p>
+<p>moduleCreate {
+    check the creation, that we have everything
+    createModuleItems.then(
+      signal module items created
+    )
+  }</p>
+<p>moduleItemsCreated {
+    check the items, see that we have everything
+    Actually a harness to findOrCreateItem
+    addItemsToModule.then(
+      signal module items added
+      // there are multiple items to be created.  The handler of this signal
+      // should only signal the next step once all the items have been found/created
+      // ??? maybe 
+    )
+  }</p>
+<p>moduleItemsAdded{
+    this is really creation success
+  }</p>
+<p><code>Module::createModuleItems</code> 
+- can access the newly created module <code>this.canvasModules.createModule.id</code>
+- for each item from <code>this.htmlConvertere.items</code>
+  - find or create the item <code>this.findOrCreateItem</code> 
+  - add the found/created item to the module <code>this.createModuleItem</code></p>
+<p><code>Module::findOrCreateItem</code>
+- determine type of item
+- call appropriate function from <code>this.canvasModules</code>
+  TODO
+  - create page needs to get passed back and handed to create Module item</p>
+<p><code>Module::addModuleItem</code>
+- add a module item to the module - it already knows the item
+  - calls <code>this.canvasModules.addModuleItem</code> to do the API stuff</p>
+<p>Thinking
+- Question is whether or not the async APIs are happening in the right order.</p>
+<h2 id="rough-design">Rough design</h2>
+<p>Module object</p>
+<ul>
+<li>some config info</li>
+<li>title</li>
+<li>items</li>
+</ul>
+<p>Items object</p>
+<ul>
+<li>title</li>
+<li>content</li>
+<li>
+<p>type</p>
+</li>
+<li>
+<p>select all h1s to identify items</p>
+</li>
+<li>use <a href="https://vanillajstoolkit.com/helpers/nextuntil/">nextUntil</a> to identify the content</li>
+</ul>
+<h2 id="process">Process</h2>
+<ol>
+<li>Break HTML into items and identify - this is the structure the view will represent</li>
+<li>Use the module/module item structure from canvas-collections??</li>
+<li>Use that structure</li>
+</ol>
+<h2 id="canvas-api">Canvas API</h2>
+<p>Looks like the API requires you create the item first and then provide the id when you add an item to a module</p>
+<h3 id="modules"><a href="https://canvas.instructure.com/doc/api/modules.html">Modules</a></h3>
+<ul>
+<li>List modules</li>
+<li>Create a module</li>
+<li>Create a module item</li>
+<li>
+<p>Update a module</p>
+</li>
+<li>
+<p>defines the module object - object with defined fields</p>
+</li>
+</ul>
+<h3 id="examples">Examples</h3>
+<ul>
+<li><a href="https://github.com/gqmaguirejr/E-learning">E-learning</a> long list of ruby code including apparently create module -- Not useful</li>
+<li><a href="https://github.com/ucfopen/canvasapi/blob/develop/canvasapi/module.py">moduley.py</a> Python code for module class, including create_module_item</li>
+</ul>
+<h2 id="data-structures">Data structures</h2>
+<p>module_item[type] = File, Page, Discussion, Assignment, Quiz, SubHeader, ExternalUrl, ExternalTool</p>
+<div class="highlight"><pre><span></span><code><span class="cm">&lt;!-- start of module div --&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span>
+  <span class="na">class</span><span class="o">=</span><span class="s">&quot;item-group-condensed context_module editable_context_module collapsed_module&quot;</span>
+  <span class="na">aria-label</span><span class="o">=</span><span class="s">&quot;${model.moduleTitle}&quot;</span> <span class="na">data-workflow-state</span><span class="o">=</span><span class="s">&quot;active&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">&gt;</span>
+  <span class="cm">&lt;!-- </span>
+<span class="cm">  data-module-url=&quot;/courses/115/modules/150&quot; data-module-id=&quot;n/a&quot;</span>
+<span class="cm">  id=&quot;context_module_150&quot; style=&quot;&quot;&gt;</span>
+<span class="cm">      --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">a</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;c2m_sample_module&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+
+  <span class="cm">&lt;!-- start of module title/name div --&gt;</span>
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;ig-header header&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;c2m_sample_module_header&quot;</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- &lt;span class=&quot;sortable-handle reorder_module_link&quot;</span>
+<span class="cm">      title=&quot;Drag to reorder modules&quot; style=&quot;&quot; &gt;</span>
+<span class="cm">      &lt;i aria-hidden=&quot;true&quot; class=&quot;icon-drag-handle&quot;&gt;&lt;/i&gt;</span>
+<span class="cm">    &lt;/span&gt; --&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h2</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span><span class="p">&gt;</span>${model.moduleTitle}<span class="p">&lt;/</span><span class="nt">h2</span><span class="p">&gt;</span>
+    <span class="cm">&lt;!-- &lt;span role=&quot;button&quot; tabindex=&quot;0&quot; href=&quot;/courses/115/modules/150/collapse&quot;</span>
+<span class="cm">      class=&quot;ig-header-title collapse_module_link ellipsis&quot;</span>
+<span class="cm">      aria-controls=&quot;context_module_content_150&quot; aria-expanded=&quot;true&quot;</span>
+<span class="cm">      aria-label=&quot;Misc Module toggle module visibility&quot; title=&quot;Misc Module&quot;</span>
+<span class="cm">      style=&quot;display: inline-block;&quot; &gt;</span>
+<span class="cm">      &lt;i class=&quot;icon-mini-arrow-down&quot;&gt;&lt;/i&gt;</span>
+<span class="cm">      &lt;span class=&quot;name&quot; title=&quot;Misc Module&quot;&gt;Misc Module&lt;/span&gt;</span>
+<span class="cm">    &lt;/span&gt; </span>
+<span class="cm">    &lt;span role=&quot;button&quot; tabindex=&quot;0&quot; href=&quot;/courses/115/modules/150/collapse&quot;</span>
+<span class="cm">      class=&quot;ig-header-title expand_module_link ellipsis&quot; aria-controls=&quot;context_module_content_150&quot; aria-expanded=&quot;false&quot;</span>
+<span class="cm">      aria-label=&quot;Misc Module toggle module visibility&quot; title=&quot;Misc Module&quot; style=&quot;display: none;&quot; &gt;</span>
+<span class="cm">      &lt;i class=&quot;icon-mini-arrow-right&quot;&gt;&lt;/i&gt;</span>
+<span class="cm">      &lt;span class=&quot;name ellipsis&quot; title=&quot;Misc Module&quot;&gt;Misc Module&lt;/span&gt;</span>
+<span class="cm">    &lt;/span&gt; --&gt;</span>
+
+    <span class="cm">&lt;!-- prerequisites --&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;prerequisites&quot;</span><span class="p">&gt;</span>
+        <span class="cm">&lt;!-- need to set/unset display:none as required --&gt;</span>
+      <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;prerequisites_message&quot;</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;Prerequisites: &quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span> <span class="p">&gt;</span>
+        Prerequisites: <span class="cm">&lt;!-- TODO have a mechanism to set this --&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirements_message&quot;</span><span class="p">&gt;</span><span class="cm">&lt;!-- TODO --&gt;</span><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+    <span class="cm">&lt;!-- module header info --&gt;</span>
+    <span class="cm">&lt;!-- &lt;div class=&quot;ig-header-admin&quot;&gt;</span>
+<span class="cm">      &lt;span data-module-type=&quot;module&quot; data-id=&quot;150&quot; data-course-id=&quot;115&quot; data-published=&quot;true&quot;</span>
+<span class="cm">        data-publishable=&quot;true&quot; data-publish-title=&quot;Misc Module&quot; title=&quot;Published&quot; data-tooltip=&quot;&quot; class=&quot;publish-icon module published publish-icon-published&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-pressed=&quot;true&quot; aria-label=&quot;Published.  Click to unpublish Misc Module.&quot; &gt;&lt;i class=&quot;icon-publish icon-Solid&quot;&gt;&lt;/i</span>
+<span class="cm">        &gt;&lt;span class=&quot;publish-text&quot; tabindex=&quot;-1&quot;&gt;&amp;nbsp;Published&lt;/span</span>
+<span class="cm">        &gt;&lt;span class=&quot;screenreader-only accessible_label&quot;</span>
+<span class="cm">          &gt;Published. Click to unpublish Misc Module.&lt;/span</span>
+<span class="cm">        &gt;&lt;/span</span>
+<span class="cm">      &gt;</span>
+
+<span class="cm">      &lt;button aria-label=&quot;Add Content to Misc Module&quot; rel=&quot;/courses/115/modules/150/items&quot; class=&quot;add_module_item_link Button--icon-action&quot; &gt;</span>
+<span class="cm">        &lt;i class=&quot;icon-plus&quot;&gt;&lt;/i&gt;&lt;span class=&quot;screenreader-only&quot;&gt;Add Content to Misc Module&lt;/span&gt; </span>
+<span class="cm">      &lt;/button&gt;</span>
+
+<span class="cm">      &lt;button class=&quot;Button--icon-action al-trigger&quot; aria-label=&quot;Manage Misc Module&quot; &gt;</span>
+<span class="cm">        &lt;i class=&quot;icon-more&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;</span>
+<span class="cm">      &lt;/button&gt;</span>
+<span class="cm">      &lt;ul class=&quot;al-options&quot;&gt;</span>
+<span class="cm">      &lt;/ul&gt;</span>
+<span class="cm">      &lt;span style=&quot;display: none;&quot;&gt;</span>
+<span class="cm">        &lt;span class=&quot;name&quot; title=&quot;Misc Module&quot;&gt;Misc Module&lt;/span&gt;</span>
+<span class="cm">        &lt;span class=&quot;id&quot;&gt;150&lt;/span&gt;</span>
+<span class="cm">        &lt;span class=&quot;publish_final_grade&quot;&gt;&amp;nbsp;&lt;/span&gt;</span>
+<span class="cm">        &lt;span class=&quot;require_sequential_progress&quot;&gt;&amp;nbsp;&lt;/span&gt;</span>
+<span class="cm">      &lt;/span&gt; --&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+  <span class="cm">&lt;!-- start of the items --&gt;</span>
+
+  <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;content&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;context_module_content_150&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: block;&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;ig-list items context_module_items manageable ui-sortable&quot;</span><span class="p">&gt;</span>
+      <span class="p">&lt;</span><span class="nt">li</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;context_module_item_1078&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;context_module_item          external_url          indent_0          _requirement     ExternalUrl_0&quot;</span> <span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;ig-row   &quot;</span><span class="p">&gt;</span>
+          <span class="p">&lt;</span><span class="nt">a</span> <span class="na">aria-label</span><span class="o">=</span><span class="s">&quot;Collaborate Ultra: Other Supports&quot;</span> <span class="na">tabindex</span><span class="o">=</span><span class="s">&quot;-1&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;for-nvda&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;/courses/115/modules/items/1078&quot;</span> <span class="p">&gt;</span>
+            Collaborate Ultra: Other Supports
+          <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+
+          <span class="cm">&lt;!--  draggable icon</span>
+<span class="cm">            &lt;div aria-hidden=&quot;true&quot; class=&quot;ig-handle&quot;&gt;</span>
+<span class="cm">            &lt;span</span>
+<span class="cm">              class=&quot;draggable-handle move_item_link&quot;</span>
+<span class="cm">              title=&quot;Drag to reorder or move item to another module&quot;</span>
+<span class="cm">            &gt;</span>
+<span class="cm">              &lt;i class=&quot;icon-drag-handle&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;</span>
+<span class="cm">            &lt;/span&gt;</span>
+<span class="cm">          &lt;/div&gt; --&gt;</span>
+
+          <span class="cm">&lt;!-- the type icon - keep, but maybe add tooltip?? --&gt;</span>
+          <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;type_icon&quot;</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;External Url&quot;</span> <span class="na">role</span><span class="o">=</span><span class="s">&quot;none&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span><span class="p">&gt;</span>TODO TYPE External Url<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;ig-type-icon&quot;</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;icon-document&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;icon-paperclip&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;icon-discussion&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;icon-assignment&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;icon-quiz&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;icon-quiz icon-Solid&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">i</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;icon-link&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">i</span><span class="p">&gt;</span>  <span class="cm">&lt;!-- it seems to do something here --&gt;</span>
+ <span class="cm">&lt;!--             &lt;img id=&quot;mc_icon&quot; src=&quot;/images/icons/mc_icon_unpub.svg&quot; alt=&quot;Mastery Connect&quot; style=&quot;display: none; width: 1rem; height: 1rem;&quot; /&gt; --&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+
+          <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;ig-info&quot;</span><span class="p">&gt;</span>
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;module-item-title&quot;</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;item_name&quot;</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">a</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;${item.title}&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;ig-title title item_link&quot;</span><span class="p">&gt;</span>
+                  ${item.title} 
+                <span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">title</span><span class="o">=</span><span class="s">&quot;{item.title}&quot;</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;title locked_title&quot;</span><span class="p">&gt;</span>
+                  ${item.title}
+                  <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;points_possible&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>TODO<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirement&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>TODO<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;completion_requirement&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>TODO<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;position&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>2<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="cm">&lt;!-- TODO this is the URL for the actual external link --&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;url&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>TODO<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;new_tab&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>0<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+              <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;module_item_icons nobr&quot;</span><span class="p">&gt;</span>
+              <span class="cm">&lt;!-- dead code? --&gt;</span>
+              <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;criterion &quot;</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;min_score&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span><span class="ni">&amp;nbsp;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;criterion_type&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span> <span class="p">&gt;</span><span class="ni">&amp;nbsp;</span><span class="p">&lt;/</span><span class="nt">span</span> <span class="p">&gt;</span>
+              <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+              <span class="cm">&lt;!-- /dead code --&gt;</span>
+              <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;type&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>external_url<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;id&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>1078<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;graded&quot;</span> <span class="na">style</span><span class="o">=</span><span class="s">&quot;display: none;&quot;</span><span class="p">&gt;</span>0<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+            <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;ig-details&quot;</span><span class="p">&gt;</span>
+              <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirement-description ig-details__item&quot;</span><span class="p">&gt;</span>
+                <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;completion_requirement&quot;</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirement_type min_score_requirement&quot;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;unfulfilled&quot;</span><span class="p">&gt;</span>
+                      Score at least <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;min_score&quot;</span><span class="p">&gt;</span><span class="ni">&amp;nbsp;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span> <span class="p">&gt;</span>Must score at least
+                        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;min_score&quot;</span><span class="p">&gt;</span><span class="ni">&amp;nbsp;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span> to complete this
+                        module item<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fulfilled&quot;</span><span class="p">&gt;</span>
+                      Scored at least <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;min_score&quot;</span><span class="p">&gt;</span><span class="ni">&amp;nbsp;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Module item has been completed by scoring at least
+                        <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;min_score&quot;</span><span class="p">&gt;</span><span class="ni">&amp;nbsp;</span><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;&lt;/</span><span class="nt">span</span> <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirement_type must_view_requirement&quot;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;unfulfilled&quot;</span><span class="p">&gt;</span>
+                      View
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Must view in order to complete this module item<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fulfilled&quot;</span><span class="p">&gt;</span>
+                      Viewed
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Module item has been viewed and is complete<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirement_type must_mark_done_requirement&quot;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;unfulfilled&quot;</span><span class="p">&gt;</span>
+                      Mark as done
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Must mark this module item done in order to
+                        complete<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fulfilled&quot;</span><span class="p">&gt;</span>
+                      Marked as done
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Module item marked as done and is complete<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirement_type must_contribute_requirement&quot;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;unfulfilled&quot;</span><span class="p">&gt;</span>
+                      Contribute
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Must contribute to this module item to complete
+                        it<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fulfilled&quot;</span><span class="p">&gt;</span>
+                      Contributed
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Contributed to this module item and is complete<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;requirement_type must_submit_requirement&quot;</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;unfulfilled&quot;</span><span class="p">&gt;</span>
+                      Submit
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Must submit this module item to complete it<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                    <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;fulfilled&quot;</span><span class="p">&gt;</span>
+                      Submitted
+                      <span class="p">&lt;</span><span class="nt">span</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;screenreader-only&quot;</span>
+                        <span class="p">&gt;</span>Module item submitted and is complete<span class="p">&lt;/</span><span class="nt">span</span>
+                      <span class="p">&gt;</span>
+                    <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                  <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+                <span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+              <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+              <span class="cm">&lt;!-- requirement description end --&gt;</span>
+            <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+          <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+          <span class="cm">&lt;!-- &lt;div class=&quot;ig-admin&quot;&gt;</span>
+<span class="cm">          &lt;/div&gt; --&gt;</span>
+        <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+      <span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+
+  <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</code></pre></div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://twitter.com/djplaner" target="_blank" rel="noopener" title="twitter.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections"], "search": "../../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.48f2be22.min.js"></script>
+      
+    
+  </body>
+</html>

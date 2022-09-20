@@ -32,7 +32,7 @@ const CHOOSE_WORD_HTML = `
   <div class="pad-box-micro border border-trbl muted">
     <i class="icon-info"></i> 
     <small>
-      More on <a target="_blank" href="https://github.com/djplaner/word-to-canvas-module/blob/main/docs/create.md#create-a-word-2-canvas-word-document">word-2-canvas Word styles</a>
+      More on <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/word-styles/">word-2-canvas Word styles</a>
     </small>
   </div>
   <p>Select the Word document to create a Canvas module</p>

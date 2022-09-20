@@ -76,6 +76,7 @@ export default class c2m_Model {
         console.log("-----------------------------");
         console.log("FIND IMAGE LINKS"); */
 
+        // the items are the individual heading sections
         let items = this.htmlConverter.items;
         
 /*        console.log(`c2m_Model -> findImageLinks: ${items.length} items`);
@@ -89,25 +90,24 @@ export default class c2m_Model {
         //   - response from find API call
         // - this.numFoundFileLinks - count of the number file links found
 
+
         this.canvasModules.imageLinks = [];
         this.canvasModules.numFoundImageLinks = 0;
 
         let parser = new DOMParser();
 
-        // loop thru this.htmlConverter.items
+        // loop thru all the page sections looking for span.canvasImage links
         for (let i = 0; i<items.length; i++ ) {
-            // extract all span.canvasFileLink from the body of the item
             let body = items[i].content;
-//            console.log(`item ${i} content`);
-//            console.log(body);
             let bodyDoc = parser.parseFromString(body, "text/html");
-            // find all the canvasFileLinks
+            // find all the span.canvasImage 
             let imageLinks = bodyDoc.querySelectorAll('span.canvasImage');
 
-            console.log(`found ${imageLinks.length} image links in item ${i}`);
+//            console.log(`found ${imageLinks.length} image links in item ${i}`);
 
             // loop thru the imageLinks
             for (let j = 0; j < imageLinks.length; j++) {
+                // extract just the name of the span.canvasImage link
                 let name = this.extractImageFileName( imageLinks[j]);
 
                 // if name undefined set it to DONT_FIND

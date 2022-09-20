@@ -1,0 +1,68 @@
+site_name: Word to Canvas
+site_url: https://djplaner.github.io/word-to-canvas-module/
+repo_url: https://github.com/djplaner/word-to-canvas-module
+site_author: David Jones
+site_description: >-
+   Convert Word documents into Canvas modules.
+
+
+# Configuration
+theme:
+  logo: assets/logo.png
+  name: material
+  font:
+    text: Arial
+  plugins:
+    - social
+  palette:
+    - scheme: slate
+      primary: red
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: red
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+
+markdown_extensions:
+  - def_list
+  - attr_list
+  - footnotes
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji 
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+
+extra:
+  social:
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/djplaner
+
+nav:
+  - Home: index.md
+  - Getting Started: 
+    - Overview: getting-started/overview.md
+    - 1. Install: getting-started/install.md
+    - 2. Test: getting-started/test.md
+    - 3. Use: getting-started/use.md 
+  - Walk-throughs:
+    - Walk-throughs: walk-throughs/walk-throughs.md
+    - 1. Sample document: walk-throughs/using-the-sample.md
+    - 2. CAR & Blackboard: walk-throughs/blackboard-car.md
+    - 3. CAR & Content Interface: walk-throughs/ci-car.md
+  - Limitations and Issues: 
+    - Limitations and Issues: limitations/limitations.md
+    - Diagnosis: limitations/diagnosis.md
+  - Reference:
+    - Overview: reference/overview.md
+    - Word Styles: reference/word-styles.md
+  - Development: development/development.md

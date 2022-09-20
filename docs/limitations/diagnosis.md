@@ -15,13 +15,13 @@ The followint table illustrates the difference between TamperMonkey being
 
 | TamperMonkey On | TamperMonkey Off |
 | ---------------- | ---------------- |
-|![](images/tamperMonkeyOn.png) |![](images/tamperMonkeyOff.png) |
+|![](../images/tamperMonkeyOn.png) |![](../images/tamperMonkeyOff.png) |
 
 Clicking on the UserScript manager icon will typically provide a way to turn it on or off.
 
 | TamperMonkey On | TamperMonkey Off |
 | ---------------- | ---------------- |
-| ![](images/tamperOnConfig.png)  | ![](images/tamperOffConfig.png) |
+| ![](../images/tamperOnConfig.png)  | ![](../images/tamperOffConfig.png) |
 
 ## Is the ```word2canvas``` userscript installed?
 

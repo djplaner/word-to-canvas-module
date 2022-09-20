@@ -27,7 +27,7 @@ Manually creating a complex module using the Canvas web interface can be a touch
 
 ## How to use ```word2canvas```
 
-1. [Install the userscript](./docs/install.md) 
+1. [Install the userscript](docs/getting-started/install.md) 
 
    Install a userscript manager (e.g. [TamperMonkey](https://www.tampermonkey.net/)) on your browser of choice and then install the [word-2-canvas userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.user.js).
 
@@ -36,7 +36,7 @@ Manually creating a complex module using the Canvas web interface can be a touch
    By creating a module from the sample Word document.
 
 3. [Create a Word document](./docs/create.md) containing content for your new Canvas module.  
-4. Visit the modules page of a Canvas course and [use word-2-canvas](./docs/use.md) to create a new module.
+4. Visit the modules page of a Canvas course and [use word-2-canvas](docs/getting-started/use.md) to create a new module.
 
 > :grey_question: Feel free to use this [repo's Issues](https://github.com/djplaner/word-to-canvas-module/issues) to ask questions. Especially in these early development stages.
 
