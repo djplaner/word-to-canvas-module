@@ -385,33 +385,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#to-be-done" class="md-nav__link">
-    To be done
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#development" class="md-nav__link">
-    Development
-  </a>
-  
-    <nav class="md-nav" aria-label="Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#userscript" class="md-nav__link">
-    Userscript
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -779,33 +752,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#to-be-done" class="md-nav__link">
-    To be done
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#development" class="md-nav__link">
-    Development
-  </a>
-  
-    <nav class="md-nav" aria-label="Development">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#userscript" class="md-nav__link">
-    Userscript
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -828,35 +774,14 @@
 
 <h1 id="word-to-canvas-word2canvas-module">Word to Canvas (<code>word2canvas</code>) Module</h1>
 <h2 id="what-is-word2canvas">What is <code>word2canvas</code>?</h2>
-<p>A <a href="https://en.wikipedia.org/wiki/User_script">userscript</a> that will create a new <a href="https://www.instructure.com/en-au/canvas">Canvas LMS</a> module from a Word document (using some specific Word styles) - see <a href="./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx">sample w2c.docx</a> for an annotated example.</p>
+<p>A <a href="https://en.wikipedia.org/wiki/User_script">userscript</a> that will create a new <a href="https://www.instructure.com/en-au/canvas">Canvas LMS</a> module from a Word document (using some specific Word styles) - see <a href="https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx">sample w2c.docx</a> for an annotated example.</p>
 <div class="admonition note">
 <p class="admonition-title">Your content stays in your environment</p>
 <p><img alt="❗" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/2757.svg" title=":exclamation:" /> The contents of your Word documents always remain on your computer, your web browser, and eventually as a Module in the Canvas instance you are working with.</p>
 </div>
 <h2 id="why-use-word2canvas">Why use <code>word2canvas</code>?</h2>
 <p>Manually creating a complex module using the Canvas web interface can be a touch tedious. Each item must be edited on its individual page. Multiple clicks... Especially if you already have the module content in a Word document and/or you are creating many modules. (e.g. migrating from one LMS to another)</p>
-<blockquote>
-<p><strong>Note:</strong> <img alt="⚠" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/26a0.svg" title=":warning:" /> <code>`word2canvas</code> is largely working and is being used. There remain some rough edges and missing features.</p>
-</blockquote>
-<p>Currently creates Canvas modules including
-- Creating new: pages, sub-headers, and external urls.
-- Links to existing: pages, assignments, files, discussions, quizzes (only old quizzes), and external tools.</p>
-<h2 id="to-be-done">To be done</h2>
-<ol>
-<li>Better error checking and messaging</li>
-<li>Figure out how to <a href="https://github.com/djplaner/word-to-canvas-module/issues/28">handle embedded images</a>.</li>
-</ol>
-<h2 id="development">Development</h2>
-<ul>
-<li>Uses <a href="https://github.com/mwilliamson/mammoth.js/">mammoth.js</a> for Word to HTML conversion</li>
-</ul>
-<h3 id="userscript">Userscript</h3>
-<p>For local development it is suggested to</p>
-<ol>
-<li>Use Chrome, with TamperMonkey installed and configured <a href="https://www.tampermonkey.net/faq.php#Q204">to allow local file acess</a>.</li>
-<li>Install the <a href="./dist/devWord2Canvas.user.js">dev userscript</a> version of the userscript.</li>
-<li>Modify the dev script updating the local file: require to match the path on your computer.</li>
-</ol>
+<p><a href="limitations/limitations/">The limitations and issues page</a> summarises the current status of <code>word2canvas</code>.</p>
 
 
 
