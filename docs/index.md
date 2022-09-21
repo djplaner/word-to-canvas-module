@@ -2,7 +2,7 @@
 
 ## What is ```word2canvas```?
 
-A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new [Canvas LMS](https://www.instructure.com/en-au/canvas) module from a Word document (using some specific Word styles) - see [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) for an annotated example.
+A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new [Canvas LMS](https://www.instructure.com/en-au/canvas) module from a Word document (using some specific Word styles) - see [sample w2c.docx](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) for an annotated example.
 
 !!! Note "Your content stays in your environment"
 

@@ -10,7 +10,7 @@ There is a 3-step process to test ```word2canvas```:
 
 !!! Note "Another example"
 
-    The ["sample Word document" walk-through](../walk-throughs/using-the-sample.md) is a screencast of the steps below using the [sample w2c.docx document](../../sample%20w2c.docx)
+    The ["sample Word document" walk-through](../walk-throughs/using-the-sample.md) is a screencast of the steps below using the [sample w2c.docx document](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx)
 
 ## 1. Prepare pre-requisites
 

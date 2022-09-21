@@ -8,7 +8,7 @@
 
     By creating a module from the sample Word document.
 
-3. [Use ```word2canvas```](./docs/use.md) 
+3. [Use ```word2canvas```](./use.md) 
 
     Typically usage involves two steps: 1) Create a Word document with your content, and 2) Use ```word2canvas``` to create a Canvas module from the Word document.
 

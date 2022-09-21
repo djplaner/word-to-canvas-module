@@ -1,6 +1,6 @@
 # ```word2canvas``` Word styles
 
-A ```word2canvas``` Word document uses specific Word styles to achieve different types of changes to a Canvas module. The [sample w2c.docx document](../../sample%20w2c.docx) includes those styles and is written to demonstrate their use. The [sample document walk-through](../walk-throughs/using-the-sample.md) shows how to use the sample document to create a Canvas module.
+A ```word2canvas``` Word document uses specific Word styles to achieve different types of changes to a Canvas module. The [sample w2c.docx document](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) includes those styles and is written to demonstrate their use. The [sample document walk-through](../walk-throughs/using-the-sample.md) shows how to use the sample document to create a Canvas module.
 
 !!! Note "Word styles"
 
@@ -10,7 +10,7 @@ A ```word2canvas``` Word document uses specific Word styles to achieve different
 
 [Canvas Modules](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Modules/ta-p/6) are collections of items of different types. ```word2canvas``` allows you to write a Canvas module as a single Word document. Your Word document consists of a sequence of different heading styles. Each heading style represents a single Canvas item. 
 
-The following illustrate how ```word2canvas``` converts the [sample w2c.docx file](../../sample%20w2c.docx) into a Canvas module. Note how each of the headings in the Word document (e.g. "Create a new page", "Welcome to the Course",..."Last page of this module") are the names given to items in the Canvas module.
+The following illustrate how ```word2canvas``` converts the [sample w2c.docx file](https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) into a Canvas module. Note how each of the headings in the Word document (e.g. "Create a new page", "Welcome to the Course",..."Last page of this module") are the names given to items in the Canvas module.
 
 | Word document | Canvas module |
 |--------------|---------------|
@@ -71,3 +71,31 @@ The following style(s) directly ````word2canvas```` to perform actions designed 
 | ------------------ | ------- |
 | `Blackboard image p` | Define HTML that includes an `<img` tag for an image residing in the content collection of a Blackboard course site. Assuming the image has been migrated to the Canvas course's files area, will create an `<img` tag in a Canvas page with a URL to the image in Canvas   |
 | `Hide` | Define text that should not be imported into the Canvas module. Typically used to provide Blackboard specific references to aid migration |
+
+### Miscellaneous styles
+
+Styles which don't quite fit into their own category (yet).
+
+| ```word2canvas``` style | Purpose |
+| ------------------ | ------- |
+| ```placeholder``` | Translates into the HTML [<mark> tag](https://www.w3schools.com/tags/tag_mark.asp). Used in QA as a placeholder that needs replacing |
+
+### Content Interface specific styles
+
+The [Content Interface](https://djplaner.github.io/Content-Interface-Tweak/) was used to create content for Blackboard. It included numerous specific styles representing different types of content. ````word2canvas```` can emulate (but not exactly) the Content Interface styles to aid in the migration of content from Blackboard to Canvas.  Typically not for use beyond migrating Content Interface content (yet).
+
+| ```word2canvas``` style | Purpose |
+| ------------------ | ------- |
+| ```Poem``` | Format a block of text as a poem |
+| ```Weekly Workout``` | Describe details of a "weekly workout" activity  |
+| ```Activity``` | Describe activity for student to complete |
+| ```Canary Exercise``` | Type of activity called canary exercise |
+| ```Picture``` | Format an image with grey background with rounded corners |
+| ```PicturRight``` | Picture format but it floats right (text wraps to the left) |
+| ```Coming Soon``` | Call out labelled coming soon |
+| ```Example``` | Used to visually distinguish example text |
+| ```Note``` | A call our or note text |
+| ```Reading``` | Specify readings |
+
+
+

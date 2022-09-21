@@ -2,14 +2,13 @@
 
 There are two steps to installing ```word2canvas```:
 
-1. [Install a userscript manager (if you haven't already)](#1-install-a-userscript-manager).
+1. Install a userscript manager (if you haven't already)]
 
     :question: You install a [userscript manager](https://en.wikipedia.org/wiki/Userscript_manager) into your web browser (not surprisingly) to manage userscripts. 
 
-1. [Install the ```word2canvas``` userscript](#2-install-the-word2canvas-userscript)
+1. Install the [the ```word2canvas``` userscript](https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.user.js)
 
     ```word2canvas``` is designed to run whenever you view [the Modules page](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-use-the-Modules-Index-Page/ta-p/926) of the Canvas LMS. Userscripts customise web pages to better suit your purposes. e.g. to help you create a Canvas module from a Word document.
-
 
 !!! About "About Userscripts"
 
@@ -27,7 +26,7 @@ There is [video showing how to install TamperMonkey](https://www.tampermonkey.ne
 
 You should see instructions for downloading (installing) TamperMonkey for your web browser. e.g. the following image for the Firefox browser
 
-![Home page for https://www.tampermonkey.net](images/tampermonkey-home.png)
+![Home page for https://www.tampermonkey.net](../images/tampermonkey-home.png)
 
 ### 1.2. Click on the left-hand _Download_ button
 
@@ -45,7 +44,7 @@ With TamperMonkey installed you can now install [the ```word2canvas``` userscrip
 
 If all is working you should something like the following image. An image showing TamperMonkey providing you with details of the userscript and asking if you wish to install it.
 
-![Installing ```word2canvas``` userscript with TamperMonkey](images/install-word2canvas.png)
+![Installing ```word2canvas``` userscript with TamperMonkey](../images/install-word2canvas.png)
 
 ## 3. Turning ```word2canvas``` off
 
@@ -53,9 +52,9 @@ There are two ways to prevent ```word2canvas``` from modifying your view of Canv
 - Disable or [remove](https://www.tampermonkey.net/#removal) TamperMonkey 
 - Disable the ```word2canvas``` userscript by accessing the TamperMonkey dashboard and disabling ```Word 2 Canvas Module``` (see below)
 
-![Accessing the TamperMonkey Dashboard](images/tampemonkey-dashboard.png)
+![Accessing the TamperMonkey Dashboard](../images/tampemonkey-dashboard.png)
 
-![View the TamperMonkey dashboard](images/dashboard.png)
+![View the TamperMonkey dashboard](../images/dashboard.png)
 
 ## 4. Testing ```word2canvas```
 
