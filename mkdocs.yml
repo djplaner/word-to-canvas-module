@@ -56,13 +56,18 @@ nav:
     - 3. Use: getting-started/use.md 
   - Walk-throughs:
     - Walk-throughs: walk-throughs/walk-throughs.md
-    - 1. Sample document: walk-throughs/using-the-sample.md
-    - 2. CAR & Blackboard: walk-throughs/blackboard-car.md
-    - 3. CAR & Content Interface: walk-throughs/ci-car.md
+    - HTML Check: walk-throughs/html-check.md
+    - Video walk-throughs:
+      - 1. Sample document: walk-throughs/using-the-sample.md
+      - 2. CAR & Blackboard: walk-throughs/blackboard-car.md
+      - 3. CAR & Content Interface: walk-throughs/ci-car.md
   - Limitations and Issues: 
     - Limitations and Issues: limitations/limitations.md
     - Diagnosis: limitations/diagnosis.md
   - Reference:
     - Overview: reference/overview.md
     - Word Styles: reference/word-styles.md
-  - Development: development/development.md
+  - Development: 
+    - Overview: development/development.md
+    - Design: development/design.md
+    - Local Development: development/local-development.md
