@@ -19,7 +19,7 @@
     
     
       
-        <title>Development - Word to Canvas</title>
+        <title>Overview - Word to Canvas</title>
       
     
     
@@ -106,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Development
+              Overview
             
           </span>
         </div>
@@ -274,11 +274,15 @@
   
 
 
-  <li class="md-tabs__item">
-    <a href="./" class="md-tabs__link md-tabs__link--active">
-      Development
-    </a>
-  </li>
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="./" class="md-tabs__link md-tabs__link--active">
+        Development
+      </a>
+    </li>
+  
 
       
     </ul>
@@ -483,6 +487,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../../walk-throughs/html-check/" class="md-nav__link">
+        HTML Check
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Video walk-throughs
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Video walk-throughs" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Video walk-throughs
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../walk-throughs/using-the-sample/" class="md-nav__link">
         1. Sample document
       </a>
@@ -514,6 +560,13 @@
       <a href="../../walk-throughs/ci-car/" class="md-nav__link">
         3. CAR & Content Interface
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -658,6 +711,34 @@
     
   
   
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
     <li class="md-nav__item md-nav__item--active">
       
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
@@ -667,12 +748,12 @@
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Development
+          Overview
           <span class="md-nav__icon md-icon"></span>
         </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Development
+        Overview
       </a>
       
         
@@ -697,17 +778,45 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#local-development-and-testing" class="md-nav__link">
-    Local development and testing
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
       
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design/" class="md-nav__link">
+        Design
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../local-development/" class="md-nav__link">
+        Local Development
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -745,13 +854,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#local-development-and-testing" class="md-nav__link">
-    Local development and testing
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -773,6 +875,9 @@
 
 
 <h1 id="development">Development</h1>
+<p><code>word2canvas</code> draws on the <a href="#standing-on-the-shoulders-of-giants">work of many others</a> and is an on-going work in progress.</p>
+<p>How <code>word2canvas</code> is developed is explained on the <a href="../local-development/">local development page</a>.</p>
+<p>The design of <code>word2canvas</code> is explained on the <a href="../design/">design page</a>.</p>
 <h2 id="standing-on-the-shoulders-of-giants">Standing on the shoulders of giants</h2>
 <p><code>word2canvas</code> uses a range of open source tools, including:</p>
 <ul>
@@ -780,13 +885,6 @@
 <li><a href="https://github.com/va4ok/userscript-builder">userscript-builder</a> for local development of the <code>word2canvas</code> userscript</li>
 <li>...many more to add</li>
 </ul>
-<h2 id="local-development-and-testing">Local development and testing</h2>
-<p>Development of <code>word2canvas</code> currently uses</p>
-<ol>
-<li>Chrome, with TamperMonkey installed and configured <a href="https://www.tampermonkey.net/faq.php#Q204">to allow local file acess</a>.</li>
-<li>The <a href="https://github.com/djplaner/word-to-canvas-module/blob/main/dist/devWord2Canvas.user.js">dev userscript</a> version of the userscript.</li>
-<li><a href="https://github.com/va4ok/userscript-builder">userscript-builder</a> configured to generate the dev userscript.</li>
-</ol>
 
 
 
@@ -821,6 +919,21 @@
           </div>
         </a>
       
+      
+        
+        <a href="../design/" class="md-footer__link md-footer__link--next" aria-label="Next: Design" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Design
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
       
     </nav>
   

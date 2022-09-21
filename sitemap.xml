@@ -36,6 +36,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://djplaner.github.io/word-to-canvas-module/development/local-development/</loc>
+         <lastmod>2022-09-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://djplaner.github.io/word-to-canvas-module/getting-started/install/</loc>
          <lastmod>2022-09-21</lastmod>
          <changefreq>daily</changefreq>
@@ -97,6 +102,11 @@
     </url>
     <url>
          <loc>https://djplaner.github.io/word-to-canvas-module/walk-throughs/ci-car/</loc>
+         <lastmod>2022-09-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://djplaner.github.io/word-to-canvas-module/walk-throughs/create-a-module/</loc>
          <lastmod>2022-09-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
