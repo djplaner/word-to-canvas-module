@@ -13,11 +13,11 @@ Use ```word2canvas`` to create a Canvas module using the [sample Word document](
 
 Use these 5 steps to create a module with ```word2canvas``` 
 
-1. [Go to the modules page of your Canvas course site](#go-to-the-modules-page-of-your-canvas-course-site)
-2. [Choose your Word document](#choose-your-word-document)
-3. [Check the HTML conversion](#check-the-html-conversion)
-4. [Check (and eventually configure) the Canvas module](#check-and-eventually-configure-the-canvas-module)
-5. [Create the module](#create-the-module)
+1. [Go to the modules page of your Canvas course site](#1-go-to-the-modules-page-of-your-canvas-course-site)
+2. [Choose your Word document](#2-choose-your-word-document)
+3. [Check the HTML conversion](#3-check-the-html-conversion)
+4. [Check (and eventually configure) the Canvas module](#4-check-and-eventually-configure-the-canvas-module)
+5. [Create the module](#5-create-the-module)
 
 ### 1. Go to the modules page of your Canvas course site
 
