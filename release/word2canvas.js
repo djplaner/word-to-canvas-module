@@ -22,7 +22,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.11";
+		this.version = "2.0.12";
 	}
 
 
@@ -157,7 +157,7 @@ const CHOOSE_WORD_HTML = `
   <div class="pad-box-micro border border-trbl muted">
     <i class="icon-info"></i> 
     <small>
-      More on <a target="_blank" href="https://github.com/djplaner/word-to-canvas-module/blob/main/docs/create.md#create-a-word-2-canvas-word-document">word-2-canvas Word styles</a>
+      More on <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/word-styles/">word-2-canvas Word styles</a>
     </small>
   </div>
   <p>Select the Word document to create a Canvas module</p>
@@ -2798,10 +2798,10 @@ const DEFAULT_OPTIONS = {
         "p[style-name='flashback'] => p.flashback",
         "p[style-name='Weekly Workout'] => p.weeklyWorkout",
         "p[style-name='Canary Exercise'] => p.canaryExercise",
-        "p[style-name='Note'] => p.ael-note",
+        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", 
         "p[style-name='Added Advice'] => p.guAddedAdvice",
         "p[style-name='activity'] => p.activity",
-        "p[style-name='Reading'] => p.reading",
+        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh", 
         "p[style-name='Coming Soon'] => p.comingSoon",
         "p[style-name='Picture'] => p.picture",
         "p[style-name='PictureRight'] => p.pictureRight",
@@ -3518,6 +3518,10 @@ class c2m_WordConverter {
         let parser = new DOMParser();
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
+        this.handleCanvasFileLinks(doc);
+
+
+
         // remove any links with empty innerText
         let links2 = doc.querySelectorAll('a');
         for (let i = 0; i < links2.length; i++) {
@@ -3599,6 +3603,25 @@ class c2m_WordConverter {
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
+
+    /**
+     * Need to tidy up the span.canvasFileLinks, currently two cases
+     * 1. 
+     * @param {*} doc 
+     */
+    handleCanvasFileLinks(doc) {
+
+            // sanity check for canvasFileLinks
+        // test
+        let fileLinks = doc.querySelectorAll('.canvasFileLink');
+        for (let i = 0; i < fileLinks.length; i++) {
+            let link = fileLinks[i];
+            if (link.tagName !== "A") {
+                console.log("Found a canvasFileLink that is not an A tag");
+            }
+        }
+    }
+
 
     /**
      * Look for any span.canvasMenuLink and attempt to convert the href for the link
@@ -4974,6 +4997,7 @@ class c2m_Model {
         console.log("-----------------------------");
         console.log("FIND IMAGE LINKS"); */
 
+        // the items are the individual heading sections
         let items = this.htmlConverter.items;
         
 /*        console.log(`c2m_Model -> findImageLinks: ${items.length} items`);
@@ -4987,23 +5011,23 @@ class c2m_Model {
         //   - response from find API call
         // - this.numFoundFileLinks - count of the number file links found
 
+
         this.canvasModules.imageLinks = [];
         this.canvasModules.numFoundImageLinks = 0;
 
         let parser = new DOMParser();
 
-        // loop thru this.htmlConverter.items
+        // loop thru all the page sections looking for span.canvasImage links
         for (let i = 0; i<items.length; i++ ) {
-            // extract all span.canvasFileLink from the body of the item
             let body = items[i].content;
             let bodyDoc = parser.parseFromString(body, "text/html");
-            // find all the canvasFileLinks
+            // find all the span.canvasImage 
             let imageLinks = bodyDoc.querySelectorAll('span.canvasImage');
 
-            console.log(`found ${imageLinks.length} image links in item ${i}`);
 
             // loop thru the imageLinks
             for (let j = 0; j < imageLinks.length; j++) {
+                // extract just the name of the span.canvasImage link
                 let name = this.extractImageFileName( imageLinks[j]);
 
                 // if name undefined set it to DONT_FIND
