@@ -64,15 +64,15 @@ const CHECK_HTML_HTML = `
 <small><strong>Customise:</strong></small>
 <ul style="list-style: none">
   <li><small> <input type="checkbox" id="w2c-accordion"> <label for="w2c-accordion">H2 as accordions</label>
-	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/h2-as-accordions.html" target="_blank">
+	<a href="https://djplaner.github.io/word-to-canvas-module/reference/options/h2-as-accordions/" target="_blank">
     <i class="icon-info"></i> for more</a></small>
   </li>
   <li><small> <input type="checkbox" id="w2c-leave-errors"> <label for="w2c-leave-errors">Keep error labels in Canvas content</label>
-	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/keep-error-labels.html" target="_blank">
+	<a href="https://djplaner.github.io/word-to-canvas-module/reference/options/keep-error-labels/" target="_blank">
     <i class="icon-info"></i> for more</a></small>
 	</li>
 	<li><small> <input type="checkbox" id="w2c-disable-inline-youtube"> <label for="w2c-disable-inline-youtube">Disable inline embedded previews </label>
-	<a href="https://djplaner.github.io/word-to-canvas-module/docs/options/disable-inline-youtube-previews.html" target="_blank">
+	<a href="https://djplaner.github.io/word-to-canvas-module/reference/options/disable-inline-youtube-previews/" target="_blank">
     <i class="icon-info"></i> for more</a></small>
 	</li>
   </ul>

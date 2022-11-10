@@ -339,7 +339,7 @@ export default class c2m_WordConverter {
                 "type": "error",
                 "message": `${errorString} Appears Word style <em>${failedStyles[i]}</em> not successfully applied 
                                 <small><strong><a target="_blank" 
-                   href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/failedWordStyles.html">
+                   href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/failedWordStyles/">
                    For more <i class="icon-question"></i></a></strong></small>`,
             });
         }
@@ -492,7 +492,7 @@ export default class c2m_WordConverter {
                 "type": "error",
                 "message": `${errorString} The Canvas External URL heading - <em>${problems[i]}</em> - contained more than just a URL.
                                 <small><strong><a target="_blank" 
-                   href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/externalUrlsProblems.html">
+                   href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/externalUrls/">
                    For more <i class="icon-question"></i></a></strong></small>`,
             });
         }
@@ -601,7 +601,7 @@ export default class c2m_WordConverter {
                 "message": `Found ${base64} base64 images <small>(labeled in HTML)</small>. 
                            These will be replaced with placeholders.<br /> 
                            <small><strong>
-                             <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/htmlConversion.html#base64-images">For more <i class="icon-question"></i></a></strong></small>`,
+                             <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/htmlConversion/#base64-images">For more <i class="icon-question"></i></a></strong></small>`,
             });
         }
 
@@ -619,7 +619,7 @@ export default class c2m_WordConverter {
         let message = `Found ${canvasImages.length} "Canvas Images" <small>(labeled in HTML)</small>. 
                        Broken images may be fixed in the final stage.<br /> 
                        <small><strong>
-                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">For more <i class="icon-question"></i></a></strong></small>
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/canvasImages/">For more <i class="icon-question"></i></a></strong></small>
                          <ul>`;
         let error = '<span {id} class="w2c-warning">canvasImage</span>';
         // insert a warning next to each canvasImage
@@ -952,7 +952,7 @@ export default class c2m_WordConverter {
         if (problems > 1) {
             message = `Found ${problems} problems with Canvas Menu Links <small>(labeled in HTML)</small>. 
                        <small><strong>
-                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/canvasImages/">
                          For more <i class="icon-question"></i></a></strong></small>
                          <ul> ${message} </ul>`;
 
@@ -1072,7 +1072,7 @@ export default class c2m_WordConverter {
         if (problems > 0) {
             message = `Found ${problems} problems with Content Interface Styles <small>(labeled in HTML)</small>. 
                        <small><strong>
-                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/docs/warnings/canvasImages.html">
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/canvasImages/">
                          For more <i class="icon-question"></i></a></strong></small>
                          <ul> ${message} </ul>`;
 

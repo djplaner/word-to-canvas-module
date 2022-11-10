@@ -68,7 +68,16 @@ nav:
   - Reference:
     - Overview: reference/overview.md
     - Word Styles: reference/word-styles.md
-    - Warnings: reference/warnings.md
+    - Options:
+      - Keep error labels: reference/options/keep-error-labels.md
+      - H2s as accordions: reference/options/h2-as-accordions.md
+      - Disable inline youtube: reference/options/disable-inline-youtube-previews.md
+    - Warnings:
+      - Overview: reference/warnings.md
+      - Failed Word style: reference/warnings/failedWordStyles.md
+      - HTML Conversion: reference/warnings/htmlConversion.md
+      - Canvas Images: reference/warnings/canvasImages.md
+      - External URLs: reference/warnings/externalUrls.md
   - Development: 
     - Overview: development/development.md
     - Design: development/design.md

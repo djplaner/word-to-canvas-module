@@ -71,21 +71,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://djplaner.github.io/word-to-canvas-module/options/disable-inline-youtube-previews/</loc>
-         <lastmod>2022-11-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://djplaner.github.io/word-to-canvas-module/options/h2-as-accordions/</loc>
-         <lastmod>2022-11-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://djplaner.github.io/word-to-canvas-module/options/keep-error-labels/</loc>
-         <lastmod>2022-11-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://djplaner.github.io/word-to-canvas-module/reference/overview/</loc>
          <lastmod>2022-11-10</lastmod>
          <changefreq>daily</changefreq>
@@ -97,6 +82,21 @@
     </url>
     <url>
          <loc>https://djplaner.github.io/word-to-canvas-module/reference/word-styles/</loc>
+         <lastmod>2022-11-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://djplaner.github.io/word-to-canvas-module/reference/options/disable-inline-youtube-previews/</loc>
+         <lastmod>2022-11-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://djplaner.github.io/word-to-canvas-module/reference/options/h2-as-accordions/</loc>
+         <lastmod>2022-11-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://djplaner.github.io/word-to-canvas-module/reference/options/keep-error-labels/</loc>
          <lastmod>2022-11-10</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -147,26 +147,6 @@
     </url>
     <url>
          <loc>https://djplaner.github.io/word-to-canvas-module/walk-throughs/walk-throughs/</loc>
-         <lastmod>2022-11-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://djplaner.github.io/word-to-canvas-module/warnings/canvasImages/</loc>
-         <lastmod>2022-11-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://djplaner.github.io/word-to-canvas-module/warnings/externalUrlsProblems/</loc>
-         <lastmod>2022-11-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://djplaner.github.io/word-to-canvas-module/warnings/failedWordStyles/</loc>
-         <lastmod>2022-11-10</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://djplaner.github.io/word-to-canvas-module/warnings/htmlConversion/</loc>
          <lastmod>2022-11-10</lastmod>
          <changefreq>daily</changefreq>
     </url>
