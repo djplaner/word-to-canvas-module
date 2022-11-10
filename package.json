@@ -1,6 +1,6 @@
 {
   "name": "word-to-canvas-module",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "description": "Userscript to create a new Canvas LMS Module from a Word document",
   "main": "./src/index.js",
   "userscript": {
@@ -13,7 +13,7 @@
       "namespace": "http://tampermonkey.net/",
       "homepage": "https://github.com/djplaner/word-to-canvas-module",
       "source": "https://github.com/djplaner/word-to-canvas-module.git",
-      "updateURL": "https://github.com/djplaner/word-to-canvas-module/raw/main/dist/word2canvas.user.js",
+      "updateURL": "https://github.com/djplaner/word-to-canvas-module/raw/main/release/word2canvas.user.js",
       "supportURL": "https://github.com/djplaner/word-to-canvas-module/issues",
       "match": "https://*/courses/*",
       "grant": "none",
