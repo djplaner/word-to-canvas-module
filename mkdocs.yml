@@ -68,6 +68,7 @@ nav:
   - Reference:
     - Overview: reference/overview.md
     - Word Styles: reference/word-styles.md
+    - Warnings: reference/warnings.md
   - Development: 
     - Overview: development/development.md
     - Design: development/design.md
