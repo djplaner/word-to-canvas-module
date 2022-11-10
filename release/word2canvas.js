@@ -22,7 +22,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.12";
+		this.version = "2.0.15";
 	}
 
 
