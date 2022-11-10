@@ -30,10 +30,12 @@ const DEFAULT_OPTIONS = {
         "p[style-name='flashback'] => p.flashback",
         "p[style-name='Weekly Workout'] => p.weeklyWorkout",
         "p[style-name='Canary Exercise'] => p.canaryExercise",
-        "p[style-name='Note'] => p.ael-note",
+//        "p[style-name='Note'] => p.ael-note",
+        "p[style-name='Note'] => div.ael-note > div.instructions > p:fresh", 
         "p[style-name='Added Advice'] => p.guAddedAdvice",
         "p[style-name='activity'] => p.activity",
-        "p[style-name='Reading'] => p.reading",
+//        "p[style-name='Reading'] => p.reading",
+        "p[style-name='Reading'] => div.reading > div.instructions > p:fresh", 
         "p[style-name='Coming Soon'] => p.comingSoon",
         "p[style-name='Picture'] => p.picture",
         "p[style-name='PictureRight'] => p.pictureRight",
@@ -754,6 +756,10 @@ export default class c2m_WordConverter {
         let parser = new DOMParser();
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
+        this.handleCanvasFileLinks(doc);
+
+
+
         // remove any links with empty innerText
         let links2 = doc.querySelectorAll('a');
         for (let i = 0; i < links2.length; i++) {
@@ -835,6 +841,25 @@ export default class c2m_WordConverter {
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
     }
+
+    /**
+     * Need to tidy up the span.canvasFileLinks, currently two cases
+     * 1. 
+     * @param {*} doc 
+     */
+    handleCanvasFileLinks(doc) {
+
+            // sanity check for canvasFileLinks
+        // test
+        let fileLinks = doc.querySelectorAll('.canvasFileLink');
+        for (let i = 0; i < fileLinks.length; i++) {
+            let link = fileLinks[i];
+            if (link.tagName !== "A") {
+                console.log("Found a canvasFileLink that is not an A tag");
+            }
+        }
+    }
+
 
     /**
      * Look for any span.canvasMenuLink and attempt to convert the href for the link
