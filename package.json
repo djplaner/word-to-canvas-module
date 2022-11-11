@@ -1,6 +1,6 @@
 {
   "name": "word-to-canvas-module",
-  "version": "2.0.16",
+  "version": "2.0.17",
   "description": "Userscript to create a new Canvas LMS Module from a Word document",
   "main": "./src/index.js",
   "userscript": {
@@ -19,7 +19,7 @@
       "match": "https://*/courses/*",
       "grant": "none",
       "require": [
-        "https://cdnjs.cloudflare.com/ajax/libs/mammoth/0.3.10/mammoth.browser.min.js",
+        "https://cdn.jsdelivr.net/npm/mammoth@1.5.1/mammoth.browser.min.js",
         "https://rawcdn.githack.com/djplaner/canvas-collections/62a4248058d13d32c574f0b620760891651587a7/src/juice/juice_client.js"
       ]
     }
