@@ -14,3 +14,11 @@ Manually creating a complex module using the Canvas web interface can be a touch
 
 [The limitations and issues page](./limitations/limitations.md) summarises the current status of ```word2canvas```.
 
+## What does it look like?
+
+The following animated image demonstrates the process of creating a new module from a Word document. It starts by showing a Blackboard course page. The subsequent Word document was generated from the Blackboard course page.
+
+The Word document is then opened and edited using some established styles. Once the document is saved, word2canvas is opened on a Canvas modules page and used to create a module from the Word document.
+
+
+![](./images/autoMigrate.gif)
