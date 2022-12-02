@@ -1,8 +1,14 @@
 # Reference overview
 
+## Latest version - v2.0.19
+
+The latest version of ```word2canvas``` is v2.0.19. This version is available from the [Install ```word2canvas``` page](../getting-started/install.md).
+
+![](images/latestVersion.png)  
+
 ## Overview of supported MS Word Styles
 
-[MS Word styles][word-styles.md] are used to specify what and how ```word2canvas``` converts the content of a Word document into a Canvas module. 
+[MS Word styles](./word-styles.md) are used to specify what and how ```word2canvas``` converts the content of a Word document into a Canvas module. 
 
 ## Available options
 

@@ -12,6 +12,10 @@ The following image is one example. In this case the two warnings provided are o
 
 Warnings can be grouped by the following different types.
 
+### Fatal errors
+
+```word2canvas``` depends on certain basic content to be present in the Word document being converted. Their absence will create [a fatal error](warnings/fatalErrors.md), meaning that ```word2canvas``` will not proceed any further with the conversion.
+
 ### Failed Word Style
 
 ```word2canvas``` relies on Word styles to determine how to convert the content of a Word document into a Canvas module. There are times when [```word2canvas``` can file to handle Word styles](warnings/failedWordStyles.md)

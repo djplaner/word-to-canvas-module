@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.17
+// @version      2.0.19
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -39,7 +39,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.17";
+		this.version = "2.0.19";
 	}
 
 
@@ -432,6 +432,20 @@ const CHECK_HTML_HTML = `
 	padding: 0.1em;
 }
 
+.w2c-message-fatal-error {
+	background-color: red;
+	color: black;
+}
+
+.w2c-forMore {
+	color: black;
+	font-size: small;
+}
+
+.w2c-forMore a {
+	color: black;
+}
+
 span.w2c-error {
     font-size: 50%;
     margin: 1em;
@@ -678,22 +692,35 @@ class c2m_CheckHtmlView extends c2m_View {
 		// display div.w2c-received-results
 		document.querySelector("div.w2c-received-results").style.display = "block";
 		document.querySelector("button#w2c-btn-confirm").style.display = "inline";
+
+		// if there are fatal errors, disable the confirm button
+		if ( this.fatalError && this.fatalError===true) {
+			document.querySelector("button#w2c-btn-confirm").disabled = true;
+			//document.querySelector("button#w2c-btn-confirm").style.display = "none";
+		}
 	}
 
 	/**
 	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate 
 	 * HTML to add in page 
+	 * Also, if there are any message.types=='fatal-error' then set this.fatalError=true
 	 * @param {Array} messages 
 	 * @returns {String} html representing messages 
 	 */
 
 	generateMessageHtml(messages) {
+		let fatalError = false;
 		let messageHtml = "<ul>";
 		messages.forEach(function (message) {
-			console.log(message);
+			if (message.type === "fatal-error") {
+				fatalError = true;
+			}
+
 			messageHtml += `
 			   <li class="w2c-message-${message.type}">${message.message}</li>`;
 		});
+
+		this.fatalError = fatalError;
 		messageHtml+= "</ul>";
 		return messageHtml;
 	}
@@ -3541,9 +3568,9 @@ class c2m_WordConverter {
         let parser = new DOMParser();
         let doc = parser.parseFromString(this.mammothResult.value, "text/html");
 
+        this.checkFatalErrors(doc);
+
         this.handleCanvasFileLinks(doc);
-
-
 
         // remove any links with empty innerText
         let links2 = doc.querySelectorAll('a');
@@ -3625,6 +3652,108 @@ class c2m_WordConverter {
 
         // convert the doc back to a string
         this.mammothResult.value = doc.documentElement.outerHTML;
+    }
+
+    /**
+     * Perform various checks on the converted HTML doc, including
+     * Ensure there is 
+     * - at least one div.moduleTitle (and preferably at the beginning of the document??)
+     * - at least one h1
+     * - no content before the first h1
+     */
+
+    checkFatalErrors(doc) {
+        let message = "";
+        // check for at least one div.moduleTitle
+        let moduleTitles = doc.querySelectorAll('div.moduleTitle');
+        if (moduleTitles.length === 0) {
+            message = `<p><strong>Fatal error:</strong> No module title found in the document.
+            <span class="w2c-forMore">
+            <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/fatalErrors/#no-title">
+                         For more <i class="icon-question"></i></a></span></p>
+           <p>This means that the original Word document did not use the <em>Title</em> style. The 
+           "title" in the Word document is required as it becomes the name of the Canvas module to be created.
+           Without a title the conversion cannot continue.
+                         </p>`;
+
+            this.mammothResult.messages.push({
+                "type": "fatal-error",
+                "message": message
+            });
+        }
+        if (moduleTitles.length>1) {
+            message = `<p>More than one module title found in the document. i.e. more than one separate use of the <em>Title</em> style.</p>
+            <p>The Canvas module will be named using the first title.</p>`;
+           /* Found ${problems} problems with Canvas Menu Links <small>(labeled in HTML)</small>. 
+                       <small><strong>
+                         <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/canvasImages/">
+                         For more <i class="icon-question"></i></a></strong></small>
+                         <ul> ${message} </ul>`; */
+
+            this.mammothResult.messages.push({
+                "type": "error",
+                "message": message
+            });
+        }
+
+        // check for at least on h1
+        let h1s = doc.querySelectorAll('h1');
+        if (h1s.length === 0) {
+            message = `<p><strong>Fatal error</strong> No h1 found in the document.  
+            <span class="w2c-forMore">
+            <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/fatalErrors/#no-module-items">
+                         For more <i class="icon-question"></i></a></span></p>
+             <p>This suggests that the Word document did not include any use of the special 
+             <a href="https://djplaner.github.io/word-to-canvas-module/reference/word-styles/#canvas-specific-styles">
+             Canvas specific Word styles</a> used to define items to be added to the module. Such styles include:</p> 
+             <em>Existing Canvas Page</em>, <em>Canvas Discussion</em>, <em>Canvas Assignment</em>, <em>Canvas Quiz</em>,
+             <em>Canvas File</em>, <em>Canvas SubHeader</em>, <em>Canvas External Url</em>, or <em>Canvas External Tool</em>.</p>
+             <p>With no items to add to the module, Word2Canvas will not continue.
+            </p>`;
+            this.mammothResult.messages.push({
+                "type": "fatal-error",
+                "message": message
+            });
+        }
+
+        // check if there is any content (except div.title) before the first h1
+        // make a copy of doc to do this check
+        let docCopy = doc.cloneNode(true);
+
+        // remove any div.Hide elements from docCopy
+        let hiddenElems = docCopy.querySelectorAll('div.Hide');
+        for (let i = 0; i < hiddenElems.length; i++) {
+            let hiddenElem = hiddenElems[i];
+            hiddenElem.parentNode.removeChild(hiddenElem);
+        }
+        // remove any div.moduleTitle elements from docCopy
+        let moduleCopyTitles = docCopy.querySelectorAll('div.moduleTitle');
+        for (let i = 0; i < moduleCopyTitles.length; i++) {
+            let moduleTitle = moduleCopyTitles[i];
+            moduleTitle.parentNode.removeChild(moduleTitle);
+        }
+
+        let firstH1 = docCopy.querySelector('h1');
+        let firstH1Parent = firstH1.parentNode;
+        let firstH1Index = Array.prototype.indexOf.call(firstH1Parent.children, firstH1);
+        let firstH1Siblings = Array.prototype.slice.call(firstH1Parent.children, 0, firstH1Index);
+        let firstH1SiblingsText = firstH1Siblings.map((elem) => {
+            return elem.textContent;
+        }
+        ).join('');
+
+        // if there is any text in firstH1SiblingsText, then generate a fatal error
+        if (firstH1SiblingsText.trim() !== '') {
+            message = `<p><strong>Fatal error</strong> Content found before the first h1.
+            <span class="w2c-forMore">
+            <a target="_blank" href="https://djplaner.github.io/word-to-canvas-module/reference/warnings/fatalErrors/#content-before-first-heading">
+                            For more <i class="icon-question"></i></a></span></p>
+            <p>Apparently meaningful content was found before a heading. i.e. not part of a module item.</p>`;
+            this.mammothResult.messages.push({
+                "type": "fatal-error",
+                "message": message
+            });
+        }
     }
 
     /**
@@ -4584,6 +4713,15 @@ class c2m_Modules {
      * 
      */
     async createModule(newModule) {
+        // only proceed if there's a module.name
+        console.log(`c2m_Modules -> createModule: **${newModule.name}**`);
+        console.log(newModule);
+        if (newModule.name === "") {
+            console.error(`c2m_Modules -> createModule: no name for module`);
+            this.createdModuleError = "No name for module (possibly because no text with <em>Title</em> style)";
+            this.dispatchEvent( 'w2c-module-error');
+            return;
+        }
 
         let callUrl = `/api/v1/courses/${this.courseId}/modules`;
 
@@ -4591,6 +4729,7 @@ class c2m_Modules {
         this.createdModuleError = undefined;
         this.createdModule = undefined;
         this.createdModuleItems = [];
+
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',

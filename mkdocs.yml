@@ -74,6 +74,7 @@ nav:
       - Disable inline youtube: reference/options/disable-inline-youtube-previews.md
     - Warnings:
       - Overview: reference/warnings.md
+      - Fatal Errors: reference/warnings/fatalErrors.md
       - Failed Word style: reference/warnings/failedWordStyles.md
       - HTML Conversion: reference/warnings/htmlConversion.md
       - Canvas Images: reference/warnings/canvasImages.md

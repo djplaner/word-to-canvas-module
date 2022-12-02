@@ -144,6 +144,20 @@ const CHECK_HTML_HTML = `
 	padding: 0.1em;
 }
 
+.w2c-message-fatal-error {
+	background-color: red;
+	color: black;
+}
+
+.w2c-forMore {
+	color: black;
+	font-size: small;
+}
+
+.w2c-forMore a {
+	color: black;
+}
+
 span.w2c-error {
     font-size: 50%;
     margin: 1em;
@@ -390,22 +404,35 @@ export default class c2m_CheckHtmlView extends c2m_View {
 		// display div.w2c-received-results
 		document.querySelector("div.w2c-received-results").style.display = "block";
 		document.querySelector("button#w2c-btn-confirm").style.display = "inline";
+
+		// if there are fatal errors, disable the confirm button
+		if ( this.fatalError && this.fatalError===true) {
+			document.querySelector("button#w2c-btn-confirm").disabled = true;
+			//document.querySelector("button#w2c-btn-confirm").style.display = "none";
+		}
 	}
 
 	/**
 	 * Given an array of Mammoth messages ({'type': ?? 'message': ??}) generate 
 	 * HTML to add in page 
+	 * Also, if there are any message.types=='fatal-error' then set this.fatalError=true
 	 * @param {Array} messages 
 	 * @returns {String} html representing messages 
 	 */
 
 	generateMessageHtml(messages) {
+		let fatalError = false;
 		let messageHtml = "<ul>";
 		messages.forEach(function (message) {
-			console.log(message);
+			if (message.type === "fatal-error") {
+				fatalError = true;
+			}
+
 			messageHtml += `
 			   <li class="w2c-message-${message.type}">${message.message}</li>`;
 		});
+
+		this.fatalError = fatalError;
 		messageHtml+= "</ul>";
 		return messageHtml;
 	}
