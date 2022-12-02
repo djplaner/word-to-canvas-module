@@ -60,6 +60,15 @@ export default class c2m_Modules {
      * 
      */
     async createModule(newModule) {
+        // only proceed if there's a module.name
+        console.log(`c2m_Modules -> createModule: **${newModule.name}**`);
+        console.log(newModule);
+        if (newModule.name === "") {
+            console.error(`c2m_Modules -> createModule: no name for module`);
+            this.createdModuleError = "No name for module (possibly because no text with <em>Title</em> style)";
+            this.dispatchEvent( 'w2c-module-error');
+            return;
+        }
 
         let callUrl = `/api/v1/courses/${this.courseId}/modules`;
 
@@ -67,6 +76,7 @@ export default class c2m_Modules {
         this.createdModuleError = undefined;
         this.createdModule = undefined;
         this.createdModuleItems = [];
+
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',

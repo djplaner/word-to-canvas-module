@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.16
+// @version      2.0.17
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -40,7 +40,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.16";
+		this.version = "2.0.17";
 	}
 
 
@@ -4595,6 +4595,15 @@ class c2m_Modules {
      * 
      */
     async createModule(newModule) {
+        // only proceed if there's a module.name
+        console.log(`c2m_Modules -> createModule: **${newModule.name}**`);
+        console.log(newModule);
+        if (newModule.name === "") {
+            console.error(`c2m_Modules -> createModule: no name for module`);
+            this.createdModuleError = "No name for module (possibly because no text with <em>Title</em> style)";
+            this.dispatchEvent( 'w2c-module-error');
+            return;
+        }
 
         let callUrl = `/api/v1/courses/${this.courseId}/modules`;
 
@@ -4602,6 +4611,7 @@ class c2m_Modules {
         this.createdModuleError = undefined;
         this.createdModule = undefined;
         this.createdModuleItems = [];
+
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',
