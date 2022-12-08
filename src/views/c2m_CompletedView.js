@@ -52,6 +52,13 @@ const COMPLETE_HTML = `
   <p>Close this dialog to view the module and then choose to <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-move-or-reorder-a-module/ta-p/1150">
   move it</a> to its proper place.</p>
   </div>
+  <div id="w2c-completion-category">
+    <ul id="w2c-conversion-errors">
+      <li id="w2c-num-add-errors">0</li>
+      <li id="w2c-num-image-errors">0</li>
+      <li id="w2c-num-file-errors">0</li>
+    </ul>
+  </div>
 </div>
 
 
@@ -474,6 +481,44 @@ export default class c2m_CompletedView extends c2m_View {
     }
 
     /**
+     * Update screen based on errors or successes found during the conversion
+     * process
+     * 
+     * Possible errors include
+     * - addErrors
+     * - imageLinkErrors
+     * - fileLinkErrors
+     */
+
+    updateCompletionCategory() {
+
+        // find div#w2c-completion-category
+        let completionCategory = document.querySelector('#w2c-completion-category');
+
+        // if there are no errors then set the class to success
+        if (this.numAddErrors === 0 && this.imageLinkErrors === 0 && this.fileLinkErrors === 0) {
+            completionCategory.classList.add('w2c-success');
+            return;
+        }
+
+        // look for li#w2c-add-errors and set innerText to numAddErrors
+        let addErrors = document.querySelector('#w2c-num-add-errors');
+        if (addErrors) {
+            addErrors.innerText = this.numAddErrors;
+        }
+        // look for li#w2c-image-errors and set innerText to imageLinkErrors
+        let imageErrors = document.querySelector('#w2c-num-image-errors');
+        if (imageErrors) {
+            imageErrors.innerText = this.imageLinkErrors;
+        }
+        // look for li#w2c-file-errors and set innerText to fileLinkErrors
+        let fileErrors = document.querySelector('#w2c-num-file-errors');
+        if (fileErrors) {
+            fileErrors.innerText = this.fileLinkErrors;
+        }
+    }
+
+    /**
      * Called everytime an item successfully added to the current module.
      * - check whether the addition worked (or not)
      *   TODO need to handle this better
@@ -489,6 +534,8 @@ export default class c2m_CompletedView extends c2m_View {
     checkModuleItemAdded(e) {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
         console.log(e);
+
+        this.updateCompletionCategory();
 
         let index = e.detail.item;
         // TODO what if index greater than # items
@@ -527,6 +574,11 @@ export default class c2m_CompletedView extends c2m_View {
             </span>`
                 );
                 this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
+                // find div#w2c-completion-category and set class to w2c-success
+                let completionCategoryDiv = document.getElementById("w2c-completion-category");
+                if (completionCategoryDiv) {
+                    completionCategoryDiv.classList.add("w2c-success");
+                }
             } else {
                 this.addProgressList(`
             <strong>Module created, but
@@ -572,6 +624,8 @@ export default class c2m_CompletedView extends c2m_View {
         //numItemsSpan.innerHTML = result.items_count;
         numItemsSpan.innerHTML = this.model.canvasModules.items.length;
 
+
+
         // hide div.w2c-waiting-results
         let waitingDiv = document.querySelector("div.w2c-waiting-results");
         waitingDiv.style.display = "none";
@@ -585,7 +639,8 @@ export default class c2m_CompletedView extends c2m_View {
 
         // populate recievedDiv with error message
         receivedDiv.innerHTML = `<h4>Error</h4>
-		 <p class="text-warning">${error}</p>`;
+          <div id="w2c-completion-category" class="wc2-no-creation">
+            <p class="text-warning">${error}</p></div>`;
 
 
         // hide div.w2c-waiting-results
