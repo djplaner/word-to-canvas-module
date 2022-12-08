@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.19
+// @version      2.0.20
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -39,7 +39,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.19";
+		this.version = "2.0.20";
 	}
 
 
@@ -1266,12 +1266,20 @@ const COMPLETE_HTML = `
 </div>
 
 <div class="w2c-recieved-results" style="display:none">
-  <h4 class="text-success">Module created</h4>
+  <h4 id="w2c-completion-summary" class="text-success"></h4>
   <div id="w2c-summary">
-  <p>The module "<span id="w2c_module_name"></span>" was created with 
-  <span id="w2c_module_num_items"></span> items.</p>
+  <p>The module "<em><span id="w2c-module-name"></span></em>" was created with 
+  <span id="w2c-module-num-items"></span> items.</p>
   <p>Close this dialog to view the module and then choose to <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-move-or-reorder-a-module/ta-p/1150">
   move it</a> to its proper place.</p>
+  </div>
+  <div id="w2c-completion-category">
+     <p>Summary of errors:</p>
+    <ul id="w2c-conversion-errors">
+      <li> <span id="w2c-num-add-errors">0</span> errors adding items to the module.</li>
+      <li> <span id="w2c-num-image-errors">0</span> errors trying to link to images in the Canvas files area.</li>
+      <li> <span id="w2c-num-file-errors">0</span> errors trying to link to files in the Canvas files area.</li>
+    </ul>
   </div>
 </div>
 
@@ -1311,6 +1319,8 @@ const COMPLETE_HTML = `
 
 <style>
 
+div#w2c-completion-category {
+}
 
 .w2c-version {
   font-size: 60%;
@@ -1486,24 +1496,24 @@ class c2m_CompletedView extends c2m_View {
 
         this.numFoundCreatedItems = 0;
         this.numItemErrors = 0;
-        this.findImageMessage=false;
+        this.findImageMessage = false;
         this.model.findImageLinks();
         //this.model.findFileLinks();
         //        this.model.findOrCreateModuleItems();
     }
 
-        /**
-     * Event handler for the w2c-imageLink-found event.
-     * ???
-     * Call the file link intiator
-     */
+    /**
+ * Event handler for the w2c-imageLink-found event.
+ * ???
+ * Call the file link intiator
+ */
 
     checkImageLinkFound(e) {
         let index = e.detail.file;
         let image = this.model.canvasModules.imageLinks[index];
 
-        if ( ! this.findImageMessage) {
-            this.findImageMessage=true;
+        if (!this.findImageMessage) {
+            this.findImageMessage = true;
             // first image found, update the progress list
             this.addProgressList(
                 `<span class="text-info">Trying to find links for ${this.model.canvasModules.imageLinks.length} images</span>`
@@ -1512,21 +1522,25 @@ class c2m_CompletedView extends c2m_View {
 
         // check that the image has been found correctly
         if (image.status === "found") {
-            if (image.response.mime_class==="image") {
+            if (image.response.mime_class === "image") {
                 this.addProgressList(
-                    `Link for image named "<em>${image.name}</em>": found`);
+                    `Link for image named <em>${image.name}</em>: found`);
             } else {
                 this.addProgressList(
-                `<span class="text-error">Wanted image file named "<em>${image.name}</em>" but found <em>${image.response.mime_class}</span>`
+                    `<span class="text-error">Wanted image file named 
+                    <em><span class="w2c-broken-image">${image.name}</a></em> 
+                    but found <em>${image.response.mime_class}</span>`
                 );
-                this.imageLinkErrors+=1;
+                this.imageLinkErrors += 1;
             }
         } else {
             // failed to find it
             this.addProgressList(
-                `<span class="text-error">Link for image named "<em>${image.name}</em>": not found</span>`
+                `<span class="text-error">Link for image named 
+                   <em><span class="w2c-broken-image">${image.name}</span></em>: 
+                   not found</span>`
             );
-            this.imageLinkErrors+=1;
+            this.imageLinkErrors += 1;
         }
 
         // increment the number of files we've heard about
@@ -1573,7 +1587,7 @@ class c2m_CompletedView extends c2m_View {
         console.log(`found file ${file.name} with id ${index}`);
         console.log(file);
 
-        if ( this.model.canvasModules.numFoundFileLinks===0) {
+        if (this.model.canvasModules.numFoundFileLinks === 0) {
             // first image found, update the progress list
             this.addProgressList(
                 `<span class="text-info">Trying to find links for ${this.model.canvasModules.fileLinks.length} files</span>`
@@ -1584,13 +1598,14 @@ class c2m_CompletedView extends c2m_View {
         if (file.status === "found") {
             // add to the progress display
             this.addProgressList(
-                `File "<em>${file.name}</em>": found`);
+                `File <em>${file.name}</em>: found`);
         } else {
             // failed to find it
             this.addProgressList(
-                `<span class="text-error">File "<em>${file.name}</em>": not found</span>`
+                `<span class="text-error">File 
+                <em><span class="w2c-broken-file">${file.name}</span></em>: not found</span>`
             );
-            this.fileLinkErrors+=1;
+            this.fileLinkErrors += 1;
         }
 
         // increment the number of files we've heard about
@@ -1599,7 +1614,7 @@ class c2m_CompletedView extends c2m_View {
 
         // if we've heard from all 
         if (this.model.canvasModules.numFoundFileLinks === this.model.canvasModules.fileLinks.length) {
-            if (this.fileLinkErrors===0) {
+            if (this.fileLinkErrors === 0) {
                 this.addProgressList(
                     `<span class="text-success">${this.model.canvasModules.numFoundFileLinks} of ${this.model.canvasModules.fileLinks.length} files found</span>`
                 );
@@ -1695,6 +1710,46 @@ class c2m_CompletedView extends c2m_View {
     }
 
     /**
+     * Update screen based on errors or successes found during the conversion
+     * process
+     * 
+     * Possible errors include
+     * - addErrors
+     * - imageLinkErrors
+     * - fileLinkErrors
+     */
+
+    updateCompletionCategory() {
+
+        // find div#w2c-completion-category
+        let completionCategory = document.querySelector('#w2c-completion-category');
+
+        // if there are no errors then set the class to success
+        if (this.numAddErrors === 0 && this.imageLinkErrors === 0 && this.fileLinkErrors === 0) {
+            completionCategory.classList.add('w2c-success');
+            return;
+        }
+
+        completionCategory.classList.add('w2c-success-but');
+
+        // look for li#w2c-add-errors and set innerText to numAddErrors
+        let addErrors = document.querySelector('#w2c-num-add-errors');
+        if (addErrors) {
+            addErrors.innerText = this.numAddErrors;
+        }
+        // look for li#w2c-image-errors and set innerText to imageLinkErrors
+        let imageErrors = document.querySelector('#w2c-num-image-errors');
+        if (imageErrors) {
+            imageErrors.innerText = this.imageLinkErrors;
+        }
+        // look for li#w2c-file-errors and set innerText to fileLinkErrors
+        let fileErrors = document.querySelector('#w2c-num-file-errors');
+        if (fileErrors) {
+            fileErrors.innerText = this.fileLinkErrors;
+        }
+    }
+
+    /**
      * Called everytime an item successfully added to the current module.
      * - check whether the addition worked (or not)
      *   TODO need to handle this better
@@ -1711,20 +1766,27 @@ class c2m_CompletedView extends c2m_View {
         console.log('OOOOOOOOOOOOOOOOOOO checkItemFoundCreated');
         console.log(e);
 
+
         let index = e.detail.item;
         // TODO what if index greater than # items
         let item = this.model.canvasModules.items[index];
-        this.numAddedItems++;
 
         if (item.added) {
             this.addProgressList(
                 `item (${item.title}) added to module in position ${index} 
                 (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
             );
+            this.numAddedItems++;
         } else {
             console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
             this.addProgressList(
-                `<span class="text-error">Error adding item "<em>${item.title}</em>": ${item.error}</span>`
+                `<span class="text-error">Error adding item 
+                   <span class="w2c-broken-add">
+                      <span class="w2c-broken-add-title"><em>${item.title}</em></span>
+                      (<span class="w2c-broken-add-type">${item.type}</span>):
+                      error <span class="w2c-broken-add-error"><em>${item.error}</em></span>
+                  </span>
+                </span>`
             );
             this.numAddErrors++;
         }
@@ -1734,10 +1796,26 @@ class c2m_CompletedView extends c2m_View {
 
         // increment the number of found/created items
         // check if all items have been found/created
-        if (this.numAddedItems != this.model.canvasModules.items.length) {
+        if (  (this.numAddedItems+this.numAddErrors) != this.model.canvasModules.items.length) {
+            // nope not everything added, add the next one
             this.model.addModuleItem(this.numAddedItems);
         } else {
+            // all items added tidy up
 
+            // Set the result
+            const totalErrors = this.numAddErrors + this.imageLinkErrors + this.fileLinkErrors;
+            let creationResult = '<span class="text-success"><strong>Module created!</strong></span>';
+            if (this.numAddErrors > 0) {
+                creationResult = `<span class="text-error"><strong>Module created with ${totalErrors} errors</strong></span>`;
+            }
+            // get the div#w2c-completion-summary
+            let completionSummary = document.querySelector('#w2c-completion-summary');
+            // set the innerHTML to the result of the creation
+            if (completionSummary) {
+                completionSummary.innerHTML = creationResult;
+            }
+
+            // display final error count at end of list
             if (this.numAddErrors === 0) {
 
                 this.addProgressList(`
@@ -1747,7 +1825,12 @@ class c2m_CompletedView extends c2m_View {
               </strong>
             </span>`
                 );
-                this.addProgressList(`<span class="text-success"><strong>Module created!</strong></span>`);
+                this.addProgressList(creationResult);
+                // find div#w2c-completion-category and set class to w2c-success
+                let completionCategoryDiv = document.getElementById("w2c-completion-category");
+                if (completionCategoryDiv) {
+                    completionCategoryDiv.classList.add("w2c-success");
+                }
             } else {
                 this.addProgressList(`
             <strong>Module created, but
@@ -1759,6 +1842,7 @@ class c2m_CompletedView extends c2m_View {
             }
             this.renderCreationResults();
         }
+        this.updateCompletionCategory();
     }
 
 
@@ -1787,11 +1871,14 @@ class c2m_CompletedView extends c2m_View {
 
         const result = this.model.canvasModules.createdModule;
 
-        let nameSpan = document.getElementById("w2c_module_name");
+        let nameSpan = document.getElementById("w2c-module-name");
         nameSpan.innerHTML = result.name;
-        let numItemsSpan = document.getElementById("w2c_module_num_items");
+        let numItemsSpan = document.getElementById("w2c-module-num-items");
         //numItemsSpan.innerHTML = result.items_count;
-        numItemsSpan.innerHTML = this.model.canvasModules.items.length;
+        //numItemsSpan.innerHTML = this.model.canvasModules.items.length;
+        numItemsSpan.innerHTML = this.numAddedItems;
+
+
 
         // hide div.w2c-waiting-results
         let waitingDiv = document.querySelector("div.w2c-waiting-results");
@@ -1806,7 +1893,8 @@ class c2m_CompletedView extends c2m_View {
 
         // populate recievedDiv with error message
         receivedDiv.innerHTML = `<h4>Error</h4>
-		 <p class="text-warning">${error}</p>`;
+          <div id="w2c-completion-category" class="wc2-no-creation">
+            <p class="text-warning">${error}</p></div>`;
 
 
         // hide div.w2c-waiting-results

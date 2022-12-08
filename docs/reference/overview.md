@@ -1,6 +1,6 @@
 # Reference overview
 
-## Latest version - v2.0.19
+## Latest version - v2.0.20
 
 The latest version of ```word2canvas``` is v2.0.19. This version is available from the [Install ```word2canvas``` page](../getting-started/install.md).
 
