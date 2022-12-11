@@ -164,6 +164,7 @@ export default class c2m_HtmlConverter {
 		h1s.forEach((h1) => {
 			let item = {};
 			item.title = h1.innerText;
+			item.indent = this.getIndent(h1);
 			item.type = this.getType(h1);
 			item.content = this.getContent(h1, item.type);
 			item.error = false;
@@ -213,6 +214,30 @@ export default class c2m_HtmlConverter {
 		}
 		// default to a page
 		return 'Page';
+	}
+
+	/**
+	 * Some h1s will have a span with class=w2c-indent-X where X is the number of
+	 * levels of indent (max of 5)
+	 * @param {DomElement} h1 
+	 * @returns {Number} the X from the class name
+	 */
+	getIndent(h1) {
+		// does h1 contain a span 
+		let span = h1.querySelector('span');
+		// if no span, return 0
+		if (!span) {
+			return 0;
+		}
+		// get the className and if it matches w2c-indent-X extract the X
+		let className = span.className;
+		let indent = className.match(/w2c-indent-(\d)/);
+		// if indent is null, return 0
+		if (!indent) {
+			return 0;
+		}
+		// return the X
+		return parseInt(indent[1]);
 	}
 
 	/**

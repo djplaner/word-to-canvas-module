@@ -10,6 +10,7 @@ const JUICE_IT = true;
 
 const DEFAULT_OPTIONS = {
     styleMap: [
+        "p[style-name='Heading 1 - indent 1'] => h1:fresh > span.w2c-indent-1",
         "p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
         "p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
         "p[style-name='Canvas Assignment'] => h1.canvasAssignment",
@@ -222,6 +223,10 @@ export default class c2m_WordConverter {
     displayResult(result) {
 
         this.mammothResult = result;
+
+        console.log("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+        console.log(this.mammothResult.value);
+        console.log("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 
         // CONTEXTUAL CHANGES
         // TODO do Content Interface translations here??

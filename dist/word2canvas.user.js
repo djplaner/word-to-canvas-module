@@ -2919,6 +2919,7 @@ const JUICE_IT = true;
 
 const DEFAULT_OPTIONS = {
     styleMap: [
+        "p[style-name='Heading 1 - indent 1'] => h1:fresh > span.w2c-indent-1",
         "p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
         "p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
         "p[style-name='Canvas Assignment'] => h1.canvasAssignment",
@@ -3131,6 +3132,10 @@ class c2m_WordConverter {
     displayResult(result) {
 
         this.mammothResult = result;
+
+        console.log("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+        console.log(this.mammothResult.value);
+        console.log("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 
         // CONTEXTUAL CHANGES
         // TODO do Content Interface translations here??
@@ -4615,6 +4620,7 @@ class c2m_HtmlConverter {
 		h1s.forEach((h1) => {
 			let item = {};
 			item.title = h1.innerText;
+			item.indent = this.getIndent(h1);
 			item.type = this.getType(h1);
 			item.content = this.getContent(h1, item.type);
 			item.error = false;
@@ -4664,6 +4670,30 @@ class c2m_HtmlConverter {
 		}
 		// default to a page
 		return 'Page';
+	}
+
+	/**
+	 * Some h1s will have a span with class=w2c-indent-X where X is the number of
+	 * levels of indent (max of 5)
+	 * @param {DomElement} h1 
+	 * @returns {Number} the X from the class name
+	 */
+	getIndent(h1) {
+		// does h1 contain a span 
+		let span = h1.querySelector('span');
+		// if no span, return 0
+		if (!span) {
+			return 0;
+		}
+		// get the className and if it matches w2c-indent-X extract the X
+		let className = span.className;
+		let indent = className.match(/w2c-indent-(\d)/);
+		// if indent is null, return 0
+		if (!indent) {
+			return 0;
+		}
+		// return the X
+		return parseInt(indent[1]);
 	}
 
 	/**
@@ -4868,11 +4898,15 @@ class c2m_Modules {
 
         let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
 
+        // TODO
+        // - Can I get the span.indent from item and use that to set the indent?
+
         let body = {
             "module_item": {
                 "title": item.title,
                 "position": index + 1, // index+1 because position is 1-based, not 0
                 "type": item.type,
+                "indent": item.indent
             }
         };
 
@@ -5723,9 +5757,6 @@ class c2m_Model {
 //                });
                 break;
             case 'File':
-                const item = this.canvasModules.items[index];
-                console.log("<<<<<<<<<<<<< trying to find file")
-                console.log(item.content);
                 this.canvasModules.findItem(index).then(() => {});
                 break;
             case 'Discussion':

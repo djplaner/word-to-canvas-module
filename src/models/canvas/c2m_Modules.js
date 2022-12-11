@@ -116,11 +116,15 @@ export default class c2m_Modules {
 
         let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
 
+        // TODO
+        // - Can I get the span.indent from item and use that to set the indent?
+
         let body = {
             "module_item": {
                 "title": item.title,
                 "position": index + 1, // index+1 because position is 1-based, not 0
                 "type": item.type,
+                "indent": item.indent
             }
         };
 
