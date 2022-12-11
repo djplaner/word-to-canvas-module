@@ -565,7 +565,13 @@ export default class c2m_Model {
      */
     addModuleItem(itemIndex) {
 
-        console.log('Shogin createdModuleItem');
+        console.log('>>>>>>>>>>>>>>>>> Showing createdModuleItem');
+
+        const item = this.canvasModules.items[itemIndex];
+
+        if ( item.type==="File") {
+            console.log(this.canvasModules.items[itemIndex] );
+        }
 
         // may need to pass in item order
         //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)

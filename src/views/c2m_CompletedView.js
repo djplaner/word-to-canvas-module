@@ -584,7 +584,7 @@ export default class c2m_CompletedView extends c2m_View {
             // Set the result
             const totalErrors = this.numAddErrors + this.imageLinkErrors + this.fileLinkErrors;
             let creationResult = '<span class="text-success"><strong>Module created!</strong></span>';
-            if (this.numAddErrors > 0) {
+            if (totalErrors > 0) {
                 creationResult = `<span class="text-error"><strong>Module created with ${totalErrors} errors</strong></span>`;
             }
             // get the div#w2c-completion-summary
