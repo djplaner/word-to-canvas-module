@@ -1778,12 +1778,12 @@ class c2m_CompletedView extends c2m_View {
         // TODO what if index greater than # items
         let item = this.model.canvasModules.items[index];
 
+        this.numAddedItems++;
         if (item.added) {
             this.addProgressList(
                 `item (${item.title}) added to module in position ${index} 
                 (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
             );
-            this.numAddedItems++;
         } else {
             console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
             this.addProgressList(
@@ -1803,7 +1803,7 @@ class c2m_CompletedView extends c2m_View {
 
         // increment the number of found/created items
         // check if all items have been found/created
-        if (  (this.numAddedItems+this.numAddErrors) != this.model.canvasModules.items.length) {
+        if (  (this.numAddedItems) !== this.model.canvasModules.items.length) {
             // nope not everything added, add the next one
             this.model.addModuleItem(this.numAddedItems);
         } else {
@@ -1848,8 +1848,8 @@ class c2m_CompletedView extends c2m_View {
                 );
             }
             this.renderCreationResults();
+            this.updateCompletionCategory();
         }
-        this.updateCompletionCategory();
     }
 
 
@@ -2920,15 +2920,59 @@ const JUICE_IT = true;
 const DEFAULT_OPTIONS = {
     styleMap: [
         "p[style-name='Heading 1 - indent 1'] => h1:fresh > span.w2c-indent-1",
-        "p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
-        "p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
-        "p[style-name='Canvas Assignment'] => h1.canvasAssignment",
-        "p[style-name='Canvas Quiz'] => h1.canvasQuiz",
-        "p[style-name='Canvas File'] => h1.canvasFile",
+        "p[style-name='Heading 1 - indent 2'] => h1:fresh > span.w2c-indent-2",
+        "p[style-name='Heading 1 - indent 3'] => h1:fresh > span.w2c-indent-3",
+        "p[style-name='Heading 1 - indent 4'] => h1:fresh > span.w2c-indent-4",
+        "p[style-name='Heading 1 - indent 5'] => h1:fresh > span.w2c-indent-5",
+        "p[style-name='Existing Canvas Page'] => h1.existingCanvasPage:fresh",
+        "p[style-name='Existing Canvas Page - indent 1'] => h1.existingCanvasPage:fresh > span.w2c-indent-1",
+        "p[style-name='Existing Canvas Page - indent 2'] => h1.existingCanvasPage:fresh > span.w2c-indent-2",
+        "p[style-name='Existing Canvas Page - indent 3'] => h1.existingCanvasPage:fresh > span.w2c-indent-3",
+        "p[style-name='Existing Canvas Page - indent 4'] => h1.existingCanvasPage:fresh > span.w2c-indent-4",
+        "p[style-name='Existing Canvas Page - indent 5'] => h1.existingCanvasPage:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas Discussion'] => h1.canvasDiscussion:fresh",
+        "p[style-name='Canvas Discussion - indent 1'] => h1.canvasDiscussion:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas Discussion - indent 2'] => h1.canvasDiscussion:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas Discussion - indent 3'] => h1.canvasDiscussion:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas Discussion - indent 4'] => h1.canvasDiscussion:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas Discussion - indent 5'] => h1.canvasDiscussion:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas Assignment'] => h1.canvasAssignment:fresh",
+        "p[style-name='Canvas Assignment - indent 1'] => h1.canvasAssignment:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas Assignment - indent 2'] => h1.canvasAssignment:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas Assignment - indent 3'] => h1.canvasAssignment:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas Assignment - indent 4'] => h1.canvasAssignment:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas Assignment - indent 5'] => h1.canvasAssignment:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas Quiz'] => h1.canvasQuiz:fresh",
+        "p[style-name='Canvas Quiz - indent 1'] => h1.canvasQuiz:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas Quiz - indent 2'] => h1.canvasQuiz:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas Quiz - indent 3'] => h1.canvasQuiz:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas Quiz - indent 4'] => h1.canvasQuiz:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas Quiz - indent 5'] => h1.canvasQuiz:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas File'] => h1.canvasFile:fresh",
+        "p[style-name='Canvas File - indent 1'] => h1.canvasFile:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas File - indent 2'] => h1.canvasFile:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas File - indent 3'] => h1.canvasFile:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas File - indent 4'] => h1.canvasFile:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas File - indent 5'] => h1.canvasFile:fresh > span.w2c-indent-5",
         "p[style-name='Canvas Image'] => span.canvasImage",
-        "p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
-        "p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
-        "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
+        "p[style-name='Canvas SubHeader'] => h1.canvasSubHeader:fresh",
+        "p[style-name='Canvas SubHeader - indent 1'] => h1.canvasSubHeader:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas SubHeader - indent 2'] => h1.canvasSubHeader:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas SubHeader - indent 3'] => h1.canvasSubHeader:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas SubHeader - indent 4'] => h1.canvasSubHeader:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas SubHeader - indent 5'] => h1.canvasSubHeader:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas External Url'] => h1.canvasExternalUrl:fresh",
+        "p[style-name='Canvas External Url - indent 1'] => h1.canvasExternalUrl:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas External Url - indent 2'] => h1.canvasExternalUrl:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas External Url - indent 3'] => h1.canvasExternalUrl:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas External Url - indent 4'] => h1.canvasExternalUrl:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas External Url - indent 5'] => h1.canvasExternalUrl:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas External Tool'] => h1.canvasExternalTool:fresh",
+        "p[style-name='Canvas External Tool - indent 1'] => h1.canvasExternalTool:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas External Tool - indent 2'] => h1.canvasExternalTool:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas External Tool - indent 3'] => h1.canvasExternalTool:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas External Tool - indent 4'] => h1.canvasExternalTool:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas External Tool - indent 5'] => h1.canvasExternalTool:fresh > span.w2c-indent-5",
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
@@ -5085,7 +5129,6 @@ class c2m_Modules {
 
         // if looking for a File item, we need to search for the filename
         if (type === "File") {
-            console.log(`--- FindItem: ${item.title} type ${type} content ${item.content.fileName}`)
             // replace smart quotes and em dashes in name with normal ones
             let name = item.content.fileName;
             name = name.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
@@ -5095,19 +5138,16 @@ class c2m_Modules {
             // kludge replace %20 with space
             name = name.replace(/%20/g, ' ');
             item.content.fileName = name;
-            console.log(`     --- FindItem: modified name ${item.content.fileName}`)
 
             searchTerm = name;
         }
 
         const newSearchTerm = encodeURIComponent(searchTerm);
-        console.log(`--- FindItem searchTerm ${searchTerm} newSearchTerm ${newSearchTerm}`)
 
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
         //let callUrl = TYPE_API_URL[type] + new URLSearchParams({ 'search_term': searchTerm });
         let callUrl = `${TYPE_API_URL[type]}search_term=${newSearchTerm}`;
-        console.log(`--- FindItem: ${item.title} type ${type} callUrl ${callUrl}`)
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',

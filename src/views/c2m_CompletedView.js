@@ -550,12 +550,12 @@ export default class c2m_CompletedView extends c2m_View {
         // TODO what if index greater than # items
         let item = this.model.canvasModules.items[index];
 
+        this.numAddedItems++;
         if (item.added) {
             this.addProgressList(
                 `item (${item.title}) added to module in position ${index} 
                 (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
             );
-            this.numAddedItems++;
         } else {
             console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
             this.addProgressList(
@@ -575,7 +575,7 @@ export default class c2m_CompletedView extends c2m_View {
 
         // increment the number of found/created items
         // check if all items have been found/created
-        if (  (this.numAddedItems+this.numAddErrors) != this.model.canvasModules.items.length) {
+        if (  (this.numAddedItems) !== this.model.canvasModules.items.length) {
             // nope not everything added, add the next one
             this.model.addModuleItem(this.numAddedItems);
         } else {
@@ -620,8 +620,8 @@ export default class c2m_CompletedView extends c2m_View {
                 );
             }
             this.renderCreationResults();
+            this.updateCompletionCategory();
         }
-        this.updateCompletionCategory();
     }
 
 

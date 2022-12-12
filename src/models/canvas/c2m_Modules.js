@@ -303,7 +303,6 @@ export default class c2m_Modules {
 
         // if looking for a File item, we need to search for the filename
         if (type === "File") {
-            console.log(`--- FindItem: ${item.title} type ${type} content ${item.content.fileName}`)
             // replace smart quotes and em dashes in name with normal ones
             let name = item.content.fileName;
             name = name.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
@@ -313,19 +312,16 @@ export default class c2m_Modules {
             // kludge replace %20 with space
             name = name.replace(/%20/g, ' ');
             item.content.fileName = name;
-            console.log(`     --- FindItem: modified name ${item.content.fileName}`)
 
             searchTerm = name;
         }
 
         const newSearchTerm = encodeURIComponent(searchTerm);
-        console.log(`--- FindItem searchTerm ${searchTerm} newSearchTerm ${newSearchTerm}`)
 
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
         //let callUrl = TYPE_API_URL[type] + new URLSearchParams({ 'search_term': searchTerm });
         let callUrl = `${TYPE_API_URL[type]}search_term=${newSearchTerm}`;
-        console.log(`--- FindItem: ${item.title} type ${type} callUrl ${callUrl}`)
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
