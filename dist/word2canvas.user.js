@@ -5133,7 +5133,8 @@ class c2m_Modules {
             let name = item.content.fileName;
             name = name.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
             name = name.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"');
-            name = name.replace(/[\u2013\u2014]/g, '-');
+            name = name.replace(/\u2013/g, '-');
+            name = name.replace(/\u2014/g, '--');
 
             // kludge replace %20 with space
             name = name.replace(/%20/g, ' ');
