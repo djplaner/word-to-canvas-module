@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.20
+// @version      2.0.21
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -39,7 +39,7 @@ class c2m_View {
 		this.model = model;
 		this.controller = controller;
 
-		this.version = "2.0.20";
+		this.version = "2.0.21";
 	}
 
 
@@ -1771,12 +1771,12 @@ class c2m_CompletedView extends c2m_View {
         // TODO what if index greater than # items
         let item = this.model.canvasModules.items[index];
 
+        this.numAddedItems++;
         if (item.added) {
             this.addProgressList(
                 `item (${item.title}) added to module in position ${index} 
                 (added ${this.numAddedItems} out of ${this.model.canvasModules.items.length})`
             );
-            this.numAddedItems++;
         } else {
             console.log(`OOOOOOOOOOOOOOOOOOOO error adding item ${item.title} -- ${item.error}`);
             this.addProgressList(
@@ -1796,7 +1796,7 @@ class c2m_CompletedView extends c2m_View {
 
         // increment the number of found/created items
         // check if all items have been found/created
-        if (  (this.numAddedItems+this.numAddErrors) != this.model.canvasModules.items.length) {
+        if (  (this.numAddedItems) !== this.model.canvasModules.items.length) {
             // nope not everything added, add the next one
             this.model.addModuleItem(this.numAddedItems);
         } else {
@@ -1805,7 +1805,7 @@ class c2m_CompletedView extends c2m_View {
             // Set the result
             const totalErrors = this.numAddErrors + this.imageLinkErrors + this.fileLinkErrors;
             let creationResult = '<span class="text-success"><strong>Module created!</strong></span>';
-            if (this.numAddErrors > 0) {
+            if (totalErrors > 0) {
                 creationResult = `<span class="text-error"><strong>Module created with ${totalErrors} errors</strong></span>`;
             }
             // get the div#w2c-completion-summary
@@ -1841,8 +1841,8 @@ class c2m_CompletedView extends c2m_View {
                 );
             }
             this.renderCreationResults();
+            this.updateCompletionCategory();
         }
-        this.updateCompletionCategory();
     }
 
 
@@ -2910,15 +2910,60 @@ const JUICE_IT = true;
 
 const DEFAULT_OPTIONS = {
     styleMap: [
-        "p[style-name='Existing Canvas Page'] => h1.existingCanvasPage",
-        "p[style-name='Canvas Discussion'] => h1.canvasDiscussion",
-        "p[style-name='Canvas Assignment'] => h1.canvasAssignment",
-        "p[style-name='Canvas Quiz'] => h1.canvasQuiz",
-        "p[style-name='Canvas File'] => h1.canvasFile",
+        "p[style-name='Heading 1 - indent 1'] => h1:fresh > span.w2c-indent-1",
+        "p[style-name='Heading 1 - indent 2'] => h1:fresh > span.w2c-indent-2",
+        "p[style-name='Heading 1 - indent 3'] => h1:fresh > span.w2c-indent-3",
+        "p[style-name='Heading 1 - indent 4'] => h1:fresh > span.w2c-indent-4",
+        "p[style-name='Heading 1 - indent 5'] => h1:fresh > span.w2c-indent-5",
+        "p[style-name='Existing Canvas Page'] => h1.existingCanvasPage:fresh",
+        "p[style-name='Existing Canvas Page - indent 1'] => h1.existingCanvasPage:fresh > span.w2c-indent-1",
+        "p[style-name='Existing Canvas Page - indent 2'] => h1.existingCanvasPage:fresh > span.w2c-indent-2",
+        "p[style-name='Existing Canvas Page - indent 3'] => h1.existingCanvasPage:fresh > span.w2c-indent-3",
+        "p[style-name='Existing Canvas Page - indent 4'] => h1.existingCanvasPage:fresh > span.w2c-indent-4",
+        "p[style-name='Existing Canvas Page - indent 5'] => h1.existingCanvasPage:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas Discussion'] => h1.canvasDiscussion:fresh",
+        "p[style-name='Canvas Discussion - indent 1'] => h1.canvasDiscussion:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas Discussion - indent 2'] => h1.canvasDiscussion:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas Discussion - indent 3'] => h1.canvasDiscussion:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas Discussion - indent 4'] => h1.canvasDiscussion:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas Discussion - indent 5'] => h1.canvasDiscussion:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas Assignment'] => h1.canvasAssignment:fresh",
+        "p[style-name='Canvas Assignment - indent 1'] => h1.canvasAssignment:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas Assignment - indent 2'] => h1.canvasAssignment:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas Assignment - indent 3'] => h1.canvasAssignment:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas Assignment - indent 4'] => h1.canvasAssignment:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas Assignment - indent 5'] => h1.canvasAssignment:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas Quiz'] => h1.canvasQuiz:fresh",
+        "p[style-name='Canvas Quiz - indent 1'] => h1.canvasQuiz:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas Quiz - indent 2'] => h1.canvasQuiz:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas Quiz - indent 3'] => h1.canvasQuiz:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas Quiz - indent 4'] => h1.canvasQuiz:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas Quiz - indent 5'] => h1.canvasQuiz:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas File'] => h1.canvasFile:fresh",
+        "p[style-name='Canvas File - indent 1'] => h1.canvasFile:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas File - indent 2'] => h1.canvasFile:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas File - indent 3'] => h1.canvasFile:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas File - indent 4'] => h1.canvasFile:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas File - indent 5'] => h1.canvasFile:fresh > span.w2c-indent-5",
         "p[style-name='Canvas Image'] => span.canvasImage",
-        "p[style-name='Canvas SubHeader'] => h1.canvasSubHeader",
-        "p[style-name='Canvas External Url'] => h1.canvasExternalUrl",
-        "p[style-name='Canvas External Tool'] => h1.canvasExternalTool",
+        "p[style-name='Canvas SubHeader'] => h1.canvasSubHeader:fresh",
+        "p[style-name='Canvas SubHeader - indent 1'] => h1.canvasSubHeader:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas SubHeader - indent 2'] => h1.canvasSubHeader:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas SubHeader - indent 3'] => h1.canvasSubHeader:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas SubHeader - indent 4'] => h1.canvasSubHeader:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas SubHeader - indent 5'] => h1.canvasSubHeader:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas External Url'] => h1.canvasExternalUrl:fresh",
+        "p[style-name='Canvas External Url - indent 1'] => h1.canvasExternalUrl:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas External Url - indent 2'] => h1.canvasExternalUrl:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas External Url - indent 3'] => h1.canvasExternalUrl:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas External Url - indent 4'] => h1.canvasExternalUrl:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas External Url - indent 5'] => h1.canvasExternalUrl:fresh > span.w2c-indent-5",
+        "p[style-name='Canvas External Tool'] => h1.canvasExternalTool:fresh",
+        "p[style-name='Canvas External Tool - indent 1'] => h1.canvasExternalTool:fresh > span.w2c-indent-1",
+        "p[style-name='Canvas External Tool - indent 2'] => h1.canvasExternalTool:fresh > span.w2c-indent-2",
+        "p[style-name='Canvas External Tool - indent 3'] => h1.canvasExternalTool:fresh > span.w2c-indent-3",
+        "p[style-name='Canvas External Tool - indent 4'] => h1.canvasExternalTool:fresh > span.w2c-indent-4",
+        "p[style-name='Canvas External Tool - indent 5'] => h1.canvasExternalTool:fresh > span.w2c-indent-5",
         "r[style-name='Talis Canvas Link'] => span.talisCanvasLink",
         "r[style-name='Canvas File Link'] => span.canvasFileLink",
         "p[style-name='Canvas File Link'] => span.canvasFileLink",
@@ -3122,6 +3167,10 @@ class c2m_WordConverter {
     displayResult(result) {
 
         this.mammothResult = result;
+
+        console.log("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+        console.log(this.mammothResult.value);
+        console.log("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
 
         // CONTEXTUAL CHANGES
         // TODO do Content Interface translations here??
@@ -4605,6 +4654,7 @@ class c2m_HtmlConverter {
 		h1s.forEach((h1) => {
 			let item = {};
 			item.title = h1.innerText;
+			item.indent = this.getIndent(h1);
 			item.type = this.getType(h1);
 			item.content = this.getContent(h1, item.type);
 			item.error = false;
@@ -4654,6 +4704,30 @@ class c2m_HtmlConverter {
 		}
 		// default to a page
 		return 'Page';
+	}
+
+	/**
+	 * Some h1s will have a span with class=w2c-indent-X where X is the number of
+	 * levels of indent (max of 5)
+	 * @param {DomElement} h1 
+	 * @returns {Number} the X from the class name
+	 */
+	getIndent(h1) {
+		// does h1 contain a span 
+		let span = h1.querySelector('span');
+		// if no span, return 0
+		if (!span) {
+			return 0;
+		}
+		// get the className and if it matches w2c-indent-X extract the X
+		let className = span.className;
+		let indent = className.match(/w2c-indent-(\d)/);
+		// if indent is null, return 0
+		if (!indent) {
+			return 0;
+		}
+		// return the X
+		return parseInt(indent[1]);
 	}
 
 	/**
@@ -4807,7 +4881,7 @@ class c2m_Modules {
         if (newModule.name === "") {
             console.error(`c2m_Modules -> createModule: no name for module`);
             this.createdModuleError = "No name for module (possibly because no text with <em>Title</em> style)";
-            this.dispatchEvent( 'w2c-module-error');
+            this.dispatchEvent('w2c-module-error');
             return;
         }
 
@@ -4841,7 +4915,7 @@ class c2m_Modules {
                 this.createdModule = json;
                 console.log(`c2m_Modules -> createModules: ${this.createdModule}`);
                 console.log(json);
-                this.dispatchEvent( 'w2c-empty-module-created');
+                this.dispatchEvent('w2c-empty-module-created');
             });
     }
 
@@ -4857,30 +4931,34 @@ class c2m_Modules {
 
         let callUrl = `/api/v1/courses/${this.courseId}/modules/${moduleId}/items`;
 
+        // TODO
+        // - Can I get the span.indent from item and use that to set the indent?
+
         let body = {
             "module_item": {
                 "title": item.title,
-                "position": index+1, // index+1 because position is 1-based, not 0
+                "position": index + 1, // index+1 because position is 1-based, not 0
                 "type": item.type,
+                "indent": item.indent
             }
         };
 
-        if ([ "File", "Discussion", "Assignment", "Quiz"].includes(item.type) ) {
+        if (["File", "Discussion", "Assignment", "Quiz"].includes(item.type)) {
             body.module_item.content_id = item.createdItem.id;
         }
 
-        if (item.type === "Page" || item.type==="ExistingPage") {
-//            body.module_item['content_id'] = item.createdItem.page_id;
+        if (item.type === "Page" || item.type === "ExistingPage") {
+            //            body.module_item['content_id'] = item.createdItem.page_id;
             body.module_item.page_url = item.createdItem.url;
             body.module_item.type = 'Page';
         }
 
-        if (["ExternalUrl","ExternalTool"].includes(item.type)) {
+        if (["ExternalUrl", "ExternalTool"].includes(item.type)) {
             // TODO need to do more to extract the URL here
             body.module_item.external_url = item.content;
         }
-//        console.log('creating module item');
-//        console.log(body);
+        //        console.log('creating module item');
+        //        console.log(body);
 
         await fetch(callUrl, {
             method: 'POST', credentials: 'include',
@@ -4902,17 +4980,17 @@ class c2m_Modules {
                 item.added = true;
 
                 // if we have a SubHeader dispatch('w2c-item-found-created')
-//                if (item.type === "SubHeader") {
-//                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
- //               } else {
-                this.dispatchEvent( 'w2c-module-item-added',{'item':index});
-  //              }
+                //                if (item.type === "SubHeader") {
+                //                    this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+                //               } else {
+                this.dispatchEvent('w2c-module-item-added', { 'item': index });
+                //              }
             }).catch((error) => {
                 console.log(`canvas::c2m_Modules::addModuleItem - caught error - ${error}`);
                 item.error = error;
                 item.added = false;
-                this.dispatchEvent( 'w2c-module-item-added',{'item':index});
-        });
+                this.dispatchEvent('w2c-module-item-added', { 'item': index });
+            });
 
     }
 
@@ -4949,7 +5027,7 @@ class c2m_Modules {
                 item.createdItem = json;
                 console.log(`c2m_Modules -> createPage: index ${index} title ${item.createdItem.title}`);
                 console.log(json);
-                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+                this.dispatchEvent('w2c-item-found-created', { 'item': index });
             });
 
     }
@@ -4968,21 +5046,22 @@ class c2m_Modules {
      * @param {String} event - name of event/object to find
      */
 
-    async findFile(index,event='w2c-file-found') {
-//        let itemList = undefined;
+    async findFile(index, event = 'w2c-file-found') {
+        //        let itemList = undefined;
         // figure out which list of items to search for
-        let itemList; 
-        if (event==='w2c-file-found'){
+        let itemList;
+        if (event === 'w2c-file-found') {
             itemList = this.fileLinks;
-        } else if (event==='w2c-imageLink-found') {
+        } else if (event === 'w2c-imageLink-found') {
             itemList = this.imageLinks;
         }
         let file = itemList[index];
         let searchTerm = file.name;
 
+        searchTerm = encodeURIComponent(searchTerm);
         console.log(`--- FindFile: ${searchTerm}`);
-        let callUrl = `/api/v1/courses/${this.courseId}/files?` + new URLSearchParams(
-            {'search_term': searchTerm});
+
+        let callUrl = `/api/v1/courses/${this.courseId}/files?search_term=${searchTerm}`;
 
         // indicate that we're about to start searching
         file.status = 'searching';
@@ -4994,23 +5073,23 @@ class c2m_Modules {
                 "Accept": "application/json",
                 "X-CSRF-Token": this.csrfToken,
             }
-        }) 
-        .then(this.status) 
-        .then((response) => { 
-            return response.json(); 
-        }) 
-        .then((json) => {
-            // json - list of files from Canvas API matching request
-            // see if we can find our file (fileLinks[index]) in the list
-            this.findFileInList(json, index, itemList);
-            // do the same event, regardless, the item will be set to indicate
-            // success or failure
-            this.dispatchEvent( event,{'file':index});
-        }).catch((error) => {
-            console.log(`canvas::c2m_Modules::findFile - caught error - ${error}`);
-            file.status = 'error';
-            this.dispatchEvent( event,{'file':index});
-        });
+        })
+            .then(this.status)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                // json - list of files from Canvas API matching request
+                // see if we can find our file (fileLinks[index]) in the list
+                this.findFileInList(json, index, itemList);
+                // do the same event, regardless, the item will be set to indicate
+                // success or failure
+                this.dispatchEvent(event, { 'file': index });
+            }).catch((error) => {
+                console.log(`canvas::c2m_Modules::findFile - caught error - ${error}`);
+                file.status = 'error';
+                this.dispatchEvent(event, { 'file': index });
+            });
     }
 
     /**
@@ -5023,25 +5102,42 @@ class c2m_Modules {
         let item = this.items[index];
         let type = item.type;
 
+        console.log(`--- FindItem: ${item.title} type **${type}**`);
+        console.log(type);
+
         // depending on type, use a different URL
         const TYPE_API_URL = {
             "ExistingPage": `/api/v1/courses/${this.courseId}/pages?`,
             "File": `/api/v1/courses/${this.courseId}/files?`,
             "Discussion": `/api/v1/courses/${this.courseId}/discussion_topics?`,
-            "Assignment" : `/api/v1/courses/${this.courseId}/assignments?`,
-            "Quiz" : `/api/v1/courses/${this.courseId}/quizzes?`
+            "Assignment": `/api/v1/courses/${this.courseId}/assignments?`,
+            "Quiz": `/api/v1/courses/${this.courseId}/quizzes?`
         };
 
         let searchTerm = item.title;
 
         // if looking for a File item, we need to search for the filename
-        if (type==="File") {
-            searchTerm = item.content.fileName;
-        } 
+        if (type === "File") {
+            // replace smart quotes and em dashes in name with normal ones
+            let name = item.content.fileName;
+            name = name.replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'");
+            name = name.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"');
+            name = name.replace(/\u2013/g, '-');
+            name = name.replace(/\u2014/g, '--');
+
+            // kludge replace %20 with space
+            name = name.replace(/%20/g, ' ');
+            item.content.fileName = name;
+
+            searchTerm = name;
+        }
+
+        const newSearchTerm = encodeURIComponent(searchTerm);
 
         // do a List pages api call
         // https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.index
-        let callUrl = TYPE_API_URL[type] + new URLSearchParams({'search_term': searchTerm});
+        //let callUrl = TYPE_API_URL[type] + new URLSearchParams({ 'search_term': searchTerm });
+        let callUrl = `${TYPE_API_URL[type]}search_term=${newSearchTerm}`;
 
         await fetch(callUrl, {
             method: 'GET', credentials: 'include',
@@ -5062,12 +5158,14 @@ class c2m_Modules {
                 this.findItemInList(json, index);
                 // do the same event, regardless, the content of item.createdItem
                 // will indicate failure or not
-                this.dispatchEvent( 'w2c-item-found-created',{'item':index});
+                this.dispatchEvent('w2c-item-found-created', { 'item': index });
             }).catch((error) => {
                 console.log(`canvas::c2m_Modules::findItem - caught error - ${error}`);
-                this.dispatchEvent( 'w2c-item-found-created',{'item':index,
-                                          'error': `Error finding item - ${error}`});
-        });
+                this.dispatchEvent('w2c-item-found-created', {
+                    'item': index,
+                    'error': `Error finding item - ${error}`
+                });
+            });
 
     }
 
@@ -5091,16 +5189,16 @@ class c2m_Modules {
             let itemName = item.title.trim();
 
             // the name to match in the list element, depends on type
-            if ( type==="File") {
+            if (type === "File") {
                 elementName = element.display_name.trim();
                 itemName = item.content.fileName.trim();
-            } else if ( type==="Assignment") {
+            } else if (type === "Assignment") {
                 elementName = element.name.trim();
             } else {
                 elementName = element.title.trim();
             }
             // if itemName is substr of fileName
-            if ( elementName.includes(itemName)) {
+            if (elementName.includes(itemName)) {
                 item.createdItem = element;
                 return;
             }
@@ -5120,7 +5218,7 @@ class c2m_Modules {
      * @param {Array} searchlist - array of files/images we're looking for (index keys on this)
      */
 
-    findFileInList( list, index, searchList) {
+    findFileInList(list, index, searchList) {
         //let file = this.fileLinks[index];
         let file = searchList[index];
 
@@ -5129,9 +5227,9 @@ class c2m_Modules {
             let elementName = element.display_name.trim();
             let fileName = file.name.trim();
 
-            if ( elementName.includes(fileName)) {
-//                console.log(
-//                    `findFileInList: elementName ${elementName} includes ${fileName}`);
+            if (elementName.includes(fileName)) {
+                //                console.log(
+                //                    `findFileInList: elementName ${elementName} includes ${fileName}`);
                 file.response = element;
                 file.status = 'found';
                 return;
@@ -5746,7 +5844,13 @@ class c2m_Model {
      */
     addModuleItem(itemIndex) {
 
-        console.log('Shogin createdModuleItem');
+        console.log('>>>>>>>>>>>>>>>>> Showing createdModuleItem');
+
+        const item = this.canvasModules.items[itemIndex];
+
+        if ( item.type==="File") {
+            console.log(this.canvasModules.items[itemIndex] );
+        }
 
         // may need to pass in item order
         //this.canvasModules.addModuleItem(moduleId, itemIndex + 1, item)
