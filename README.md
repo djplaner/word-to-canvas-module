@@ -2,7 +2,7 @@
 
 ## What is ```word2canvas```?
 
-A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new [Canvas LMS](https://www.instructure.com/en-au/canvas) module from a Word document (using some specific Word styles) - see [sample w2c.docx](./https://github.com/djplaner/word-to-canvas-module/raw/main/sample%20w2c.docx) for an annotated example.
+A [userscript](https://en.wikipedia.org/wiki/User_script) that will create a new [Canvas LMS](https://www.instructure.com/en-au/canvas) module from a Word document (using some specific Word styles) - see [sample w2c.docx](sample%20w2c.docx) for an annotated example.
 
 > :exclamation: The contents of your Word documents always remain on your computer, your web browser, and eventually as a Module in the Canvas instance you are working with.
 
@@ -14,7 +14,7 @@ Manually creating a complex module using the Canvas web interface can be a touch
 
 1. Doesn't handle images embedded in Word documents.
 
-   The Canvas editor [removes base64 encoded images from HTML](https://community.canvaslms.com/t5/Canvas-Question-Forum/base64-Images-Not-Displaying-in-Course-Pages/td-p/464739). The method ```word2canvas``` uses to convert the Word document to HTML converts images to base64 encoded images. The [current suggested "solution"](./docs/warnings/htmlConversion.md#base64-images) requires manual saving of these images and using them to replace placeholder images via the Canvas RCE. 
+   The Canvas editor [removes base64 encoded images from HTML](https://community.canvaslms.com/t5/Canvas-Question-Forum/base64-Images-Not-Displaying-in-Course-Pages/td-p/464739). The method ```word2canvas``` uses to convert the Word document to HTML converts images to base64 encoded images. The [current suggested "solution"](https://djplaner.github.io/word-to-canvas-module/walk-throughs/html-check/#base64-images) requires manual saving of these images and using them to replace placeholder images via the Canvas RCE. 
 
 2. Required to use very specific Word styles.
 
@@ -71,5 +71,5 @@ Currently creates Canvas modules including
 For local development it is suggested to
 
 1. Use Chrome, with TamperMonkey installed and configured [to allow local file acess](https://www.tampermonkey.net/faq.php#Q204).
-2. Install the [dev userscript](./dist/devWord2Canvas.user.js) version of the userscript.
+2. Install the [dev userscript](raw/main/dist/devWord2Canvas.user.js) version of the userscript.
 3. Modify the dev script updating the local file: require to match the path on your computer.
