@@ -71,5 +71,5 @@ Currently creates Canvas modules including
 For local development it is suggested to
 
 1. Use Chrome, with TamperMonkey installed and configured [to allow local file acess](https://www.tampermonkey.net/faq.php#Q204).
-2. Install the [dev userscript](raw/main/dist/devWord2Canvas.user.js) version of the userscript.
+2. Install the [dev userscript](dist/devWord2Canvas.user.js) version of the userscript.
 3. Modify the dev script updating the local file: require to match the path on your computer.
