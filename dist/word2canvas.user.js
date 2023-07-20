@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Word 2 Canvas Module
 // @namespace    http://tampermonkey.net/
-// @version      2.0.20
+// @version      2.0.21
 // @description  Userscript to create a new Canvas LMS Module from a Word document
 // @author       David Jones
 // @match        https://*/courses/*
@@ -3000,7 +3000,9 @@ const DEFAULT_OPTIONS = {
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
+        "p[style-name='FAQ Heading'] => div.faqHeading > p:fresh",
         "p[style-name='FAQ Heading 1'] => div.faqHeading > p:fresh",
+        "p[style-name='FAQ body'] => div.faqBody > p:fresh",
         "p[style-name='FAQ body 1'] => div.faqBody > p:fresh",
 
         // kludges to tidy up common messy word cruft

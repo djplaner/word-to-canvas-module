@@ -762,6 +762,47 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#specify-the-name-of-the-module" class="md-nav__link">
+    Specify the name of the module
+  </a>
+  
+    <nav class="md-nav" aria-label="Specify the name of the module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-new-module-item" class="md-nav__link">
+    Create a new module item
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-an-existing-item-to-the-module" class="md-nav__link">
+    Add an existing item to the module
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modify-content-within-a-canvas-page" class="md-nav__link">
+    Modify content within a Canvas page
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indentation-styles" class="md-nav__link">
+    Indentation styles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#general-web-specific-styles" class="md-nav__link">
     General web specific styles
   </a>
@@ -1130,6 +1171,47 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#specify-the-name-of-the-module" class="md-nav__link">
+    Specify the name of the module
+  </a>
+  
+    <nav class="md-nav" aria-label="Specify the name of the module">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-new-module-item" class="md-nav__link">
+    Create a new module item
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-an-existing-item-to-the-module" class="md-nav__link">
+    Add an existing item to the module
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modify-content-within-a-canvas-page" class="md-nav__link">
+    Modify content within a Canvas page
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#indentation-styles" class="md-nav__link">
+    Indentation styles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#general-web-specific-styles" class="md-nav__link">
     General web specific styles
   </a>
@@ -1238,7 +1320,15 @@
 </tbody>
 </table>
 <h3 id="canvas-specific-styles">Canvas specific styles</h3>
-<p>The following Word styles direct <code>word2canvas</code> to perform Canvas specific actions. e.g. create a new Canvas module with a title matching text in the <code>Title</code> style.</p>
+<p>The following Word styles direct <code>word2canvas</code> to perform Canvas specific actions. Actions that can be split into the following broad categories</p>
+<ol>
+<li>Specify the name of the module to create;</li>
+<li>Create a new module items; </li>
+<li>Add an existing item to the module; and,</li>
+<li>Modify content within a Canvas page.</li>
+</ol>
+<h3 id="specify-the-name-of-the-module">Specify the name of the module</h3>
+<p><code>word2canvas</code> will look for the Word style <em>Title</em> at the top of the Word document. It will used the text in the <em>Title</em> style as the name of the new Canvas module. </p>
 <table>
 <thead>
 <tr>
@@ -1251,10 +1341,42 @@
 <td><code>Title</code> <sup id="fnref2:*"><a class="footnote-ref" href="#fn:*">1</a></sup></td>
 <td>The title of the new <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Modules/ta-p/6">Canvas module</a></td>
 </tr>
+</tbody>
+</table>
+<h4 id="create-a-new-module-item">Create a new module item</h4>
+<p><code>word2canvas</code> creates a Canvas module from a Word document. Canvas modules <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-course-content-as-module-items/ta-p/1157">contain items</a>. In your Word document, specify new items to create by using one of these styles. All based on the standard Word <em>Heading 1</em> style.</p>
+<table>
+<thead>
+<tr>
+<th><code>word2canvas</code> style</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>Heading 1</code> <sup id="fnref:*"><a class="footnote-ref" href="#fn:*">1</a></sup></td>
 <td>Name of a new <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Pages/ta-p/5">Canvas page</a></td>
 </tr>
+<tr>
+<td><code>Canvas SubHeader</code></td>
+<td>Name for a new <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-a-text-header-as-a-module-item/ta-p/1208">Canvas text (sub) header</a></td>
+</tr>
+<tr>
+<td><code>Canvas External Url</code></td>
+<td>Add an <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967">external link as a module item</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="add-an-existing-item-to-the-module">Add an existing item to the module</h4>
+<p>Your module can also contain items (e.g. pages, discussions, assignments) that already exist in the Canvas course. Use one of the following styles to add one of these existing item to the module.</p>
+<table>
+<thead>
+<tr>
+<th><code>word2canvas</code> style</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><code>Existing Canvas Page</code></td>
 <td>Name of a Canvas page already available in the course</td>
@@ -1264,16 +1386,8 @@
 <td>Name of an <strong>existing</strong> <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Discussions/ta-p/3">Canvas discussion</a></td>
 </tr>
 <tr>
-<td><code>Canvas SubHeader</code></td>
-<td>Name for a new <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-a-text-header-as-a-module-item/ta-p/1208">Canvas text (sub) header</a></td>
-</tr>
-<tr>
 <td><code>Canvas File</code></td>
-<td>The name (or part of the name) of a file already in the Canvas course's <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7">Files</a></td>
-</tr>
-<tr>
-<td><code>Canvas File Link</code></td>
-<td>Insert a link to a Canvas file within a page. Apply this style to some text and it assumes that the text is the name of the file that it should link to. Apply this style to a link, then it assumes the link is the name of the file.</td>
+<td>The name of a file already in the Canvas course's <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7">Files</a></td>
 </tr>
 <tr>
 <td><code>Canvas Assignment</code></td>
@@ -1284,20 +1398,8 @@
 <td>The name (or part of the name) of a quiz already in the Canvas course's <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Quizzes/ta-p/68">Quizzes</a></td>
 </tr>
 <tr>
-<td><code>Canvas External Url</code></td>
-<td>Add an <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967">external link as a module item</a></td>
-</tr>
-<tr>
 <td><code>Canvas External Tool</code></td>
 <td>Add an <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-tool-as-a-module-item/ta-p/1146">external tool as a module item</a></td>
-</tr>
-<tr>
-<td><code>Canvas Image</code></td>
-<td>Define some HTML that contains an <code>&lt;img</code> tag where the <code>img.src</code> is the name of a file already in the Canvas course's <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7">Files area</a>. Will attempt to identify a URL for the file and insert it into the <code>img.src</code></td>
-</tr>
-<tr>
-<td><code>Canvas Menu Link</code></td>
-<td>Create a link where the "address" is the name of an item in the Canvas left hand menu. Will get replaced with the correct URL for the course site</td>
 </tr>
 </tbody>
 </table>
@@ -1305,6 +1407,42 @@
 <p class="admonition-title">Canvas Quiz Limitations</p>
 <p><img alt="⚠" class="twemoji" src="https://twemoji.maxcdn.com/v/latest/svg/26a0.svg" title=":warning:" /> <strong>Canvas Quiz</strong> only works for <em>Classic Quizzes</em>, <strong>not</strong> <em>New Quizzes</em> (classic vs. new quizzes](https://it.umn.edu/services-technologies/how-tos/canvas-understand-classic-quizzes-vs-new)) because Canvas does <a href="https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387">not yet have an API for new Quizzes</a>.</p>
 </div>
+<h4 id="modify-content-within-a-canvas-page">Modify content within a Canvas page</h4>
+<p>A <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Pages/ta-p/5">Canvas page</a> contains a collection of HTML. When using the <em>Heading 1</em> or <em>Existing Canvas Page</em> styles <code>word2canvas</code> will convert the content following the heading into HTML content in the page. The following styles direct <code>word2canvas</code> to modify the content from the Word document before placing it in the page.</p>
+<table>
+<thead>
+<tr>
+<th><code>word2canvas</code> style</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Canvas File Link</code></td>
+<td>Text with this style is assumed to be the name of a file in the Canvas files areaa. <code>word2canvas</code> will replace the name of the file with a link to the file.</td>
+</tr>
+<tr>
+<td><code>Canvas Image</code></td>
+<td>Define some HTML that contains an <code>&lt;img</code> tag where the <code>img.src</code> is the name of a file already in the Canvas course's <a href="https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7">Files area</a>. Will attempt to identify a URL for the file and insert it into the <code>img.src</code></td>
+</tr>
+<tr>
+<td><code>Canvas Menu Link</code></td>
+<td>Specifies the name of an item in the <a href="https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-use-the-Course-Navigation-Menu-as-an-instructor/ta-p/941">course navigation menu</a>. <code>word2canvas</code> will make the name a link matching the navigation menu link.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="indentation-styles">Indentation styles</h3>
+<p>Canvas provides the ability to <a href="https://teacherscollege.screenstepslive.com/a/790009-indent-a-module-item-in-canvas">indent items</a>. Canvas provides a maxiumu of 5 levels of indentation. Often useful for structuring a long list of items into a hierarchy.</p>
+<p>In <code>word2canvas</code>, module items are specified with one of the <a href="#create-a-new-module-item">create new</a> or <a href="#add-an-existing-item-to-the-module">add existing</a> styles above. Each of these styles have related indentation styles that can be used to indent the item.</p>
+<p>An indentation style has the same name as the original style but with the additional of <code>- indent X</code> to the end of the name. Where <code>X</code> is a number from 1 through 5 (inclusive) that specifies the level of indentation. For example,</p>
+<ul>
+<li><code>Heading 1 - indent 3</code> will create a new Canvas page and add it to the module and indent it 3 levels.</li>
+<li><code>Canvas SubHeader - indent 5</code> will add a new Canvas subheader to the module and indent it 5 levels.</li>
+</ul>
+<p>The following image is an example of Word document using indentation styles.</p>
+<p><img alt="" src="../images/wordIndentStyles.png" />  </p>
+<p>And here is the resulting Canvas module that is created using that Word document.</p>
+<p><img alt="" src="../images/moduleIndentStyles.png" />  </p>
 <h3 id="general-web-specific-styles">General web specific styles</h3>
 <p>The following style(s) direct <code>word2canvas</code> to perform general web specific actions. e.g. embed into a Canvas item some specific HTML.</p>
 <table>

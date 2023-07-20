@@ -20,6 +20,8 @@ The following illustrate how ```word2canvas``` converts the [sample w2c.docx fil
 
 ```word2canvas``` styles are divided into categories as to primary purpose, as summarised in the following table. The rest of the page describes each category's styles and their purpose.
 
+[^*]: These are standard Word styles which you will find in most Word documents.
+
 | Category | Purpose |
 |----------|---------|
 | [Canvas specific](#canvas-specific-styles) | Create/access Canvas resource |
@@ -30,30 +32,77 @@ The following illustrate how ```word2canvas``` converts the [sample w2c.docx fil
 
 ### Canvas specific styles
 
-The following Word styles direct ````word2canvas```` to perform Canvas specific actions. e.g. create a new Canvas module with a title matching text in the `Title` style.
+The following Word styles direct ````word2canvas```` to perform Canvas specific actions. Actions that can be split into the following broad categories
+
+1. Specify the name of the module to create;
+2. Create a new module items; 
+3. Add an existing item to the module; and,
+3. Modify content within a Canvas page.
+
+### Specify the name of the module
+
+```word2canvas``` will look for the Word style _Title_ at the top of the Word document. It will used the text in the _Title_ style as the name of the new Canvas module. 
 
 | ```word2canvas``` style | Purpose |
 | ------------------ | ------- |
 | `Title` [^*] | The title of the new [Canvas module](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Modules/ta-p/6) |
+
+#### Create a new module item
+
+```word2canvas``` creates a Canvas module from a Word document. Canvas modules [contain items](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-course-content-as-module-items/ta-p/1157). In your Word document, specify new items to create by using one of these styles. All based on the standard Word _Heading 1_ style.
+
+
+| ```word2canvas``` style | Purpose |
+| ------------------ | ------- |
 | `Heading 1` [^*] | Name of a new [Canvas page](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Pages/ta-p/5) |
+| `Canvas SubHeader` | Name for a new [Canvas text (sub) header](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-a-text-header-as-a-module-item/ta-p/1208) |
+| `Canvas External Url` | Add an [external link as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967) |
+
+#### Add an existing item to the module
+
+Your module can also contain items (e.g. pages, discussions, assignments) that already exist in the Canvas course. Use one of the following styles to add one of these existing item to the module.
+
+| ```word2canvas``` style | Purpose |
+| ------------------ | ------- |
 | `Existing Canvas Page` | Name of a Canvas page already available in the course |
 | `Canvas Discussion` | Name of an **existing** [Canvas discussion](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Discussions/ta-p/3) |
-| `Canvas SubHeader` | Name for a new [Canvas text (sub) header](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-a-text-header-as-a-module-item/ta-p/1208) |
-| `Canvas File` | The name (or part of the name) of a file already in the Canvas course's [Files](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7) |
-| `Canvas File Link` | Insert a link to a Canvas file within a page. Apply this style to some text and it assumes that the text is the name of the file that it should link to. Apply this style to a link, then it assumes the link is the name of the file. |
+| `Canvas File` | The name of a file already in the Canvas course's [Files](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7) |
 | `Canvas Assignment` | The name (or part of the name) of an assignment already in the Canvas course's [Assignments](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Assignments/ta-p/9) | 
 | `Canvas Quiz` | The name (or part of the name) of a quiz already in the Canvas course's [Quizzes](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Quizzes/ta-p/68)  |
-| `Canvas External Url` | Add an [external link as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-URL-as-a-module-item/ta-p/967) |
 | `Canvas External Tool` | Add an [external tool as a module item](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-add-an-external-tool-as-a-module-item/ta-p/1146) |
-| `Canvas Image` | Define some HTML that contains an `<img` tag where the `img.src` is the name of a file already in the Canvas course's [Files area](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7). Will attempt to identify a URL for the file and insert it into the `img.src` |
-| `Canvas Menu Link` | Create a link where the "address" is the name of an item in the Canvas left hand menu. Will get replaced with the correct URL for the course site |
-
-
-[^*]: These are standard Word styles which you will find in most Word documents.
 
 !!! Note "Canvas Quiz Limitations"
 
     :warning: **Canvas Quiz** only works for _Classic Quizzes_, **not** _New Quizzes_ (classic vs. new quizzes](https://it.umn.edu/services-technologies/how-tos/canvas-understand-classic-quizzes-vs-new)) because Canvas does [not yet have an API for new Quizzes](https://community.canvaslms.com/t5/Canvas-Question-Forum/QUIZZES-NEXT-API/m-p/140850/highlight/true#M56387).
+
+#### Modify content within a Canvas page
+
+A [Canvas page](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Pages/ta-p/5) contains a collection of HTML. When using the _Heading 1_ or _Existing Canvas Page_ styles ```word2canvas``` will convert the content following the heading into HTML content in the page. The following styles direct ```word2canvas``` to modify the content from the Word document before placing it in the page.
+
+| ```word2canvas``` style | Purpose |
+| ------------------ | ------- |
+| `Canvas File Link` | Text with this style is assumed to be the name of a file in the Canvas files areaa. ```word2canvas``` will replace the name of the file with a link to the file. |
+| `Canvas Image` | Define some HTML that contains an `<img` tag where the `img.src` is the name of a file already in the Canvas course's [Files area](https://community.canvaslms.com/t5/Canvas-Basics-Guide/What-are-Files/ta-p/7). Will attempt to identify a URL for the file and insert it into the `img.src` |
+| `Canvas Menu Link` | Specifies the name of an item in the [course navigation menu](https://community.canvaslms.com/t5/Instructor-Guide/How-do-I-use-the-Course-Navigation-Menu-as-an-instructor/ta-p/941). ```word2canvas``` will make the name a link matching the navigation menu link. |
+
+### Indentation styles
+
+Canvas provides the ability to [indent items](https://teacherscollege.screenstepslive.com/a/790009-indent-a-module-item-in-canvas). Canvas provides a maxiumu of 5 levels of indentation. Often useful for structuring a long list of items into a hierarchy.
+
+In ```word2canvas```, module items are specified with one of the [create new](#create-a-new-module-item) or [add existing](#add-an-existing-item-to-the-module) styles above. Each of these styles have related indentation styles that can be used to indent the item.
+
+An indentation style has the same name as the original style but with the additional of ``` - indent X``` to the end of the name. Where ```X``` is a number from 1 through 5 (inclusive) that specifies the level of indentation. For example,
+
+- ```Heading 1 - indent 3``` will create a new Canvas page and add it to the module and indent it 3 levels.
+- ```Canvas SubHeader - indent 5``` will add a new Canvas subheader to the module and indent it 5 levels.
+
+The following image is an example of Word document using indentation styles.
+
+![](images/wordIndentStyles.png)  
+
+And here is the resulting Canvas module that is created using that Word document.
+
+![](images/moduleIndentStyles.png)  
 
 ### General web specific styles
 

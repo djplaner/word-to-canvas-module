@@ -91,7 +91,9 @@ const DEFAULT_OPTIONS = {
 
         "p[style-name='Hide'] => div.Hide > p:fresh",
 
+        "p[style-name='FAQ Heading'] => div.faqHeading > p:fresh",
         "p[style-name='FAQ Heading 1'] => div.faqHeading > p:fresh",
+        "p[style-name='FAQ body'] => div.faqBody > p:fresh",
         "p[style-name='FAQ body 1'] => div.faqBody > p:fresh",
 
         // kludges to tidy up common messy word cruft
